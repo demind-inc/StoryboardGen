@@ -1,0 +1,5 @@
+{
+  "name": "Consistency Character Studio",
+  "description": "Generate a series of images featuring the same character across different scenes using strict visual references and Gemini 3 Pro Image Preview.",
+  "requestFramePermissions": []
+}
