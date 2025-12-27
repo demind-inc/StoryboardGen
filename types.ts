@@ -1,5 +1,4 @@
-
-export type ImageSize = '1K' | '2K' | '4K';
+export type ImageSize = "1K" | "2K" | "4K";
 
 export interface SlideContent {
   title: string;

@@ -241,13 +241,7 @@ const App: React.FC = () => {
                 />
               </svg>
             </div>
-            <div className="brand__text">
-              <p className="brand__eyebrow">Storyboard SaaS</p>
-              <h1 className="brand__title">Consistency Studio</h1>
-              <p className="brand__subtitle">
-                Polished, Canva-grade visuals with locked-in characters.
-              </p>
-            </div>
+            <h1 className="brand__title">Consistency Studio</h1>
           </div>
 
           <div className="mode-toggle">
@@ -257,34 +251,108 @@ const App: React.FC = () => {
                 className={`mode-toggle__button ${
                   mode === "slideshow" ? "is-active" : ""
                 }`}
+                title="Slideshow Mode"
               >
-                Slideshow Mode
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
               </button>
               <button
                 onClick={() => setMode("manual")}
                 className={`mode-toggle__button ${
                   mode === "manual" ? "is-active" : ""
                 }`}
+                title="Manual Generation"
               >
-                Manual Generation
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
               </button>
             </div>
-            <p className="mode-toggle__helper">
-              Switch between AI storyboard or hands-on crafting.
-            </p>
           </div>
 
           <div className="header-actions">
             <div className="header-actions__meta">
-              <span className="pill pill--ghost">
-                {references.length || "0"} references
+              <span className="pill pill--ghost" title="Reference images">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  style={{ marginRight: "4px" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                {references.length || "0"}
               </span>
-              <span className="pill pill--ghost">
-                {totalScenes || "0"} scenes
+              <span className="pill pill--ghost" title="Scenes">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  style={{ marginRight: "4px" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                {totalScenes || "0"}
               </span>
             </div>
             <div className="size-picker">
-              <span>Res</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                title="Resolution"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                />
+              </svg>
               <div className="size-picker__options">
                 {(["1K", "2K", "4K"] as ImageSize[]).map((s) => (
                   <button
@@ -305,7 +373,50 @@ const App: React.FC = () => {
               disabled={isGenerating || references.length === 0}
               className="primary-button"
             >
-              {isGenerating ? "Processing..." : "Generate Images"}
+              {isGenerating ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    style={{
+                      marginRight: "6px",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  Processing
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    style={{ marginRight: "6px" }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  Generate
+                </>
+              )}
             </button>
           </div>
         </div>
