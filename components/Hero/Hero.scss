@@ -1,0 +1,93 @@
+.hero {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: center;
+}
+
+.hero__left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero__title {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.hero__subtitle {
+  margin: 0;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero__right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.metric-tile {
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12);
+}
+
+.metric-tile__label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.metric-tile__value {
+  margin: 4px 0 2px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.metric-tile__hint {
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.metric-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+}
+
+.metric-card__value {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.metric-card__label {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-weight: 600;
+}

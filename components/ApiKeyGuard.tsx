@@ -1,4 +1,5 @@
 import React from "react";
+import "./ApiKeyGuard.scss";
 
 interface ApiKeyGuardProps {
   onKeySelected: () => void;
