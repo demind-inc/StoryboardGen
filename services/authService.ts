@@ -23,7 +23,8 @@ export async function upsertProfile(sessionUser: {
   const full_name =
     (sessionUser.user_metadata?.full_name as string | undefined) ?? null;
 
-  const { data, error } = await supabase
+  // Try with id as UUID first (standard Supabase pattern)
+  let result = await supabase
     .from("profiles")
     .upsert(
       {
@@ -37,10 +38,37 @@ export async function upsertProfile(sessionUser: {
     .select()
     .single();
 
-  if (error) {
-    console.error("Profile upsert error", error);
+  // If id is bigint, try using user_id instead
+  if (
+    result.error &&
+    (result.error.message?.includes("bigint") ||
+      result.error.message?.includes("invalid input syntax"))
+  ) {
+    console.log("Retrying with user_id column (id appears to be bigint)...");
+    result = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          user_id: sessionUser.id,
+          email: sessionUser.email ?? null,
+          full_name,
+          last_sign_in_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      )
+      .select()
+      .single();
+  }
+
+  if (result.error) {
+    console.error("Profile upsert error", result.error);
+    console.error(
+      "Make sure your profiles table has either:\n" +
+        "1. id uuid primary key (references auth.users.id), OR\n" +
+        "2. id bigint primary key (auto-increment) and user_id uuid (references auth.users.id)"
+    );
     return null;
   }
 
-  return data as AccountProfile;
+  return result.data as AccountProfile;
 }
