@@ -1,23 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Session } from "@supabase/supabase-js";
-import {
-  AccountProfile,
-  AppMode,
-  AuthStatus,
-  ImageSize,
-  ReferenceImage,
-  SceneResult,
-} from "./types";
+import React, { useState, useRef } from "react";
+import { AppMode, ImageSize, ReferenceImage, SceneResult } from "./types";
 import {
   generateCharacterScene,
   generateSlideshowStructure,
 } from "./services/geminiService";
-import {
-  getCurrentSession,
-  signOut,
-  upsertProfile,
-} from "./services/authService";
-import { getSupabaseClient } from "./services/supabaseClient";
+import { useAuth } from "./providers/AuthProvider";
 import AppHeader from "./components/AppHeader/AppHeader";
 import Hero from "./components/Hero/Hero";
 import Sidebar from "./components/Sidebar/Sidebar";
@@ -27,13 +14,18 @@ import AuthShell from "./components/AuthShell/AuthShell";
 import "./App.scss";
 
 const App: React.FC = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<AccountProfile | null>(null);
-  const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
-  const [authEmail, setAuthEmail] = useState("");
-  const [authMessage, setAuthMessage] = useState<string | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const [isSendingLink, setIsSendingLink] = useState(false);
+  const {
+    authStatus,
+    authEmail,
+    authMessage,
+    authError,
+    isSendingLink,
+    setAuthEmail,
+    signIn,
+    signOut,
+    displayEmail,
+  } = useAuth();
+
   const [mode, setMode] = useState<AppMode>("slideshow");
   const [topic, setTopic] = useState<string>("");
   const [manualPrompts, setManualPrompts] = useState<string>(
@@ -47,57 +39,9 @@ const App: React.FC = () => {
   const [isCreatingStoryboard, setIsCreatingStoryboard] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-
-    const initialize = async () => {
-      try {
-        const supabase = getSupabaseClient();
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-          async (_event, newSession) => {
-            setSession(newSession);
-            if (newSession?.user) {
-              const savedProfile = await upsertProfile(newSession.user);
-              if (savedProfile) setProfile(savedProfile);
-              setAuthStatus("signed_in");
-            } else {
-              setProfile(null);
-              setAuthStatus("signed_out");
-            }
-          }
-        );
-        unsubscribe = () => authListener?.subscription.unsubscribe();
-
-        const currentSession = await getCurrentSession();
-
-        if (currentSession?.user) {
-          setSession(currentSession);
-          const savedProfile = await upsertProfile(currentSession.user);
-          if (savedProfile) setProfile(savedProfile);
-          setAuthStatus("signed_in");
-        } else {
-          setAuthStatus("signed_out");
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        setAuthError(
-          "Unable to connect to authentication. Check Supabase keys."
-        );
-        setAuthStatus("signed_out");
-      }
-    };
-
-    initialize();
-
-    return () => {
-      unsubscribe?.();
-    };
-  }, []);
-
   const results = mode === "slideshow" ? slideshowResults : manualResults;
   const generatedCount = results.filter((item) => item.imageUrl).length;
   const totalScenes = results.length;
-  const displayEmail = profile?.email || session?.user?.email || "";
   const disableGenerate = isGenerating || references.length === 0;
 
   const triggerUpload = () => fileInputRef.current?.click();
@@ -120,49 +64,6 @@ const App: React.FC = () => {
       };
       reader.readAsDataURL(file);
     });
-  };
-
-  const handleSendMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthMessage(null);
-    setAuthError(null);
-
-    if (!authEmail.trim()) {
-      setAuthError("Please enter a valid email address.");
-      return;
-    }
-
-    setIsSendingLink(true);
-    try {
-      const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        email: authEmail.trim(),
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setAuthMessage("Check your email for the magic sign-in link.");
-    } catch (error: any) {
-      console.error("Sign-in error:", error);
-      setAuthError(error.message || "Failed to start sign-in. Try again.");
-    } finally {
-      setIsSendingLink(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      setAuthMessage(null);
-    } catch (error: any) {
-      console.error("Sign-out error:", error);
-      setAuthError(error.message || "Unable to sign out.");
-    }
   };
 
   const removeReference = (id: string) => {
@@ -342,7 +243,7 @@ const App: React.FC = () => {
         authStatus={authStatus}
         isSendingLink={isSendingLink}
         onEmailChange={setAuthEmail}
-        onSubmit={handleSendMagicLink}
+        onSubmit={signIn}
       />
     );
   }
@@ -358,7 +259,7 @@ const App: React.FC = () => {
         mode={mode}
         onModeChange={setMode}
         displayEmail={displayEmail}
-        onSignOut={handleSignOut}
+        onSignOut={signOut}
         referencesCount={references.length}
         totalScenes={totalScenes}
         size={size}
