@@ -51,6 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initialize = async () => {
       try {
         const supabase = getSupabaseClient();
+        console.log("Supabase client initialized");
 
         // Set up auth state change listener - this will fire immediately with current session
         // and handle auto-signin for persisted sessions. Supabase automatically restores
