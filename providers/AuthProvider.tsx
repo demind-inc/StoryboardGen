@@ -5,25 +5,26 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { Session } from "@supabase/supabase-js";
-import { AccountProfile, AuthStatus } from "../types";
-import {
-  getCurrentSession,
-  signOut,
-  upsertProfile,
-} from "../services/authService";
+import { Session, User } from "@supabase/supabase-js";
+import { AuthStatus } from "../types";
+import { signOut } from "../services/authService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
 interface AuthContextType {
   session: Session | null;
-  profile: AccountProfile | null;
+  profile: User | null;
   authStatus: AuthStatus;
   authEmail: string;
+  authPassword: string;
   authMessage: string | null;
   authError: string | null;
-  isSendingLink: boolean;
+  isLoading: boolean;
+  isSignUpMode: boolean;
   setAuthEmail: (email: string) => void;
+  setAuthPassword: (password: string) => void;
+  toggleAuthMode: () => void;
   signIn: (e: React.FormEvent) => Promise<void>;
+  signUp: (e: React.FormEvent) => Promise<void>;
   signOut: () => Promise<void>;
   displayEmail: string;
 }
@@ -36,12 +37,14 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<AccountProfile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
   const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isSendingLink, setIsSendingLink] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignUpMode, setIsSignUpMode] = useState(true); // Default to signup
 
   const displayEmail = profile?.email || session?.user?.email || "";
 
@@ -52,6 +55,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const supabase = getSupabaseClient();
         console.log("Supabase client initialized");
+
+        // Promise to track when initial session is handled
+        let resolveInitialSession: (() => void) | null = null;
+        let initializationComplete = false;
+        const initialSessionPromise = new Promise<void>((resolve) => {
+          resolveInitialSession = resolve;
+        });
 
         // Set up auth state change listener - this will fire immediately with current session
         // and handle auto-signin for persisted sessions. Supabase automatically restores
@@ -64,12 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Handle initial session restoration and subsequent auth changes
             if (newSession?.user) {
               setSession(newSession);
-              try {
-                const savedProfile = await upsertProfile(newSession.user);
-                if (savedProfile) setProfile(savedProfile);
-              } catch (error) {
-                console.error("Profile upsert error:", error);
-              }
+              setProfile(newSession.user);
               setAuthStatus("signed_in");
 
               // Clear any auth messages when successfully signed in
@@ -85,51 +90,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 );
               }
             } else {
-              setSession(null);
-              setProfile(null);
-              setAuthStatus("signed_out");
+              // Only set to signed_out after initialization is complete
+              // This prevents race conditions during initial load
+              if (initializationComplete || event === "SIGNED_OUT") {
+                setSession(null);
+                setProfile(null);
+                setAuthStatus("signed_out");
+              }
+            }
+
+            // Mark initialization as complete after handling INITIAL_SESSION or first event
+            if (
+              !initializationComplete &&
+              (event === "INITIAL_SESSION" ||
+                event === "SIGNED_IN" ||
+                event === "SIGNED_OUT")
+            ) {
+              initializationComplete = true;
+              resolveInitialSession?.();
             }
           }
         );
         unsubscribe = () => authListener?.subscription.unsubscribe();
 
-        // Check for existing session as a fallback
-        // The listener should fire immediately, but this ensures we catch the session
-        // in case of any edge cases
-        // Also check if there's a hash in the URL (from magic link redirect)
-        const hasHash =
-          window.location.hash.includes("access_token") ||
-          window.location.hash.includes("type=recovery");
-
-        // If there's a hash, give Supabase a moment to process it
-        if (hasHash) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-
-        const currentSession = await getCurrentSession();
-        if (currentSession?.user) {
-          setSession(currentSession);
-          try {
-            const savedProfile = await upsertProfile(currentSession.user);
-            if (savedProfile) setProfile(savedProfile);
-          } catch (error) {
-            console.error("Profile upsert error:", error);
-          }
-          setAuthStatus("signed_in");
-
-          // Clear URL hash if it was from a redirect
-          if (hasHash) {
-            window.history.replaceState(
-              null,
-              "",
-              window.location.pathname + window.location.search
-            );
-          }
-        } else {
-          // Set to signed_out if no session found
-          // The listener may have already updated this, but this ensures it's set
-          setAuthStatus("signed_out");
-        }
+        // Wait for initial session to be handled (with timeout as fallback)
+        await Promise.race([
+          initialSessionPromise,
+          new Promise((resolve) => setTimeout(resolve, 500)),
+        ]);
       } catch (error) {
         console.error("Auth initialization error:", error);
         setAuthError(
@@ -156,27 +144,83 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
-    setIsSendingLink(true);
+    if (!authPassword.trim()) {
+      setAuthError("Please enter your password.");
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: authEmail.trim(),
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
+        password: authPassword,
       });
 
       if (error) {
         throw error;
       }
 
-      setAuthMessage("Check your email for the magic sign-in link.");
+      // Success - the onAuthStateChange listener will handle the rest
+      setAuthMessage(null);
     } catch (error: any) {
       console.error("Sign-in error:", error);
-      setAuthError(error.message || "Failed to start sign-in. Try again.");
+      setAuthError(
+        error.message || "Failed to sign in. Please check your credentials."
+      );
     } finally {
-      setIsSendingLink(false);
+      setIsLoading(false);
     }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthMessage(null);
+    setAuthError(null);
+
+    if (!authEmail.trim()) {
+      setAuthError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!authPassword.trim()) {
+      setAuthError("Please enter a password.");
+      return;
+    }
+
+    if (authPassword.length < 6) {
+      setAuthError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const supabase = getSupabaseClient();
+      const { error } = await supabase.auth.signUp({
+        email: authEmail.trim(),
+        password: authPassword,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Success - the onAuthStateChange listener will handle the rest
+      setAuthMessage("Account created successfully! You are now signed in.");
+    } catch (error: any) {
+      console.error("Sign-up error:", error);
+      setAuthError(
+        error.message || "Failed to create account. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleAuthMode = () => {
+    setIsSignUpMode(!isSignUpMode);
+    setAuthMessage(null);
+    setAuthError(null);
   };
 
   const handleSignOut = async () => {
@@ -194,11 +238,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     profile,
     authStatus,
     authEmail,
+    authPassword,
     authMessage,
     authError,
-    isSendingLink,
+    isLoading,
+    isSignUpMode,
     setAuthEmail,
+    setAuthPassword,
+    toggleAuthMode,
     signIn: handleSignIn,
+    signUp: handleSignUp,
     signOut: handleSignOut,
     displayEmail,
   };
