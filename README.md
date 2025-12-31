@@ -23,7 +23,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
 2. Create a `.env` file in the root directory and add your Gemini API key:
 
    ```bash
-   GEMINI_API_KEY=your_api_key_here
+   VITE_GEMINI_API_KEY=your_api_key_here
    ```
 
    Get your API key from: https://ai.google.dev/
