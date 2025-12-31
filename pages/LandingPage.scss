@@ -216,26 +216,24 @@
   max-width: 480px;
 }
 
-.landing__upload-button {
-  white-space: nowrap;
-}
-
-.landing__dropzone {
+.landing__solid-upload {
   margin-top: 12px;
   padding: 12px;
-  background: #f8fafc;
-  border: 1px dashed rgba(148, 163, 184, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.6);
   border-radius: 12px;
+  background: #ffffff;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: grid;
+  gap: 8px;
 }
 
-.landing__dropzone:hover {
+.landing__solid-upload:hover {
   border-color: #6366f1;
-  background: #eef2ff;
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.12);
 }
 
-.landing__drop-dashed {
+.landing__solid-top {
   display: flex;
   align-items: center;
   gap: 12px;

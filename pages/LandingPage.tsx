@@ -109,10 +109,6 @@ const LandingPage: React.FC = () => {
       <main className="landing__main">
         <section className="landing__hero">
           <div className="landing__hero-copy">
-            <div className="landing__badge">
-              First image is free. Sign in/up to generate. Second image will be
-              billed.
-            </div>
             <h1>
               Show up in any context with consistent, professional AI shots.
             </h1>
@@ -144,37 +140,37 @@ const LandingPage: React.FC = () => {
               <div className="panel__body">
                 <div className="panel__row panel__row--stack">
                   <div className="panel__mini-label">Upload image</div>
-                  <div className="panel__row-upload">
-                    <button
-                      className="primary-button landing__upload-button"
-                      onClick={handleUploadClick}
-                    >
-                      Upload image
-                    </button>
-                    <div
-                      className="landing__dropzone"
-                      onClick={handleUploadClick}
-                    >
-                      <div className="landing__drop-dashed">
-                        <span className="landing__drop-icon">+</span>
-                        <div className="landing__drop-text">
-                          <strong>Drag & drop</strong> or click to upload
-                          <p className="landing__drop-hint">
-                            We’ll prompt you to sign in/up before generating.
-                          </p>
-                        </div>
+                  <div
+                    className="landing__solid-upload"
+                    role="button"
+                    tabIndex={0}
+                    onClick={handleUploadClick}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleUploadClick();
+                      }
+                    }}
+                  >
+                    <div className="landing__solid-top">
+                      <span className="landing__drop-icon">+</span>
+                      <div className="landing__drop-text">
+                        <strong>Click to upload</strong> a reference
+                        <p className="landing__drop-hint">
+                          We’ll prompt you to sign in/up before generating.
+                        </p>
                       </div>
-                      {uploadedFileName && (
-                        <div className="landing__upload-file">
-                          <span className="landing__upload-file-name">
-                            {uploadedFileName}
-                          </span>
-                          <span className="landing__upload-file-tag">
-                            Ready after sign in
-                          </span>
-                        </div>
-                      )}
                     </div>
+                    {uploadedFileName && (
+                      <div className="landing__upload-file">
+                        <span className="landing__upload-file-name">
+                          {uploadedFileName}
+                        </span>
+                        <span className="landing__upload-file-tag">
+                          Ready after sign in
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="panel__row">
@@ -358,32 +354,44 @@ const LandingPage: React.FC = () => {
             <p className="landing__eyebrow">FAQ</p>
             <h2>Answers before you start</h2>
             <p className="landing__section-copy">
-              Quick hits on the most common questions about generating contextual images with NanoGen.
+              Quick hits on the most common questions about generating
+              contextual images with NanoGen.
             </p>
           </div>
           <div className="faq">
             <div className="faq__item">
-              <div className="faq__question">How does it differ from ChatGPT?</div>
+              <div className="faq__question">
+                How does it differ from ChatGPT?
+              </div>
               <div className="faq__answer">
-                We generate multiple images from your reference and prompts, keeping your look consistent across every shot—ChatGPT is text-first.
+                We generate multiple images from your reference and prompts,
+                keeping your look consistent across every shot—ChatGPT is
+                text-first.
               </div>
             </div>
             <div className="faq__item">
-              <div className="faq__question">Do I need to sign in to generate?</div>
+              <div className="faq__question">
+                Do I need to sign in to generate?
+              </div>
               <div className="faq__answer">
-                Yes. Sign in/up to unlock your first free render; additional images are billed per render.
+                Yes. Sign in/up to unlock your first free render; additional
+                images are billed per render.
               </div>
             </div>
             <div className="faq__item">
-              <div className="faq__question">How many reference images should I upload?</div>
+              <div className="faq__question">
+                How many reference images should I upload?
+              </div>
               <div className="faq__answer">
-                Upload 1–3 clear photos with good lighting. We use them to lock your face, outfit, and style for all generated scenes.
+                Upload 1–3 clear photos with good lighting. We use them to lock
+                your face, outfit, and style for all generated scenes.
               </div>
             </div>
             <div className="faq__item">
               <div className="faq__question">Can I edit prompts manually?</div>
               <div className="faq__answer">
-                Yes. Start with our suggested prompts or type your own to control the setting, mood, and props.
+                Yes. Start with our suggested prompts or type your own to
+                control the setting, mood, and props.
               </div>
             </div>
           </div>
