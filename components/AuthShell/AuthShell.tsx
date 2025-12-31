@@ -4,22 +4,32 @@ import "./AuthShell.scss";
 
 interface AuthShellProps {
   authEmail: string;
+  authPassword: string;
   authMessage: string | null;
   authError: string | null;
   authStatus: AuthStatus;
-  isSendingLink: boolean;
+  isLoading: boolean;
+  isSignUpMode: boolean;
   onEmailChange: (value: string) => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onPasswordChange: (value: string) => void;
+  onToggleAuthMode: () => void;
+  onSignIn: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSignUp: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const AuthShell: React.FC<AuthShellProps> = ({
   authEmail,
+  authPassword,
   authMessage,
   authError,
   authStatus,
-  isSendingLink,
+  isLoading,
+  isSignUpMode,
   onEmailChange,
-  onSubmit,
+  onPasswordChange,
+  onToggleAuthMode,
+  onSignIn,
+  onSignUp,
 }) => {
   return (
     <div className="auth-shell">
@@ -45,15 +55,21 @@ const AuthShell: React.FC<AuthShellProps> = ({
           <h1 className="brand__title">NanoGen AI</h1>
         </div>
 
-        <h2 className="auth-card__title">Sign in or create an account</h2>
+        <h2 className="auth-card__title">
+          {isSignUpMode ? "Create your account" : "Sign in to your account"}
+        </h2>
         <p className="auth-card__subtitle">
-          Use your email to get a Supabase magic link. We will save your account details into
-          the profiles table when you sign in.
+          {isSignUpMode
+            ? "Enter your email and password to create an account. We will save your account details into the profiles table when you sign up."
+            : "Enter your email and password to sign in. We will save your account details into the profiles table when you sign in."}
         </p>
 
-        <form className="auth-form" onSubmit={onSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={isSignUpMode ? onSignUp : onSignIn}
+        >
           <label className="field-label" htmlFor="auth-email">
-            Work email
+            Email
           </label>
           <input
             id="auth-email"
@@ -63,14 +79,94 @@ const AuthShell: React.FC<AuthShellProps> = ({
             placeholder="you@example.com"
             className="text-input"
             required
+            autoComplete="email"
           />
-          <button type="submit" className="primary-button" disabled={isSendingLink} style={{ width: "100%" }}>
-            {isSendingLink ? "Sending link..." : "Send magic link"}
+          <label
+            className="field-label"
+            htmlFor="auth-password"
+            style={{ marginTop: "16px" }}
+          >
+            Password
+          </label>
+          <input
+            id="auth-password"
+            type="password"
+            value={authPassword}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            placeholder={
+              isSignUpMode
+                ? "Create a password (min. 6 characters)"
+                : "Enter your password"
+            }
+            className="text-input"
+            required
+            autoComplete={isSignUpMode ? "new-password" : "current-password"}
+            minLength={6}
+          />
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={isLoading}
+            style={{ width: "100%", marginTop: "16px" }}
+          >
+            {isLoading
+              ? isSignUpMode
+                ? "Creating account..."
+                : "Signing in..."
+              : isSignUpMode
+              ? "Sign up"
+              : "Sign in"}
           </button>
         </form>
 
-        {authMessage && <div className="auth-alert auth-alert--success">{authMessage}</div>}
-        {authError && <div className="auth-alert auth-alert--error">{authError}</div>}
+        <div style={{ marginTop: "16px", textAlign: "center" }}>
+          {isSignUpMode ? (
+            <p className="helper-text">
+              Already have an account?{" "}
+              <button
+                type="button"
+                onClick={onToggleAuthMode}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  padding: 0,
+                  font: "inherit",
+                }}
+              >
+                Sign in
+              </button>
+            </p>
+          ) : (
+            <p className="helper-text">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={onToggleAuthMode}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  padding: 0,
+                  font: "inherit",
+                }}
+              >
+                Sign up
+              </button>
+            </p>
+          )}
+        </div>
+
+        {authMessage && (
+          <div className="auth-alert auth-alert--success">{authMessage}</div>
+        )}
+        {authError && (
+          <div className="auth-alert auth-alert--error">{authError}</div>
+        )}
         {authStatus === "checking" && !authError && (
           <p className="helper-text" style={{ marginTop: "12px" }}>
             Checking your session...
