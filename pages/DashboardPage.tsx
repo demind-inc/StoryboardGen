@@ -6,7 +6,7 @@ import {
   ImageSize,
   PromptPreset,
   ReferenceImage,
-  ReferenceLibraryItem,
+  ReferenceSet,
   SceneResult,
 } from "../types";
 import {
@@ -52,9 +52,7 @@ const DashboardPage: React.FC = () => {
     "Boy looking confused with question marks around him\nBoy feeling lonely at a cafe table\nBoy looking angry while listening to something"
   );
   const [references, setReferences] = useState<ReferenceImage[]>([]);
-  const [referenceLibrary, setReferenceLibrary] = useState<
-    ReferenceLibraryItem[]
-  >([]);
+  const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
   const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
   const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
   const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
@@ -276,17 +274,36 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleAddReferencesFromLibrary = (
-    items: ReferenceLibraryItem[]
-  ) => {
-    if (!items.length) return;
-    const mapped = items.map(
-      (item): ReferenceImage => ({
-        id: Math.random().toString(36).substring(2, 9),
-        data: item.data,
-        mimeType: item.mimeType,
+  const handleAddReferencesFromLibrary = async (sets: ReferenceSet[]) => {
+    if (!sets.length) return;
+    // Flatten all images from selected sets
+    const allImages = sets.flatMap((set) => set.images);
+
+    // Convert URLs to base64 data URLs for ReferenceImage (needed for Gemini API)
+    const mapped = await Promise.all(
+      allImages.map(async (item): Promise<ReferenceImage> => {
+        try {
+          const response = await fetch(item.url);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve({
+                id: Math.random().toString(36).substring(2, 9),
+                data: reader.result as string,
+                mimeType: item.mimeType,
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("Failed to load image from storage:", error);
+          throw error;
+        }
       })
     );
+
     setReferences((prev) => [...prev, ...mapped]);
   };
 

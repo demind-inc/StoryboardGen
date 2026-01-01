@@ -26,9 +26,17 @@ export interface ReferenceImage {
 
 export interface ReferenceLibraryItem {
   id: string;
+  setId: string;
   label: string | null;
-  data: string;
+  url: string; // URL to image in Supabase Storage
   mimeType: string;
+  createdAt?: string | null;
+}
+
+export interface ReferenceSet {
+  setId: string;
+  label: string | null;
+  images: ReferenceLibraryItem[];
   createdAt?: string | null;
 }
 

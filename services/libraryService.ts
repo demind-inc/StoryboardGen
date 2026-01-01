@@ -1,9 +1,29 @@
 import { getSupabaseClient } from "./supabaseClient";
 import { PromptLibraryInsert, ReferenceLibraryInsert } from "../database.types";
-import { PromptPreset, ReferenceImage, ReferenceLibraryItem } from "../types";
+import {
+  PromptPreset,
+  ReferenceImage,
+  ReferenceLibraryItem,
+  ReferenceSet,
+} from "../types";
 
 const DEFAULT_REFERENCE_LABEL = "Saved reference";
 const DEFAULT_PROMPT_TITLE = "Saved prompt";
+const STORAGE_BUCKET = "reference-images";
+
+// Helper to convert base64 data URL to Blob
+const dataURLtoBlob = (dataURL: string): Blob => {
+  const arr = dataURL.split(",");
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/png";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
 
 export async function saveReferenceImages(
   userId: string,
@@ -14,15 +34,41 @@ export async function saveReferenceImages(
 
   const supabase = getSupabaseClient();
   const baseLabel = label?.trim() || DEFAULT_REFERENCE_LABEL;
+  // Generate a set_id to group all images together
+  const setId = crypto.randomUUID();
 
-  const payload: ReferenceLibraryInsert[] = references.map((ref, idx) => ({
-    user_id: userId,
-    label: references.length > 1 ? `${baseLabel} #${idx + 1}` : baseLabel,
-    data: ref.data,
-    mime_type: ref.mimeType,
-  }));
+  // Upload images to Supabase Storage
+  const uploadPromises = references.map(async (ref, index) => {
+    const fileExtension = ref.mimeType.split("/")[1] || "png";
+    const fileName = `${userId}/${setId}/${index}.${fileExtension}`;
+    const blob = dataURLtoBlob(ref.data);
 
-  const { error } = await supabase.from("reference_library").insert(payload);
+    const { error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(fileName, blob, {
+        contentType: ref.mimeType,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    return {
+      user_id: userId,
+      set_id: setId,
+      label: baseLabel,
+      file_path: fileName,
+      mime_type: ref.mimeType,
+    };
+  });
+
+  const payload = await Promise.all(uploadPromises);
+
+  // Save metadata to database
+  const { error } = await supabase
+    .from("reference_library")
+    .insert(payload as any);
   if (error) {
     throw error;
   }
@@ -30,11 +76,11 @@ export async function saveReferenceImages(
 
 export async function fetchReferenceLibrary(
   userId: string
-): Promise<ReferenceLibraryItem[]> {
+): Promise<ReferenceSet[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("reference_library")
-    .select("id, label, data, mime_type, created_at")
+    .select("id, set_id, label, file_path, mime_type, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -42,24 +88,46 @@ export async function fetchReferenceLibrary(
     throw error;
   }
 
-  return (
-    data?.map((item) => {
-      // Ensure data has the proper data URL prefix
-      let imageData = item.data;
-      if (!imageData.startsWith("data:")) {
-        // If data doesn't have prefix, add it
-        imageData = `data:${item.mime_type};base64,${imageData}`;
-      }
+  if (!data || data.length === 0) {
+    return [];
+  }
 
-      return {
-        id: item.id,
+  // Group images by set_id
+  const setsMap = new Map<string, ReferenceSet>();
+
+  for (const item of data as any[]) {
+    // Get public URL from Supabase Storage
+    const { data: urlData } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(item.file_path);
+
+    const libraryItem: ReferenceLibraryItem = {
+      id: item.id,
+      setId: item.set_id,
+      label: item.label,
+      url: urlData.publicUrl,
+      mimeType: item.mime_type,
+      createdAt: item.created_at,
+    };
+
+    if (!setsMap.has(item.set_id)) {
+      setsMap.set(item.set_id, {
+        setId: item.set_id,
         label: item.label,
-        data: imageData,
-        mimeType: item.mime_type,
+        images: [],
         createdAt: item.created_at,
-      };
-    }) ?? []
-  );
+      });
+    }
+
+    setsMap.get(item.set_id)!.images.push(libraryItem);
+  }
+
+  // Convert map to array and sort by creation date (most recent first)
+  return Array.from(setsMap.values()).sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
 }
 
 export async function savePromptPreset(
@@ -77,7 +145,7 @@ export async function savePromptPreset(
 
   const { data, error } = await supabase
     .from("prompt_library")
-    .insert(payload)
+    .insert(payload as any)
     .select("id, title, prompt_text, created_at")
     .single();
 
@@ -85,11 +153,16 @@ export async function savePromptPreset(
     throw error;
   }
 
+  if (!data) {
+    throw new Error("Failed to create prompt preset");
+  }
+
+  const row = data as any;
   return {
-    id: data.id,
-    title: data.title,
-    content: data.prompt_text,
-    createdAt: data.created_at,
+    id: row.id,
+    title: row.title,
+    content: row.prompt_text,
+    createdAt: row.created_at,
   };
 }
 
@@ -108,7 +181,7 @@ export async function fetchPromptLibrary(
   }
 
   return (
-    data?.map((item) => ({
+    (data as any[])?.map((item: any) => ({
       id: item.id,
       title: item.title,
       content: item.prompt_text,

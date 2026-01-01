@@ -93,24 +93,27 @@ export interface Database {
         Row: {
           id: string; // uuid, primary key
           user_id: string; // uuid, FOREIGN KEY references auth.users(id)
-          label: string | null; // text, optional name
-          data: string; // text, base64 image
+          set_id: string; // uuid, groups multiple images into a set
+          label: string | null; // text, optional name (set name, shared across images in set)
+          file_path: string; // text, path to file in Supabase Storage
           mime_type: string; // text, image mime type
           created_at: string; // timestamptz, default now()
         };
         Insert: {
           id?: string; // uuid
           user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          set_id: string; // uuid, groups multiple images into a set
           label?: string | null; // text
-          data: string; // text
+          file_path: string; // text, path to file in Supabase Storage
           mime_type: string; // text
           created_at?: string; // timestamptz
         };
         Update: {
           id?: string; // uuid
           user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
+          set_id?: string; // uuid
           label?: string | null; // text
-          data?: string; // text
+          file_path?: string; // text
           mime_type?: string; // text
           created_at?: string | null; // timestamptz
         };

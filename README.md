@@ -84,22 +84,37 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    create table public.reference_library (
      id uuid primary key default uuid_generate_v4(),
      user_id uuid references auth.users not null,
+     set_id uuid not null,
      label text,
-     data text not null,
+     file_path text not null,
      mime_type text not null,
      created_at timestamptz not null default now()
    );
 
+   -- Create index on set_id for faster grouping queries
+   create index idx_reference_library_set_id on public.reference_library(set_id);
+   ```
+
+   **Create Supabase Storage bucket for reference images:**
+
+   1. Go to your Supabase project dashboard → Storage
+   2. Create a new bucket named `reference-images`
+   3. Make it **public** (or configure RLS policies if you prefer private)
+   4. Run the SQL file `supabase-storage-setup.sql` in your Supabase SQL editor to set up storage policies, or copy and paste the contents of that file.
+
    create table public.prompt_library (
-     id uuid primary key default uuid_generate_v4(),
-     user_id uuid references auth.users not null,
-     title text not null,
-     prompt_text text not null,
-     created_at timestamptz not null default now()
+   id uuid primary key default uuid_generate_v4(),
+   user_id uuid references auth.users not null,
+   title text not null,
+   prompt_text text not null,
+   created_at timestamptz not null default now()
    );
+
    ```
 
    **Important:** Enable Row-Level Security (RLS) and create policies for all tables. Run the SQL file `supabase-rls-policies.sql` in your Supabase SQL editor, or copy and paste the contents of that file.
+
+   ```
 
 4. Connect Stripe subscription checkout ($20/month) for paid generations after the first image:
 

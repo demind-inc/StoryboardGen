@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ReferenceLibraryItem } from "../../types";
+import { ReferenceSet } from "../../types";
 import "./DatasetModal.scss";
 
 interface ReferenceLibraryModalProps {
   isOpen: boolean;
-  items: ReferenceLibraryItem[];
+  items: ReferenceSet[];
   isLoading?: boolean;
   onClose: () => void;
-  onSelect: (items: ReferenceLibraryItem[]) => void;
+  onSelect: (sets: ReferenceSet[]) => void;
 }
 
 const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
@@ -17,34 +17,39 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
   onClose,
   onSelect,
 }) => {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedSetIds, setSelectedSetIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!isOpen) {
-      setSelectedIds(new Set());
+      setSelectedSetIds(new Set());
     }
   }, [isOpen]);
 
-  const toggleSelection = (id: string) => {
-    setSelectedIds((prev) => {
+  const toggleSelection = (setId: string) => {
+    setSelectedSetIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
+      if (next.has(setId)) {
+        next.delete(setId);
       } else {
-        next.add(id);
+        next.add(setId);
       }
       return next;
     });
   };
 
-  const selectedItems = useMemo(
-    () => items.filter((item) => selectedIds.has(item.id)),
-    [items, selectedIds]
+  const selectedSets = useMemo(
+    () => items.filter((set) => selectedSetIds.has(set.setId)),
+    [items, selectedSetIds]
+  );
+
+  const totalSelectedImages = useMemo(
+    () => selectedSets.reduce((sum, set) => sum + set.images.length, 0),
+    [selectedSets]
   );
 
   const handleApply = () => {
-    if (!selectedItems.length) return;
-    onSelect(selectedItems);
+    if (!selectedSets.length) return;
+    onSelect(selectedSets);
     onClose();
   };
 
@@ -88,35 +93,48 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
           </div>
         ) : (
           <div className="dataset-modal__grid custom-scrollbar">
-            {items.map((item) => {
-              const isSelected = selectedIds.has(item.id);
+            {items.map((set) => {
+              const isSelected = selectedSetIds.has(set.setId);
+              const firstImage = set.images[0];
+              const imageCount = set.images.length;
               return (
                 <button
-                  key={item.id}
+                  key={set.setId}
                   className={`dataset-card ${isSelected ? "is-selected" : ""}`}
-                  onClick={() => toggleSelection(item.id)}
+                  onClick={() => toggleSelection(set.setId)}
                 >
                   <div className="dataset-card__thumb">
-                    <img
-                      src={item.data}
-                      alt={item.label || "Reference"}
-                      onError={(e) => {
-                        console.error("Failed to load image:", item.id, item.data?.substring(0, 50));
-                        // Fallback to a placeholder if image fails to load
-                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
+                    {firstImage && (
+                      <img
+                        src={firstImage.url}
+                        alt={set.label || "Reference set"}
+                        onError={(e) => {
+                          console.error(
+                            "Failed to load image:",
+                            firstImage.id,
+                            firstImage.url
+                          );
+                          // Fallback to a placeholder if image fails to load
+                          e.currentTarget.src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                    )}
+                    {imageCount > 1 && (
+                      <div className="dataset-card__badge">{imageCount}</div>
+                    )}
                     <span className="dataset-card__check">
                       {isSelected ? "✓" : "+"}
                     </span>
                   </div>
                   <div className="dataset-card__meta">
                     <div className="dataset-card__title">
-                      {item.label || "Untitled reference"}
+                      {set.label || "Untitled reference set"}
                     </div>
-                    {item.createdAt && (
+                    {set.createdAt && (
                       <div className="dataset-card__date">
-                        {new Date(item.createdAt).toLocaleString()}
+                        {new Date(set.createdAt).toLocaleString()}
+                        {imageCount > 1 && ` • ${imageCount} images`}
                       </div>
                     )}
                   </div>
@@ -130,11 +148,16 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
           <button
             className="primary-button"
             onClick={handleApply}
-            disabled={!selectedItems.length}
+            disabled={!selectedSets.length}
           >
-            Use {selectedItems.length || ""} selected
+            Use {totalSelectedImages || ""} image
+            {totalSelectedImages !== 1 ? "s" : ""} from {selectedSets.length}{" "}
+            set{selectedSets.length !== 1 ? "s" : ""}
           </button>
-          <button className="primary-button primary-button--ghost" onClick={onClose}>
+          <button
+            className="primary-button primary-button--ghost"
+            onClick={onClose}
+          >
             Cancel
           </button>
         </div>
