@@ -21,9 +21,9 @@ export async function getSubscription(
     .from(SUBSCRIPTION_TABLE)
     .select("*")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle(); // Use maybeSingle() instead of single() to handle 0 rows gracefully
 
-  if (error && error.code !== "PGRST116") {
+  if (error) {
     throw error;
   }
 
@@ -63,16 +63,26 @@ export async function createOrUpdateSubscription(
         stripe_customer_id: subscriptionData.stripeCustomerId || null,
         current_period_end: subscriptionData.currentPeriodEnd || null,
         updated_at: new Date().toISOString(),
-      },
+      } as any,
       {
         onConflict: "user_id",
       }
     )
     .select()
-    .single();
+    .maybeSingle(); // Use maybeSingle() to handle cases where upsert might not return data
 
   if (error) {
     throw error;
+  }
+
+  // If upsert didn't return data, try to fetch it
+  if (!data) {
+    const subscription = await getSubscription(userId);
+    if (subscription) {
+      return subscription;
+    }
+    // If still no data, throw an error
+    throw new Error("Failed to create or retrieve subscription");
   }
 
   return {
