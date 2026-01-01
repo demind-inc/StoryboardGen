@@ -4,7 +4,9 @@ import {
   AppMode,
   DailyUsage,
   ImageSize,
+  PromptPreset,
   ReferenceImage,
+  ReferenceSet,
   SceneResult,
 } from "../types";
 import {
@@ -25,12 +27,20 @@ import {
   getHasGeneratedFreeImage,
   setHasGeneratedFreeImage,
 } from "../services/authService";
+import {
+  fetchPromptLibrary,
+  fetchReferenceLibrary,
+  savePromptPreset,
+  saveReferenceImages,
+} from "../services/libraryService";
 import AppHeader from "../components/AppHeader/AppHeader";
 import Hero from "../components/Hero/Hero";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Results from "../components/Results/Results";
 import Footer from "../components/Footer/Footer";
+import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
+import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
 
 const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
@@ -42,6 +52,13 @@ const DashboardPage: React.FC = () => {
     "Boy looking confused with question marks around him\nBoy feeling lonely at a cafe table\nBoy looking angry while listening to something"
   );
   const [references, setReferences] = useState<ReferenceImage[]>([]);
+  const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
+  const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
+  const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
+  const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
+  const [isSavingReferences, setIsSavingReferences] = useState(false);
+  const [isSavingPrompt, setIsSavingPrompt] = useState(false);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [slideshowResults, setSlideshowResults] = useState<SceneResult[]>([]);
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [size, setSize] = useState<ImageSize>("1K");
@@ -72,6 +89,7 @@ const DashboardPage: React.FC = () => {
       refreshUsage(userId);
       refreshSubscription(userId);
       refreshHasGeneratedFreeImage(userId);
+      loadLibraries(userId);
     }
   }, [authStatus, session?.user?.id]);
 
@@ -85,6 +103,40 @@ const DashboardPage: React.FC = () => {
       setHasGeneratedFreeImage(false);
     } finally {
       setIsFreeImageLoading(false);
+    }
+  };
+
+  const loadLibraries = async (userId: string) => {
+    setIsLibraryLoading(true);
+    try {
+      const [refs, prompts] = await Promise.all([
+        fetchReferenceLibrary(userId),
+        fetchPromptLibrary(userId),
+      ]);
+      setReferenceLibrary(refs);
+      setPromptLibrary(prompts);
+    } catch (error) {
+      console.error("Failed to load saved datasets:", error);
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  };
+
+  const refreshReferenceLibrary = async (userId: string) => {
+    try {
+      const refs = await fetchReferenceLibrary(userId);
+      setReferenceLibrary(refs);
+    } catch (error) {
+      console.error("Failed to refresh reference library:", error);
+    }
+  };
+
+  const refreshPromptLibrary = async (userId: string) => {
+    try {
+      const prompts = await fetchPromptLibrary(userId);
+      setPromptLibrary(prompts);
+    } catch (error) {
+      console.error("Failed to refresh prompt library:", error);
     }
   };
 
@@ -190,6 +242,105 @@ const DashboardPage: React.FC = () => {
 
   const removeReference = (id: string) => {
     setReferences((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleSaveReferences = async () => {
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
+    if (references.length === 0) {
+      alert("Upload a reference image first.");
+      return;
+    }
+
+    const label =
+      window.prompt(
+        "Name this reference set",
+        `Reference set (${new Date().toLocaleDateString()})`
+      ) || undefined;
+
+    setIsSavingReferences(true);
+    try {
+      await saveReferenceImages(userId, references, label);
+      await refreshReferenceLibrary(userId);
+    } catch (error) {
+      console.error("Failed to save references:", error);
+      alert("Could not save references. Please try again.");
+    } finally {
+      setIsSavingReferences(false);
+    }
+  };
+
+  const handleAddReferencesFromLibrary = async (sets: ReferenceSet[]) => {
+    if (!sets.length) return;
+    // Flatten all images from selected sets
+    const allImages = sets.flatMap((set) => set.images);
+
+    // Convert URLs to base64 data URLs for ReferenceImage (needed for Gemini API)
+    const mapped = await Promise.all(
+      allImages.map(async (item): Promise<ReferenceImage> => {
+        try {
+          const response = await fetch(item.url);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve({
+                id: Math.random().toString(36).substring(2, 9),
+                data: reader.result as string,
+                mimeType: item.mimeType,
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("Failed to load image from storage:", error);
+          throw error;
+        }
+      })
+    );
+
+    setReferences((prev) => [...prev, ...mapped]);
+  };
+
+  const handleSavePromptPreset = async () => {
+    const userId = session?.user?.id;
+    const content = manualPrompts.trim();
+
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
+    if (!content) {
+      alert("Please add a prompt before saving.");
+      return;
+    }
+
+    const title =
+      window.prompt(
+        "Name this prompt preset",
+        `Prompt preset (${new Date().toLocaleDateString()})`
+      ) || undefined;
+
+    setIsSavingPrompt(true);
+    try {
+      const saved = await savePromptPreset(userId, content, title);
+      setPromptLibrary((prev) => [saved, ...prev]);
+    } catch (error) {
+      console.error("Failed to save prompt preset:", error);
+      alert("Could not save prompt preset. Please try again.");
+    } finally {
+      setIsSavingPrompt(false);
+    }
+  };
+
+  const handleUsePromptPreset = (preset: PromptPreset) => {
+    setManualPrompts(preset.content);
   };
 
   const openPaymentModal = () => {
@@ -570,12 +721,18 @@ const DashboardPage: React.FC = () => {
             onUploadClick={triggerUpload}
             onFileChange={handleFileUpload}
             onRemoveReference={removeReference}
+            onSaveReferences={handleSaveReferences}
+            isSavingReferences={isSavingReferences}
+            onOpenReferenceLibrary={() => setIsReferenceLibraryOpen(true)}
             topic={topic}
             onTopicChange={setTopic}
             onGenerateStoryboard={handleGenerateStoryboard}
             isCreatingStoryboard={isCreatingStoryboard}
             manualPrompts={manualPrompts}
             onManualPromptsChange={setManualPrompts}
+            onSavePrompt={handleSavePromptPreset}
+            isSavingPrompt={isSavingPrompt}
+            onOpenPromptLibrary={() => setIsPromptLibraryOpen(true)}
           />
 
           <Results
@@ -586,6 +743,22 @@ const DashboardPage: React.FC = () => {
           />
         </div>
       </main>
+
+      <ReferenceLibraryModal
+        isOpen={isReferenceLibraryOpen}
+        items={referenceLibrary}
+        isLoading={isLibraryLoading}
+        onClose={() => setIsReferenceLibraryOpen(false)}
+        onSelect={handleAddReferencesFromLibrary}
+      />
+
+      <PromptLibraryModal
+        isOpen={isPromptLibraryOpen}
+        items={promptLibrary}
+        isLoading={isLibraryLoading}
+        onClose={() => setIsPromptLibraryOpen(false)}
+        onSelect={handleUsePromptPreset}
+      />
 
       <PaymentModal
         isOpen={isPaymentModalOpen}

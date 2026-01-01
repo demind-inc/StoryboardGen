@@ -1,4 +1,4 @@
-export type ImageSize = "1K" | "2K" | "4K";
+export type ImageSize = "1K";
 export type AppMode = "slideshow" | "manual";
 export type AuthStatus = "checking" | "signed_out" | "signed_in";
 
@@ -22,6 +22,29 @@ export interface ReferenceImage {
   id: string;
   data: string; // base64
   mimeType: string;
+}
+
+export interface ReferenceLibraryItem {
+  id: string;
+  setId: string;
+  label: string | null;
+  url: string; // URL to image in Supabase Storage
+  mimeType: string;
+  createdAt?: string | null;
+}
+
+export interface ReferenceSet {
+  setId: string;
+  label: string | null;
+  images: ReferenceLibraryItem[];
+  createdAt?: string | null;
+}
+
+export interface PromptPreset {
+  id: string;
+  title: string;
+  content: string;
+  createdAt?: string | null;
 }
 
 export interface AccountProfile {

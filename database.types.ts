@@ -16,7 +16,7 @@ export interface Database {
     Tables: {
       profiles: {
         Row: {
-          id: string; // uuid, primary key, references auth.users
+          id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
           email: string | null;
           full_name: string | null;
           last_sign_in_at: string | null; // timestamptz
@@ -24,7 +24,7 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
         Insert: {
-          id: string; // uuid
+          id: string; // uuid, FOREIGN KEY references auth.users(id)
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
@@ -32,7 +32,7 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
         Update: {
-          id?: string; // uuid
+          id?: string; // uuid, FOREIGN KEY references auth.users(id)
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
@@ -42,19 +42,19 @@ export interface Database {
       };
       usage_limits: {
         Row: {
-          user_id: string; // uuid, references auth.users, part of primary key
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id), part of primary key
           usage_date: string; // date, part of primary key
           used: number; // integer, default 0
           daily_limit: number; // integer, default 10
         };
         Insert: {
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           usage_date: string; // date
           used?: number; // integer, default 0
           daily_limit?: number; // integer, default 10
         };
         Update: {
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           usage_date?: string; // date
           used?: number; // integer
           daily_limit?: number; // integer
@@ -62,7 +62,7 @@ export interface Database {
       };
       subscriptions: {
         Row: {
-          user_id: string; // uuid, primary key, references auth.users
+          user_id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
           is_active: boolean; // default false
           stripe_subscription_id: string | null; // text
           stripe_customer_id: string | null; // text
@@ -71,7 +71,7 @@ export interface Database {
           updated_at: string; // timestamptz, default now()
         };
         Insert: {
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           is_active?: boolean; // default false
           stripe_subscription_id?: string | null; // text
           stripe_customer_id?: string | null; // text
@@ -80,13 +80,65 @@ export interface Database {
           updated_at?: string; // timestamptz, default now()
         };
         Update: {
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           is_active?: boolean;
           stripe_subscription_id?: string | null; // text
           stripe_customer_id?: string | null; // text
           current_period_end?: string | null; // timestamptz
           created_at?: string | null; // timestamptz
           updated_at?: string | null; // timestamptz
+        };
+      };
+      reference_library: {
+        Row: {
+          id: string; // uuid, primary key
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          set_id: string; // uuid, groups multiple images into a set
+          label: string | null; // text, optional name (set name, shared across images in set)
+          file_path: string; // text, path to file in Supabase Storage
+          mime_type: string; // text, image mime type
+          created_at: string; // timestamptz, default now()
+        };
+        Insert: {
+          id?: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          set_id: string; // uuid, groups multiple images into a set
+          label?: string | null; // text
+          file_path: string; // text, path to file in Supabase Storage
+          mime_type: string; // text
+          created_at?: string; // timestamptz
+        };
+        Update: {
+          id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
+          set_id?: string; // uuid
+          label?: string | null; // text
+          file_path?: string; // text
+          mime_type?: string; // text
+          created_at?: string | null; // timestamptz
+        };
+      };
+      prompt_library: {
+        Row: {
+          id: string; // uuid, primary key
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          title: string; // text
+          prompt_text: string; // text
+          created_at: string; // timestamptz, default now()
+        };
+        Insert: {
+          id?: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          title: string; // text
+          prompt_text: string; // text
+          created_at?: string; // timestamptz
+        };
+        Update: {
+          id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
+          title?: string; // text
+          prompt_text?: string; // text
+          created_at?: string | null; // timestamptz
         };
       };
     };
@@ -120,3 +172,17 @@ export type SubscriptionsInsert =
   Database["public"]["Tables"]["subscriptions"]["Insert"];
 export type SubscriptionsUpdate =
   Database["public"]["Tables"]["subscriptions"]["Update"];
+
+export type ReferenceLibraryRow =
+  Database["public"]["Tables"]["reference_library"]["Row"];
+export type ReferenceLibraryInsert =
+  Database["public"]["Tables"]["reference_library"]["Insert"];
+export type ReferenceLibraryUpdate =
+  Database["public"]["Tables"]["reference_library"]["Update"];
+
+export type PromptLibraryRow =
+  Database["public"]["Tables"]["prompt_library"]["Row"];
+export type PromptLibraryInsert =
+  Database["public"]["Tables"]["prompt_library"]["Insert"];
+export type PromptLibraryUpdate =
+  Database["public"]["Tables"]["prompt_library"]["Update"];

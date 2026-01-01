@@ -1,0 +1,169 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { ReferenceSet } from "../../types";
+import "./DatasetModal.scss";
+
+interface ReferenceLibraryModalProps {
+  isOpen: boolean;
+  items: ReferenceSet[];
+  isLoading?: boolean;
+  onClose: () => void;
+  onSelect: (sets: ReferenceSet[]) => void;
+}
+
+const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
+  isOpen,
+  items,
+  isLoading,
+  onClose,
+  onSelect,
+}) => {
+  const [selectedSetIds, setSelectedSetIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedSetIds(new Set());
+    }
+  }, [isOpen]);
+
+  const toggleSelection = (setId: string) => {
+    setSelectedSetIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(setId)) {
+        next.delete(setId);
+      } else {
+        next.add(setId);
+      }
+      return next;
+    });
+  };
+
+  const selectedSets = useMemo(
+    () => items.filter((set) => selectedSetIds.has(set.setId)),
+    [items, selectedSetIds]
+  );
+
+  const totalSelectedImages = useMemo(
+    () => selectedSets.reduce((sum, set) => sum + set.images.length, 0),
+    [selectedSets]
+  );
+
+  const handleApply = () => {
+    if (!selectedSets.length) return;
+    onSelect(selectedSets);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="dataset-modal__backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Reference library"
+    >
+      <div className="dataset-modal">
+        <div className="dataset-modal__header">
+          <div>
+            <p className="dataset-modal__eyebrow">Reference library</p>
+            <h3 className="dataset-modal__title">Pick saved images</h3>
+            <p className="dataset-modal__subtitle">
+              Reuse your stored character shots to keep scenes consistent.
+            </p>
+          </div>
+          <button className="dataset-modal__close" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="dataset-modal__empty">
+            <div className="dataset-modal__spinner" />
+            <p className="helper-text" style={{ margin: 0 }}>
+              Loading your references...
+            </p>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="dataset-modal__empty">
+            <div className="dataset-modal__empty-icon">📁</div>
+            <p>No saved references yet</p>
+            <p className="helper-text" style={{ margin: 0 }}>
+              Save your current uploads to quickly reuse them later.
+            </p>
+          </div>
+        ) : (
+          <div className="dataset-modal__grid custom-scrollbar">
+            {items.map((set) => {
+              const isSelected = selectedSetIds.has(set.setId);
+              const firstImage = set.images[0];
+              const imageCount = set.images.length;
+              return (
+                <button
+                  key={set.setId}
+                  className={`dataset-card ${isSelected ? "is-selected" : ""}`}
+                  onClick={() => toggleSelection(set.setId)}
+                >
+                  <div className="dataset-card__thumb">
+                    {firstImage && (
+                      <img
+                        src={firstImage.url}
+                        alt={set.label || "Reference set"}
+                        onError={(e) => {
+                          console.error(
+                            "Failed to load image:",
+                            firstImage.id,
+                            firstImage.url
+                          );
+                          // Fallback to a placeholder if image fails to load
+                          e.currentTarget.src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage%3C/text%3E%3C/svg%3E";
+                        }}
+                      />
+                    )}
+                    {imageCount > 1 && (
+                      <div className="dataset-card__badge">{imageCount}</div>
+                    )}
+                    <span className="dataset-card__check">
+                      {isSelected ? "✓" : "+"}
+                    </span>
+                  </div>
+                  <div className="dataset-card__meta">
+                    <div className="dataset-card__title">
+                      {set.label || "Untitled reference set"}
+                    </div>
+                    {set.createdAt && (
+                      <div className="dataset-card__date">
+                        {new Date(set.createdAt).toLocaleString()}
+                        {imageCount > 1 && ` • ${imageCount} images`}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="dataset-modal__footer">
+          <button
+            className="primary-button"
+            onClick={handleApply}
+            disabled={!selectedSets.length}
+          >
+            Use {totalSelectedImages || ""} image
+            {totalSelectedImages !== 1 ? "s" : ""} from {selectedSets.length}{" "}
+            set{selectedSets.length !== 1 ? "s" : ""}
+          </button>
+          <button
+            className="primary-button primary-button--ghost"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ReferenceLibraryModal;

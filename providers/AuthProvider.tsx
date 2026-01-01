@@ -54,7 +54,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initialize = async () => {
       try {
         const supabase = getSupabaseClient();
-        console.log("Supabase client initialized");
 
         // Promise to track when initial session is handled
         let resolveInitialSession: (() => void) | null = null;
@@ -69,8 +68,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // It also fires when a user clicks the magic link and gets redirected back.
         const { data: authListener } = supabase.auth.onAuthStateChange(
           async (event, newSession) => {
-            console.log("Auth state changed:", event, newSession?.user?.email);
-
             // Handle initial session restoration and subsequent auth changes
             if (newSession?.user) {
               setSession(newSession);
