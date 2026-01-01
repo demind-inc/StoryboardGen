@@ -1,4 +1,4 @@
-export type ImageSize = "1K" | "2K" | "4K";
+export type ImageSize = "1K";
 export type AppMode = "slideshow" | "manual";
 export type AuthStatus = "checking" | "signed_out" | "signed_in";
 
