@@ -1,12 +1,13 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "../database.types";
 
 const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseAnonKey =
   import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
-let cachedClient: SupabaseClient | null = null;
+let cachedClient: SupabaseClient<Database> | null = null;
 
-export function getSupabaseClient(): SupabaseClient {
+export function getSupabaseClient(): SupabaseClient<Database> {
   if (cachedClient) return cachedClient;
 
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -15,7 +16,7 @@ export function getSupabaseClient(): SupabaseClient {
     );
   }
 
-  cachedClient = createClient(supabaseUrl, supabaseAnonKey, {
+  cachedClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,

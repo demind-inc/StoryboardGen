@@ -1,5 +1,6 @@
 import { DailyUsage } from "../types";
 import { getSupabaseClient } from "./supabaseClient";
+import { UsageLimitsInsert } from "../database.types";
 
 const USAGE_TABLE = "usage_limits";
 export const DEFAULT_DAILY_LIMIT = 10;
@@ -28,9 +29,9 @@ export async function getDailyUsage(userId: string): Promise<DailyUsage> {
     .select("user_id, usage_date, used, daily_limit")
     .eq("user_id", userId)
     .eq("usage_date", today)
-    .single();
+    .maybeSingle(); // Use maybeSingle() instead of single() to handle 0 rows gracefully
 
-  if (error && error.code !== "PGRST116") {
+  if (error) {
     throw error;
   }
 
@@ -38,25 +39,14 @@ export async function getDailyUsage(userId: string): Promise<DailyUsage> {
     return normalizeUsage(data);
   }
 
-  const { data: inserted, error: insertError } = await supabase
-    .from(USAGE_TABLE)
-    .insert({
-      user_id: userId,
-      usage_date: today,
-      used: 0,
-      daily_limit: DEFAULT_DAILY_LIMIT,
-    })
-    .select("user_id, usage_date, used, daily_limit")
-    .single();
-
-  if (insertError) {
-    if (insertError.code === "23505") {
-      return getDailyUsage(userId);
-    }
-    throw insertError;
-  }
-
-  return normalizeUsage(inserted);
+  // If no record exists (404), return default values
+  return {
+    userId,
+    usageDate: today,
+    used: 0,
+    dailyLimit: DEFAULT_DAILY_LIMIT,
+    remaining: DEFAULT_DAILY_LIMIT,
+  };
 }
 
 export async function recordGeneration(
@@ -72,16 +62,69 @@ export async function recordGeneration(
     throw limitError;
   }
 
+  // Use upsert to create the record if it doesn't exist, or update if it does
   const { data, error } = await supabase
     .from(USAGE_TABLE)
-    .update({ used: currentUsage.used + amount })
-    .eq("user_id", userId)
-    .eq("usage_date", currentUsage.usageDate)
+    .upsert(
+      {
+        user_id: userId,
+        usage_date: currentUsage.usageDate,
+        used: currentUsage.used + amount,
+        daily_limit: currentUsage.dailyLimit,
+      } as any,
+      {
+        onConflict: "user_id,usage_date",
+      }
+    )
     .select("user_id, usage_date, used, daily_limit")
     .single();
 
   if (error) {
+    // If upsert returns no rows (PGRST116), try to fetch the record
+    if (error.code === "PGRST116") {
+      // Record might have been created but not returned, fetch it
+      const { data: fetchedData, error: fetchError } = await supabase
+        .from(USAGE_TABLE)
+        .select("user_id, usage_date, used, daily_limit")
+        .eq("user_id", userId)
+        .eq("usage_date", currentUsage.usageDate)
+        .single();
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      if (fetchedData) {
+        return normalizeUsage(fetchedData);
+      }
+
+      // If still no data, return the expected values
+      return {
+        userId,
+        usageDate: currentUsage.usageDate,
+        used: currentUsage.used + amount,
+        dailyLimit: currentUsage.dailyLimit,
+        remaining: Math.max(
+          currentUsage.dailyLimit - (currentUsage.used + amount),
+          0
+        ),
+      };
+    }
     throw error;
+  }
+
+  if (!data) {
+    // Fallback if data is null
+    return {
+      userId,
+      usageDate: currentUsage.usageDate,
+      used: currentUsage.used + amount,
+      dailyLimit: currentUsage.dailyLimit,
+      remaining: Math.max(
+        currentUsage.dailyLimit - (currentUsage.used + amount),
+        0
+      ),
+    };
   }
 
   return normalizeUsage(data);

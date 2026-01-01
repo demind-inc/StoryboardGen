@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
-import { signOut } from "../services/authService";
+import { signOut, upsertProfile } from "../services/authService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
 interface AuthContextType {
@@ -222,11 +222,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthStatus("signed_in");
         setAuthMessage("Account created successfully! You are now signed in.");
         setAuthError(null);
+
+        // Store user info in profiles table
+        try {
+          await upsertProfile({
+            id: data.session.user.id,
+            email: data.session.user.email,
+            user_metadata: data.session.user.user_metadata,
+          });
+        } catch (profileError) {
+          console.error("Failed to create profile:", profileError);
+          // Don't fail the sign up if profile creation fails
+        }
       } else if (data.user) {
         // If session is null but user exists (email confirmation required)
         // Still set the user but keep status as signed_out until confirmed
         setProfile(data.user);
         setAuthMessage("Account created! Please check your email to confirm.");
+
+        // Store user info in profiles table even if email confirmation is required
+        try {
+          await upsertProfile({
+            id: data.user.id,
+            email: data.user.email,
+            user_metadata: data.user.user_metadata,
+          });
+        } catch (profileError) {
+          console.error("Failed to create profile:", profileError);
+          // Don't fail the sign up if profile creation fails
+        }
       }
     } catch (error: any) {
       console.error("Sign-up error:", error);
