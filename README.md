@@ -99,7 +99,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
 
    1. Go to your Supabase project dashboard → Storage
    2. Create a new bucket named `reference-images`
-   3. Make it **public** (or configure RLS policies if you prefer private)
+   3. Keep it **private** (the app uses signed URLs for secure access)
    4. Run the SQL file `supabase-storage-setup.sql` in your Supabase SQL editor to set up storage policies, or copy and paste the contents of that file.
 
    create table public.prompt_library (

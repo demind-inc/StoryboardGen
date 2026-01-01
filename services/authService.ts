@@ -44,7 +44,6 @@ export async function upsertProfile(sessionUser: {
     (result.error.message?.includes("bigint") ||
       result.error.message?.includes("invalid input syntax"))
   ) {
-    console.log("Retrying with user_id column (id appears to be bigint)...");
     result = await supabase
       .from("profiles")
       .upsert(

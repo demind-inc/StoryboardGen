@@ -147,7 +147,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 disabled={isCreatingStoryboard || !topic.trim()}
                 className="storyboard-button"
               >
-                {isCreatingStoryboard ? "Creating Script..." : "Generate Storyboard"}
+                {isCreatingStoryboard
+                  ? "Creating Script..."
+                  : "Generate Storyboard"}
               </button>
               <div className="sidebar__helper">
                 <p className="helper-text">
@@ -181,7 +183,9 @@ const Sidebar: React.FC<SidebarProps> = ({
               placeholder="One scene prompt per line..."
               className="textarea-input"
             />
-            <p className="helper-text">Describe actions, emotions, and props.</p>
+            <p className="helper-text">
+              Describe actions, emotions, and props.
+            </p>
           </>
         )}
       </section>

@@ -95,17 +95,41 @@ export async function fetchReferenceLibrary(
   // Group images by set_id
   const setsMap = new Map<string, ReferenceSet>();
 
-  for (const item of data as any[]) {
-    // Get public URL from Supabase Storage
-    const { data: urlData } = supabase.storage
+  // Generate signed URLs for all images (private bucket requires signed URLs)
+  // Signed URLs expire after 1 hour (3600 seconds)
+  const signedUrlPromises = (data as any[]).map(async (item) => {
+    const { data: signedUrlData, error: urlError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .getPublicUrl(item.file_path);
+      .createSignedUrl(item.file_path, 3600); // 1 hour expiration
+
+    if (urlError) {
+      console.error(
+        "Failed to create signed URL for file:",
+        item.file_path,
+        urlError
+      );
+      return { item, signedUrl: null };
+    }
+
+    return {
+      item,
+      signedUrl: signedUrlData?.signedUrl || null,
+    };
+  });
+
+  const urlResults = await Promise.all(signedUrlPromises);
+
+  for (const { item, signedUrl } of urlResults) {
+    if (!signedUrl) {
+      console.error("Skipping item due to missing signed URL:", item.file_path);
+      continue;
+    }
 
     const libraryItem: ReferenceLibraryItem = {
       id: item.id,
       setId: item.set_id,
       label: item.label,
-      url: urlData.publicUrl,
+      url: signedUrl,
       mimeType: item.mime_type,
       createdAt: item.created_at,
     };
