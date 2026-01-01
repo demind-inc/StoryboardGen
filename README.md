@@ -99,6 +99,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    );
    ```
 
+   **Important:** Enable Row-Level Security (RLS) and create policies for all tables. Run the SQL file `supabase-rls-policies.sql` in your Supabase SQL editor, or copy and paste the contents of that file.
+
 4. Connect Stripe subscription checkout ($20/month) for paid generations after the first image:
 
    ```bash
