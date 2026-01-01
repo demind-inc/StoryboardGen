@@ -21,6 +21,10 @@ import {
   getSubscription,
   activateSubscription,
 } from "../services/subscriptionService";
+import {
+  getHasGeneratedFreeImage,
+  setHasGeneratedFreeImage,
+} from "../services/authService";
 import AppHeader from "../components/AppHeader/AppHeader";
 import Hero from "../components/Hero/Hero";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
@@ -46,12 +50,9 @@ const DashboardPage: React.FC = () => {
   const [usage, setUsage] = useState<DailyUsage | null>(null);
   const [isUsageLoading, setIsUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState<string | null>(null);
-  const [hasGeneratedFreeImage, setHasGeneratedFreeImage] = useState<boolean>(
-    () => {
-      if (typeof window === "undefined") return false;
-      return localStorage.getItem("nanogen_has_generated") === "true";
-    }
-  );
+  const [hasGeneratedFreeImage, setHasGeneratedFreeImage] =
+    useState<boolean>(false);
+  const [isFreeImageLoading, setIsFreeImageLoading] = useState(false);
   const [isPaymentUnlocked, setIsPaymentUnlocked] = useState<boolean>(false);
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -70,8 +71,22 @@ const DashboardPage: React.FC = () => {
     if (authStatus === "signed_in" && userId) {
       refreshUsage(userId);
       refreshSubscription(userId);
+      refreshHasGeneratedFreeImage(userId);
     }
   }, [authStatus, session?.user?.id]);
+
+  const refreshHasGeneratedFreeImage = async (userId: string) => {
+    setIsFreeImageLoading(true);
+    try {
+      const hasGenerated = await getHasGeneratedFreeImage(userId);
+      setHasGeneratedFreeImage(hasGenerated);
+    } catch (error) {
+      console.error("Failed to fetch has_generated_free_image:", error);
+      setHasGeneratedFreeImage(false);
+    } finally {
+      setIsFreeImageLoading(false);
+    }
+  };
 
   const refreshSubscription = async (userId: string) => {
     setIsSubscriptionLoading(true);
@@ -181,11 +196,16 @@ const DashboardPage: React.FC = () => {
     setIsPaymentModalOpen(true);
   };
 
-  const markFirstGenerationComplete = () => {
-    if (!hasGeneratedFreeImage) {
-      setHasGeneratedFreeImage(true);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("nanogen_has_generated", "true");
+  const markFirstGenerationComplete = async () => {
+    const userId = session?.user?.id;
+    if (!hasGeneratedFreeImage && userId) {
+      try {
+        await setHasGeneratedFreeImage(userId, true);
+        setHasGeneratedFreeImage(true);
+      } catch (error) {
+        console.error("Failed to update has_generated_free_image:", error);
+        // Still update local state even if DB update fails
+        setHasGeneratedFreeImage(true);
       }
     }
   };

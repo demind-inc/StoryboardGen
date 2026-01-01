@@ -35,7 +35,18 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-   Ensure you have a `profiles` table with `id uuid primary key`, `email text`, `full_name text`, and `last_sign_in_at timestamptz`.
+   Ensure you have a `profiles` table with `id uuid primary key`, `email text`, `full_name text`, `last_sign_in_at timestamptz`, and `has_generated_free_image boolean default false`:
+
+   ```sql
+   create table public.profiles (
+     id uuid references auth.users not null primary key,
+     email text,
+     full_name text,
+     last_sign_in_at timestamptz,
+     has_generated_free_image boolean default false,
+     created_at timestamptz default now()
+   );
+   ```
 
    Add a `usage_limits` table to track daily image generation limits:
 

@@ -20,6 +20,7 @@ export interface Database {
           email: string | null;
           full_name: string | null;
           last_sign_in_at: string | null; // timestamptz
+          has_generated_free_image: boolean | null; // default false
           created_at?: string | null; // timestamptz
         };
         Insert: {
@@ -27,6 +28,7 @@ export interface Database {
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
+          has_generated_free_image?: boolean | null; // default false
           created_at?: string | null; // timestamptz
         };
         Update: {
@@ -34,6 +36,7 @@ export interface Database {
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
+          has_generated_free_image?: boolean | null;
           created_at?: string | null; // timestamptz
         };
       };

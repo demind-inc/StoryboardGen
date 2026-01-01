@@ -72,3 +72,50 @@ export async function upsertProfile(sessionUser: {
 
   return result.data as AccountProfile;
 }
+
+export async function getHasGeneratedFreeImage(
+  userId: string
+): Promise<boolean> {
+  const supabase = getSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("has_generated_free_image")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to fetch has_generated_free_image:", error);
+    return false;
+  }
+
+  return data?.has_generated_free_image ?? false;
+}
+
+export async function setHasGeneratedFreeImage(
+  userId: string,
+  value: boolean
+): Promise<void> {
+  const supabase = getSupabaseClient();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ has_generated_free_image: value })
+    .eq("id", userId);
+
+  if (error) {
+    // If update fails, try upsert instead
+    const { error: upsertError } = await supabase.from("profiles").upsert(
+      {
+        id: userId,
+        has_generated_free_image: value,
+      } as any,
+      { onConflict: "id" }
+    );
+
+    if (upsertError) {
+      console.error("Failed to set has_generated_free_image:", upsertError);
+      throw upsertError;
+    }
+  }
+}
