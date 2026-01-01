@@ -16,7 +16,7 @@ export interface Database {
     Tables: {
       profiles: {
         Row: {
-          id: string; // uuid, primary key, references auth.users
+          id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
           email: string | null;
           full_name: string | null;
           last_sign_in_at: string | null; // timestamptz
@@ -24,7 +24,7 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
         Insert: {
-          id: string; // uuid
+          id: string; // uuid, FOREIGN KEY references auth.users(id)
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
@@ -32,7 +32,7 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
         Update: {
-          id?: string; // uuid
+          id?: string; // uuid, FOREIGN KEY references auth.users(id)
           email?: string | null;
           full_name?: string | null;
           last_sign_in_at?: string | null; // timestamptz
@@ -42,19 +42,19 @@ export interface Database {
       };
       usage_limits: {
         Row: {
-          user_id: string; // uuid, references auth.users, part of primary key
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id), part of primary key
           usage_date: string; // date, part of primary key
           used: number; // integer, default 0
           daily_limit: number; // integer, default 10
         };
         Insert: {
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           usage_date: string; // date
           used?: number; // integer, default 0
           daily_limit?: number; // integer, default 10
         };
         Update: {
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           usage_date?: string; // date
           used?: number; // integer
           daily_limit?: number; // integer
@@ -62,7 +62,7 @@ export interface Database {
       };
       subscriptions: {
         Row: {
-          user_id: string; // uuid, primary key, references auth.users
+          user_id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
           is_active: boolean; // default false
           stripe_subscription_id: string | null; // text
           stripe_customer_id: string | null; // text
@@ -71,7 +71,7 @@ export interface Database {
           updated_at: string; // timestamptz, default now()
         };
         Insert: {
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           is_active?: boolean; // default false
           stripe_subscription_id?: string | null; // text
           stripe_customer_id?: string | null; // text
@@ -80,7 +80,7 @@ export interface Database {
           updated_at?: string; // timestamptz, default now()
         };
         Update: {
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           is_active?: boolean;
           stripe_subscription_id?: string | null; // text
           stripe_customer_id?: string | null; // text
@@ -92,7 +92,7 @@ export interface Database {
       reference_library: {
         Row: {
           id: string; // uuid, primary key
-          user_id: string; // uuid, references auth.users
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           label: string | null; // text, optional name
           data: string; // text, base64 image
           mime_type: string; // text, image mime type
@@ -100,7 +100,7 @@ export interface Database {
         };
         Insert: {
           id?: string; // uuid
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           label?: string | null; // text
           data: string; // text
           mime_type: string; // text
@@ -108,7 +108,7 @@ export interface Database {
         };
         Update: {
           id?: string; // uuid
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           label?: string | null; // text
           data?: string; // text
           mime_type?: string; // text
@@ -118,21 +118,21 @@ export interface Database {
       prompt_library: {
         Row: {
           id: string; // uuid, primary key
-          user_id: string; // uuid, references auth.users
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           title: string; // text
           prompt_text: string; // text
           created_at: string; // timestamptz, default now()
         };
         Insert: {
           id?: string; // uuid
-          user_id: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
           title: string; // text
           prompt_text: string; // text
           created_at?: string; // timestamptz
         };
         Update: {
           id?: string; // uuid
-          user_id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
           title?: string; // text
           prompt_text?: string; // text
           created_at?: string | null; // timestamptz
