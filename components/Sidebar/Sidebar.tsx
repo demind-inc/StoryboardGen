@@ -15,6 +15,9 @@ interface SidebarProps {
   isSubscribed: boolean;
   subscriptionLabel?: string;
   subscriptionPrice?: string | null;
+  planType?: string;
+  remainingCredits?: number;
+  totalCredits?: number;
   onOpenBilling?: () => void;
   onCancelSubscription?: () => void;
   onSignOut: () => void;
@@ -30,6 +33,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   isSubscribed,
   subscriptionLabel,
   subscriptionPrice,
+  planType,
+  remainingCredits,
+  totalCredits,
   onOpenBilling,
   onCancelSubscription,
   onSignOut,
@@ -135,17 +141,25 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="sidebar__mode-toggle">
           <button
             className={`sidebar__mode-link ${
-              mode === "manual" ? "is-active" : ""
+              mode === "manual" && activePanel === "manual" ? "is-active" : ""
             }`}
-            onClick={() => onModeChange("manual")}
+            onClick={() => {
+              onModeChange("manual");
+              onPanelChange("manual");
+            }}
           >
             Multi image generation
           </button>
           <button
             className={`sidebar__mode-link ${
-              mode === "slideshow" ? "is-active" : ""
+              mode === "slideshow" && activePanel === "storyboard"
+                ? "is-active"
+                : ""
             }`}
-            onClick={() => onModeChange("slideshow")}
+            onClick={() => {
+              onModeChange("slideshow");
+              onPanelChange("storyboard");
+            }}
           >
             Slideshow
           </button>
@@ -171,36 +185,36 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             References
           </button>
-          {mode === "slideshow" && (
-            <button
-              className={`sidebar__nav-item ${
-                activePanel === "storyboard" ? "is-active" : ""
-              }`}
-              onClick={() => onPanelChange("storyboard")}
-            >
-              Slideshow Story
-            </button>
-          )}
-          {mode === "manual" && (
-            <button
-              className={`sidebar__nav-item ${
-                activePanel === "manual" ? "is-active" : ""
-              }`}
-              onClick={() => onPanelChange("manual")}
-            >
-              Manual Scenarios
-            </button>
-          )}
         </nav>
       </div>
 
-      {!isSubscribed && onOpenBilling && (
-        <div className="sidebar__footer">
+      <div className="sidebar__footer">
+        <div className="sidebar__plan-info">
+          <div className="sidebar__plan-row">
+            <span className="sidebar__plan-label">Plan</span>
+            <span className="sidebar__plan-value">
+              {isSubscribed && planType ? planType.toUpperCase() : "Free"}
+            </span>
+          </div>
+          <div className="sidebar__plan-row">
+            <span className="sidebar__plan-label">Credits</span>
+            <span className="sidebar__plan-value">
+              {isSubscribed
+                ? remainingCredits !== undefined && totalCredits !== undefined
+                  ? `${remainingCredits}/${totalCredits}`
+                  : "--/--"
+                : remainingCredits !== undefined
+                ? `${remainingCredits}/3`
+                : "3"}
+            </span>
+          </div>
+        </div>
+        {!isSubscribed && onOpenBilling && (
           <button className="sidebar__upgrade-btn" onClick={onOpenBilling}>
             Upgrade
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="sidebar__footer-section">
         <Footer />

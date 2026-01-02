@@ -22,6 +22,39 @@
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar__plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.sidebar__plan-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar__plan-label {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar__plan-value {
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .sidebar__footer-section {

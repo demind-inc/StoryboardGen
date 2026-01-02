@@ -787,6 +787,11 @@ const DashboardPage: React.FC = () => {
             subscriptionPrice={
               hasSubscription ? PLAN_PRICE_LABEL[planType] : null
             }
+            planType={hasSubscription ? planType : undefined}
+            remainingCredits={
+              hasSubscription ? displayUsageRemaining : freeCreditsRemaining
+            }
+            totalCredits={hasSubscription ? displayUsageLimit : undefined}
             onOpenBilling={() => setIsPaymentModalOpen(true)}
             onCancelSubscription={async () => {
               const userId = session?.user?.id;

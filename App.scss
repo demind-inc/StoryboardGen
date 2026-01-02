@@ -297,11 +297,12 @@ body {
 }
 
 .card {
-  background: #ffffff;
-  border: 1px solid var(--border);
+  background: rgba(13, 17, 26, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   padding: 20px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
 
   &--gradient {
     background: linear-gradient(
@@ -334,9 +335,14 @@ body {
     background: transparent;
     font-size: 10px;
     font-weight: 800;
-    color: #2563eb;
+    color: #60a5fa;
     text-transform: uppercase;
     cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #93c5fd;
+    }
 
     &--ghost {
       color: #ffffff;
