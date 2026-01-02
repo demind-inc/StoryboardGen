@@ -252,6 +252,10 @@ body {
     }
   }
 
+  &.primary-button--full {
+    width: 100%;
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -524,6 +528,22 @@ body {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+  }
+}
+
+.results-placeholder {
+  display: grid;
+  gap: 10px;
+
+  &__text {
+    margin: 0;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-start;
   }
 }
 
