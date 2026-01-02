@@ -973,17 +973,15 @@ const DashboardPage: React.FC = () => {
                     <button onClick={triggerUpload} className="card__action">
                       Upload
                     </button>
+                    <button
+                      onClick={handleSaveReferences}
+                      disabled={isSavingReferences || references.length === 0}
+                      className="card__action"
+                      title="Save current references for reuse"
+                    >
+                      {isSavingReferences ? "Saving..." : "Save to dataset"}
+                    </button>
                   </div>
-                </div>
-                <div className="reference-actions">
-                  <button
-                    onClick={handleSaveReferences}
-                    disabled={isSavingReferences || references.length === 0}
-                    className="chip-button"
-                    title="Save current references for reuse"
-                  >
-                    {isSavingReferences ? "Saving..." : "Save to dataset"}
-                  </button>
                 </div>
                 {references.length === 0 ? (
                   <div
@@ -1073,21 +1071,23 @@ const DashboardPage: React.FC = () => {
 
             {activePanel === "manual" && mode === "manual" && (
               <section className="card sidebar__panel">
-                <h3 className="card__title">2. Manual Scenarios</h3>
-                <div className="prompt-actions">
-                  <button
-                    onClick={() => setIsPromptLibraryOpen(true)}
-                    className="chip-button chip-button--ghost"
-                  >
-                    Use saved prompt
-                  </button>
-                  <button
-                    onClick={handleSavePromptPreset}
-                    disabled={isSavingPrompt || !manualPrompts.trim()}
-                    className="chip-button"
-                  >
-                    {isSavingPrompt ? "Saving..." : "Save prompt"}
-                  </button>
+                <div className="card__header">
+                  <h3 className="card__title">2. Manual Scenarios</h3>
+                  <div className="card__actions">
+                    <button
+                      onClick={() => setIsPromptLibraryOpen(true)}
+                      className="card__action card__action--ghost"
+                    >
+                      Use saved prompt
+                    </button>
+                    <button
+                      onClick={handleSavePromptPreset}
+                      disabled={isSavingPrompt || !manualPrompts.trim()}
+                      className="card__action"
+                    >
+                      {isSavingPrompt ? "Saving..." : "Save prompt"}
+                    </button>
+                  </div>
                 </div>
                 <textarea
                   value={manualPrompts}
