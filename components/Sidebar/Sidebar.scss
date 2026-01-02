@@ -15,6 +15,7 @@
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(8px);
+  font-size: 13px;
 }
 
 .sidebar__footer {
@@ -121,6 +122,7 @@
   background: rgba(255, 255, 255, 0.04);
   color: #f8fafc;
   font-weight: 700;
+  font-size: 12px;
   margin-bottom: 8px;
   word-break: break-all;
 }
@@ -134,12 +136,13 @@
   margin: 0 0 4px;
   color: #e2e8f0;
   font-weight: 800;
+  font-size: 12px;
 }
 
 .sidebar__profile-meta {
   margin: 0 0 8px;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sidebar__profile-actions button {
@@ -150,6 +153,7 @@
   background: rgba(255, 255, 255, 0.06);
   color: #e2e8f0;
   font-weight: 700;
+  font-size: 12px;
   cursor: pointer;
   transition: background 0.2s ease;
 
@@ -165,6 +169,7 @@
   background: transparent;
   color: #fca5a5;
   font-weight: 800;
+  font-size: 12px;
   cursor: pointer;
   text-align: left;
   margin-top: 8px;
@@ -175,7 +180,7 @@
   color: #cbd5e1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   opacity: 0.85;
 }
@@ -183,7 +188,7 @@
 .sidebar__title {
   margin: 0;
   color: #f8fafc;
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: -0.01em;
 }
 
@@ -208,6 +213,7 @@
   border-radius: 10px;
   cursor: pointer;
   font-weight: 800;
+  font-size: 13px;
   letter-spacing: -0.01em;
   transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
 
@@ -257,7 +263,7 @@
   justify-content: space-between;
   color: #cbd5e1;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .sidebar__saved-list {
@@ -295,11 +301,12 @@
 
 .sidebar__saved-title {
   font-weight: 800;
+  font-size: 12px;
 }
 
 .sidebar__saved-meta {
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sidebar__chevron {
@@ -310,7 +317,7 @@
 .sidebar__empty {
   margin: 0;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .sidebar__panel {
@@ -383,7 +390,7 @@
   background: transparent;
   color: #cbd5e1;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   padding: 4px 0;
   text-decoration: underline;
@@ -446,7 +453,7 @@
   );
   color: #f8fafc;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
   letter-spacing: -0.01em;
