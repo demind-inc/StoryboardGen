@@ -25,6 +25,7 @@ import {
   getSubscription,
   activateSubscription,
   deactivateSubscription,
+  cancelStripeSubscription,
 } from "../services/subscriptionService";
 import {
   getHasGeneratedFreeImage,
@@ -84,6 +85,9 @@ const DashboardPage: React.FC = () => {
   const [planType, setPlanType] = useState<SubscriptionPlan>("basic");
   const [planLockedFromSubscription, setPlanLockedFromSubscription] =
     useState(false);
+  const [stripeSubscriptionId, setStripeSubscriptionId] = useState<
+    string | null | undefined
+  >(null);
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -176,10 +180,12 @@ const DashboardPage: React.FC = () => {
       } else {
         setPlanLockedFromSubscription(false);
       }
+      setStripeSubscriptionId(subscription?.stripeSubscriptionId);
     } catch (error) {
       console.error("Failed to fetch subscription:", error);
       setIsPaymentUnlocked(false);
       setPlanLockedFromSubscription(false);
+      setStripeSubscriptionId(null);
     } finally {
       setIsSubscriptionLoading(false);
     }
@@ -812,6 +818,7 @@ const DashboardPage: React.FC = () => {
           const userId = session?.user?.id;
           if (!userId) return;
           try {
+            await cancelStripeSubscription(stripeSubscriptionId);
             await deactivateSubscription(userId);
             setIsPaymentUnlocked(false);
             setPlanLockedFromSubscription(false);

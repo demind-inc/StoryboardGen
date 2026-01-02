@@ -129,6 +129,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
    STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
    STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
+   STRIPE_SECRET_KEY=SECRET_KEY
    ```
 
    Create Stripe Payment Links for each plan price and drop them into these env vars. The paywall modal will pick the correct link based on the selected plan. If you include `?paid=true` or `?session_id=...` in your return URL, the dashboard will automatically activate the subscription in the database.

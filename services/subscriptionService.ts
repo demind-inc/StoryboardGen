@@ -119,3 +119,30 @@ export async function deactivateSubscription(
     isActive: false,
   });
 }
+
+export async function cancelStripeSubscription(
+  stripeSubscriptionId?: string | null
+): Promise<void> {
+  if (!stripeSubscriptionId) return;
+
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  const endpoint = `https://api.stripe.com/v1/subscriptions/${stripeSubscriptionId}`;
+
+  if (!stripeKey) {
+    throw new Error(
+      "STRIPE_SECRET_KEY is not set. Add it to your server environment."
+    );
+  }
+
+  const response = await fetch(endpoint, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${stripeKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(`Stripe cancel failed: ${response.status} ${message}`);
+  }
+}

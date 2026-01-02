@@ -122,7 +122,7 @@ const pricingPlans = [
       "Team-friendly storage",
       "Fastest support response",
     ],
-    cta: "Talk to us",
+    cta: "Choose Business",
   },
 ];
 
