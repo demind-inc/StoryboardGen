@@ -44,6 +44,67 @@ import Footer from "../components/Footer/Footer";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
 
+interface NameCaptureModalProps {
+  isOpen: boolean;
+  title: string;
+  defaultValue: string;
+  onSave: (value: string) => void;
+  onCancel: () => void;
+}
+
+const NameCaptureModal: React.FC<NameCaptureModalProps> = ({
+  isOpen,
+  title,
+  defaultValue,
+  onSave,
+  onCancel,
+}) => {
+  const [value, setValue] = useState(defaultValue);
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue, isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="dataset-modal__backdrop" role="dialog" aria-modal="true">
+      <div className="dataset-modal">
+        <div className="dataset-modal__header">
+          <div>
+            <p className="dataset-modal__eyebrow">Save</p>
+            <h3 className="dataset-modal__title">{title}</h3>
+          </div>
+          <button className="dataset-modal__close" onClick={onCancel}>
+            ×
+          </button>
+        </div>
+        <div className="dataset-modal__body">
+          <label className="field-label">Name</label>
+          <input
+            className="text-input"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Enter a name"
+            autoFocus
+          />
+        </div>
+        <div className="dataset-modal__footer">
+          <button className="primary-button" onClick={() => onSave(value)}>
+            Save
+          </button>
+          <button
+            className="primary-button primary-button--ghost"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
   const navigate = useNavigate();
@@ -89,6 +150,10 @@ const DashboardPage: React.FC = () => {
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<PanelKey>("storyboard");
+  const [nameModal, setNameModal] = useState<{
+    type: "reference" | "prompt" | null;
+    defaultValue: string;
+  }>({ type: null, defaultValue: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const stripePlanLinks: Partial<Record<SubscriptionPlan, string>> = {
     basic: import.meta.env.STRIPE_LINK_BASIC || process.env.STRIPE_LINK_BASIC,
@@ -325,7 +390,7 @@ const DashboardPage: React.FC = () => {
     setReferences((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const handleSaveReferences = async () => {
+  const handleSaveReferences = async (label?: string) => {
     const userId = session?.user?.id;
     if (!userId) {
       alert("Unable to verify your account. Please sign in again.");
@@ -336,12 +401,6 @@ const DashboardPage: React.FC = () => {
       alert("Upload a reference image first.");
       return;
     }
-
-    const label =
-      window.prompt(
-        "Name this reference set",
-        `Reference set (${new Date().toLocaleDateString()})`
-      ) || undefined;
 
     setIsSavingReferences(true);
     try {
@@ -388,7 +447,7 @@ const DashboardPage: React.FC = () => {
     setReferences((prev) => [...prev, ...mapped]);
   };
 
-  const handleSavePromptPreset = async () => {
+  const handleSavePromptPreset = async (title?: string) => {
     const userId = session?.user?.id;
     const content = manualPrompts.trim();
 
@@ -402,12 +461,6 @@ const DashboardPage: React.FC = () => {
       return;
     }
 
-    const title =
-      window.prompt(
-        "Name this prompt preset",
-        `Prompt preset (${new Date().toLocaleDateString()})`
-      ) || undefined;
-
     setIsSavingPrompt(true);
     try {
       const saved = await savePromptPreset(userId, content, title);
@@ -419,6 +472,30 @@ const DashboardPage: React.FC = () => {
       setIsSavingPrompt(false);
     }
   };
+
+  const openReferenceNameModal = () =>
+    setNameModal({
+      type: "reference",
+      defaultValue: `Reference set (${new Date().toLocaleDateString()})`,
+    });
+
+  const openPromptNameModal = () =>
+    setNameModal({
+      type: "prompt",
+      defaultValue: `Prompt preset (${new Date().toLocaleDateString()})`,
+    });
+
+  const handleNameModalSave = async (value: string) => {
+    const trimmed = value.trim();
+    if (nameModal.type === "reference") {
+      await handleSaveReferences(trimmed || undefined);
+    } else if (nameModal.type === "prompt") {
+      await handleSavePromptPreset(trimmed || undefined);
+    }
+    setNameModal({ type: null, defaultValue: "" });
+  };
+
+  const closeNameModal = () => setNameModal({ type: null, defaultValue: "" });
 
   const handleUsePromptPreset = (preset: PromptPreset) => {
     setManualPrompts(preset.content);
@@ -959,7 +1036,9 @@ const DashboardPage: React.FC = () => {
               </section>
             )}
 
-            {(activePanel === "references" || mode === "manual") && (
+            {(activePanel === "references" ||
+              mode === "manual" ||
+              mode === "slideshow") && (
               <section className="card">
                 <div className="card__header">
                   <h3 className="card__title">1. References</h3>
@@ -974,7 +1053,7 @@ const DashboardPage: React.FC = () => {
                       Upload
                     </button>
                     <button
-                      onClick={handleSaveReferences}
+                      onClick={openReferenceNameModal}
                       disabled={isSavingReferences || references.length === 0}
                       className="card__action"
                       title="Save current references for reuse"
@@ -1081,7 +1160,7 @@ const DashboardPage: React.FC = () => {
                       Use saved prompt
                     </button>
                     <button
-                      onClick={handleSavePromptPreset}
+                      onClick={openPromptNameModal}
                       disabled={isSavingPrompt || !manualPrompts.trim()}
                       className="card__action"
                     >
@@ -1150,6 +1229,18 @@ const DashboardPage: React.FC = () => {
         isLoading={isLibraryLoading}
         onClose={() => setIsPromptLibraryOpen(false)}
         onSelect={handleUsePromptPreset}
+      />
+
+      <NameCaptureModal
+        isOpen={nameModal.type !== null}
+        title={
+          nameModal.type === "reference"
+            ? "Name this reference set"
+            : "Name this prompt preset"
+        }
+        defaultValue={nameModal.defaultValue}
+        onSave={handleNameModalSave}
+        onCancel={closeNameModal}
       />
 
       <PaymentModal
