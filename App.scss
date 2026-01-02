@@ -804,11 +804,13 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
   border-radius: 10px;
-  padding: 10px;
+  padding: 12px;
   text-align: left;
   color: #e2e8f0;
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.2s ease;
+  display: grid;
+  gap: 8px;
 
   &:hover {
     transform: translateY(-1px);
@@ -816,13 +818,36 @@ body {
   }
 }
 
+.library-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
 .library-prompt-title {
   font-weight: 800;
+  font-size: 14px;
 }
 
 .library-prompt-meta {
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
+  font-weight: 600;
+}
+
+.library-prompt-content {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .results-placeholder {

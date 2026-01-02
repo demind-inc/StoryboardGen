@@ -125,7 +125,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                   <input
                     type="text"
                     className="library-set-title-input"
-                    placeholder="Set name (optional)"
+                    placeholder="Set name"
                     value={newSetLabel}
                     onChange={(e) => setNewSetLabel(e.target.value)}
                   />

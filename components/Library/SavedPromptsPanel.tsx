@@ -57,12 +57,15 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                   className="library-prompt-item"
                   onClick={() => onSelectPromptPreset(preset)}
                 >
-                  <div className="library-prompt-title">{preset.title}</div>
-                  {preset.createdAt && (
-                    <div className="library-prompt-meta">
-                      {new Date(preset.createdAt).toLocaleDateString()}
-                    </div>
-                  )}
+                  <div className="library-prompt-header">
+                    <div className="library-prompt-title">{preset.title}</div>
+                    {preset.createdAt && (
+                      <div className="library-prompt-meta">
+                        {new Date(preset.createdAt).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="library-prompt-content">{preset.content}</div>
                 </button>
               ))}
             </div>
