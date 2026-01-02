@@ -48,6 +48,8 @@ const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const FREE_CREDIT_CAP = 3;
+
   const [mode, setMode] = useState<AppMode>("slideshow");
   const [topic, setTopic] = useState<string>("");
   const [manualPrompts, setManualPrompts] = useState<string>(
@@ -78,9 +80,9 @@ const DashboardPage: React.FC = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const stripePlanLinks: Partial<Record<SubscriptionPlan, string>> = {
-    basic: process.env.STRIPE_LINK_BASIC,
-    pro: process.env.STRIPE_LINK_PRO,
-    business: process.env.STRIPE_LINK_BUSINESS,
+    basic: import.meta.env.STRIPE_LINK_BASIC,
+    pro: import.meta.env.STRIPE_LINK_PRO,
+    business: import.meta.env.STRIPE_LINK_BUSINESS,
   };
 
   // Redirect to auth page if not authenticated
@@ -180,7 +182,10 @@ const DashboardPage: React.FC = () => {
 
     if (urlPlan && ["basic", "pro", "business"].includes(urlPlan)) {
       setPlanType(urlPlan as SubscriptionPlan);
-    } else if (storedPlan && ["basic", "pro", "business"].includes(storedPlan)) {
+    } else if (
+      storedPlan &&
+      ["basic", "pro", "business"].includes(storedPlan)
+    ) {
       setPlanType(storedPlan as SubscriptionPlan);
     }
   }, [authStatus]);
@@ -202,6 +207,8 @@ const DashboardPage: React.FC = () => {
       params.get("paid") === "1" ||
       params.get("paid") === "true" ||
       params.get("session_id");
+    const openPaymentFlag =
+      params.get("openPayment") === "1" || params.get("openPayment") === "true";
 
     if (paidFlag) {
       const activateSubscriptionStatus = async () => {
@@ -220,6 +227,16 @@ const DashboardPage: React.FC = () => {
         }
       };
       activateSubscriptionStatus();
+    }
+
+    if (openPaymentFlag && !isPaymentUnlocked) {
+      setIsPaymentModalOpen(true);
+      params.delete("openPayment");
+      const newSearch = params.toString();
+      const newUrl = `${window.location.pathname}${
+        newSearch ? `?${newSearch}` : ""
+      }`;
+      window.history.replaceState(null, "", newUrl);
     }
   }, [isPaymentUnlocked, session?.user?.id, planType]);
 
@@ -509,6 +526,22 @@ const DashboardPage: React.FC = () => {
       return;
     }
 
+    if (
+      !isPaymentUnlocked &&
+      latestUsage &&
+      latestUsage.used >= FREE_CREDIT_CAP
+    ) {
+      openPaymentModal();
+      setter((prev) =>
+        prev.map((res, idx) =>
+          idx === index
+            ? { ...res, isLoading: false, error: "Upgrade to keep generating." }
+            : res
+        )
+      );
+      return;
+    }
+
     if (latestUsage && latestUsage.remaining <= 0) {
       setter((prev) =>
         prev.map((res, idx) =>
@@ -627,6 +660,16 @@ const DashboardPage: React.FC = () => {
           latestUsage.remaining === 1 ? "" : "s"
         } this month (credits ${latestUsage.monthlyLimit}).`
       );
+      setIsGenerating(false);
+      return;
+    }
+
+    if (
+      !isPaymentUnlocked &&
+      latestUsage &&
+      latestUsage.used >= FREE_CREDIT_CAP
+    ) {
+      openPaymentModal();
       setIsGenerating(false);
       return;
     }

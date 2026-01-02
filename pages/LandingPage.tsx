@@ -141,6 +141,18 @@ const LandingPage: React.FC = () => {
   useEffect(() => {
     if (authStatus === "signed_in") {
       setShowAuthModal(false);
+      if (typeof window !== "undefined") {
+        const pendingPayment = window.localStorage.getItem("start_payment_flow");
+        const preferredPlan = window.localStorage.getItem("preferred_plan");
+        if (pendingPayment) {
+          window.localStorage.removeItem("start_payment_flow");
+          navigate(
+            `/dashboard${
+              preferredPlan ? `?plan=${preferredPlan}&openPayment=1` : "?openPayment=1"
+            }`
+          );
+        }
+      }
     }
   }, [authStatus]);
 
@@ -155,9 +167,10 @@ const LandingPage: React.FC = () => {
   const handlePlanStart = (plan: SubscriptionPlan) => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem("preferred_plan", plan);
+      window.localStorage.setItem("start_payment_flow", "1");
     }
     if (authStatus === "signed_in") {
-      navigate(`/dashboard?plan=${plan}`);
+      navigate(`/dashboard?plan=${plan}&openPayment=1`);
       return;
     }
     setShowAuthModal(true);
