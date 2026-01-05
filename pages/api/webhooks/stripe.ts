@@ -25,6 +25,22 @@ export const config = {
 };
 
 /**
+ * Helper function to get user_id from Stripe customer ID
+ * This uses the mapping stored in the subscriptions table
+ */
+async function getUserIdFromCustomerId(
+  customerId: string
+): Promise<string | null> {
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+
+  return subscription?.user_id || null;
+}
+
+/**
  * POST /api/webhooks/stripe
  * Handles Stripe webhook events
  *
@@ -97,6 +113,58 @@ export default async function handler(
   // Handle the event
   try {
     switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const customerId =
+          typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id;
+
+        if (!customerId) {
+          console.error("No customer ID found in checkout session");
+          return res.status(400).json({ error: "Missing customer identifier" });
+        }
+
+        // Read client_reference_id (user_id) from the checkout session
+        const userId = session.client_reference_id;
+
+        if (!userId) {
+          console.error(
+            `No client_reference_id found in checkout session ${session.id}`
+          );
+          return res
+            .status(400)
+            .json({ error: "Missing client_reference_id (user_id)" });
+        }
+
+        // Map Stripe customer → user once by creating/updating subscription record
+        // This establishes the mapping that other webhooks will use
+        const { error: mappingError } = await supabase
+          .from("subscriptions")
+          .upsert(
+            {
+              user_id: userId,
+              stripe_customer_id: customerId,
+              updated_at: new Date().toISOString(),
+            },
+            {
+              onConflict: "user_id",
+            }
+          );
+
+        if (mappingError) {
+          console.error("Failed to map customer to user:", mappingError);
+          return res
+            .status(500)
+            .json({ error: "Failed to map customer to user" });
+        }
+
+        console.log(
+          `Mapped Stripe customer ${customerId} to user ${userId} from checkout session ${session.id}`
+        );
+        break;
+      }
+
       case "customer.subscription.created": {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId =
@@ -109,28 +177,12 @@ export default async function handler(
           return res.status(400).json({ error: "Missing customer identifier" });
         }
 
-        // Find user by Stripe customer ID
-        const { data: existingSubscription } = await supabase
-          .from("subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .maybeSingle();
-
-        let userId: string | undefined = existingSubscription?.user_id;
-
-        // If not found by customer ID, try to find by subscription ID (in case customer ID wasn't set yet)
-        if (!userId) {
-          const { data: subBySubId } = await supabase
-            .from("subscriptions")
-            .select("user_id")
-            .eq("stripe_subscription_id", subscription.id)
-            .maybeSingle();
-          userId = subBySubId?.user_id;
-        }
+        // Get user_id from customer mapping (established in checkout.session.completed)
+        const userId = await getUserIdFromCustomerId(customerId);
 
         if (!userId) {
           console.error(
-            `Could not find user for customer ${customerId} or subscription ${subscription.id}`
+            `Could not find user for customer ${customerId}. Make sure checkout.session.completed was processed first.`
           );
           return res.status(400).json({ error: "User not found" });
         }
@@ -172,15 +224,53 @@ export default async function handler(
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
+        const customerId =
+          typeof subscription.customer === "string"
+            ? subscription.customer
+            : subscription.customer?.id;
 
-        // Deactivate subscription
+        if (!customerId) {
+          console.error("No customer ID found in subscription");
+          return res.status(400).json({ error: "Missing customer identifier" });
+        }
+
+        // Get user_id from customer mapping
+        const userId = await getUserIdFromCustomerId(customerId);
+
+        if (!userId) {
+          console.error(
+            `Could not find user for customer ${customerId}. Using subscription ID as fallback.`
+          );
+          // Fallback: deactivate by subscription ID
+          const { error } = await supabase
+            .from("subscriptions")
+            .update({
+              is_active: false,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("stripe_subscription_id", subscription.id);
+
+          if (error) {
+            console.error("Failed to deactivate subscription:", error);
+            return res
+              .status(500)
+              .json({ error: "Failed to update subscription" });
+          }
+
+          console.log(
+            `Subscription ${subscription.id} deleted (deactivated) - fallback method`
+          );
+          break;
+        }
+
+        // Deactivate subscription using user_id
         const { error } = await supabase
           .from("subscriptions")
           .update({
             is_active: false,
             updated_at: new Date().toISOString(),
           })
-          .eq("stripe_subscription_id", subscription.id);
+          .eq("user_id", userId);
 
         if (error) {
           console.error("Failed to deactivate subscription:", error);
@@ -189,7 +279,9 @@ export default async function handler(
             .json({ error: "Failed to update subscription" });
         }
 
-        console.log(`Subscription ${subscription.id} deleted (deactivated)`);
+        console.log(
+          `Subscription ${subscription.id} deleted (deactivated) for user ${userId}`
+        );
         break;
       }
 

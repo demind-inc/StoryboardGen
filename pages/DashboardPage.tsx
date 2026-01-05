@@ -175,11 +175,43 @@ const DashboardPage: React.FC = () => {
   }>({ type: null, defaultValue: "" });
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const stripePlanLinks: Partial<Record<SubscriptionPlan, string>> = {
-    basic: process.env.STRIPE_LINK_BASIC || "",
-    pro: process.env.STRIPE_LINK_PRO || "",
-    business: process.env.STRIPE_LINK_BUSINESS || "",
+
+  // Build payment links with client_reference_id (user_id) as query parameter
+  const getStripePlanLinks = (): Partial<Record<SubscriptionPlan, string>> => {
+    const userId = session?.user?.id;
+    if (!userId) {
+      return {
+        basic: process.env.STRIPE_LINK_BASIC || "",
+        pro: process.env.STRIPE_LINK_PRO || "",
+        business: process.env.STRIPE_LINK_BUSINESS || "",
+      };
+    }
+
+    const baseLinks = {
+      basic: process.env.STRIPE_LINK_BASIC || "",
+      pro: process.env.STRIPE_LINK_PRO || "",
+      business: process.env.STRIPE_LINK_BUSINESS || "",
+    };
+
+    // Add client_reference_id to each payment link
+    const links: Partial<Record<SubscriptionPlan, string>> = {};
+    for (const [plan, baseUrl] of Object.entries(baseLinks)) {
+      if (baseUrl) {
+        try {
+          const url = new URL(baseUrl);
+          url.searchParams.set("client_reference_id", userId);
+          links[plan as SubscriptionPlan] = url.toString();
+        } catch (error) {
+          // If URL is invalid, use base URL as-is
+          console.warn(`Invalid Stripe payment link URL for ${plan}:`, baseUrl);
+          links[plan as SubscriptionPlan] = baseUrl;
+        }
+      }
+    }
+    return links;
   };
+
+  const stripePlanLinks = getStripePlanLinks();
 
   // Redirect to auth page if not authenticated
   useEffect(() => {
