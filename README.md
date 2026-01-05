@@ -129,16 +129,120 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
    STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
    STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
-   STRIPE_SECRET_KEY=SECRET_KEY
+   STRIPE_SECRET_KEY=sk_live_... (or sk_test_... for testing)
+   STRIPE_WEBHOOK_SECRET=whsec_... (optional, but recommended for production)
    ```
 
-   Create Stripe Payment Links for each plan price and drop them into these env vars. The paywall modal will pick the correct link based on the selected plan. If you include `?paid=true` or `?session_id=...` in your return URL, the dashboard will automatically activate the subscription in the database.
+   Create Stripe Payment Links for each plan price and drop them into these env vars. The paywall modal will pick the correct link based on the selected plan.
 
-5. Run the app:
+   **Important:** Configure the return URL in each Stripe Payment Link's settings to redirect to the subscription confirmation page:
+
+   - Basic plan: `https://yourdomain.com/subscription/redirect?paid=1&plan=basic`
+   - Pro plan: `https://yourdomain.com/subscription/redirect?paid=1&plan=pro`
+   - Business plan: `https://yourdomain.com/subscription/redirect?paid=1&plan=business`
+
+   The subscription redirect page will automatically activate the subscription via the backend API and redirect to the dashboard.
+
+5. **Backend Server Configuration (Next.js API Routes):**
+
+   The app uses Next.js API routes (automatically deployed as Vercel serverless functions). The backend handles:
+
+   - Subscription activation after payment redirect (`/api/subscription/redirect`)
+   - Stripe webhook events (`/api/webhooks/stripe`)
+   - Health check endpoint (`/api/health`)
+
+   **Environment Variables for Backend (set in Vercel Dashboard):**
+
    ```bash
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key  # Required for backend operations
+   STRIPE_SECRET_KEY=sk_live_... (or sk_test_... for testing)
+   STRIPE_WEBHOOK_SECRET=whsec_... (get from Stripe Dashboard → Webhooks)
+   ```
+
+   **Setting up Stripe Webhook:**
+
+   1. Go to your Stripe Dashboard → Developers → Webhooks
+   2. Click "Add endpoint"
+   3. Set the endpoint URL to: `https://yourdomain.com/api/webhooks/stripe`
+   4. Select the following events to listen to:
+      - `checkout.session.completed`
+      - `customer.subscription.updated`
+      - `customer.subscription.deleted`
+      - `invoice.payment_succeeded`
+      - `invoice.payment_failed`
+   5. Copy the webhook signing secret and add it to `STRIPE_WEBHOOK_SECRET` in Vercel
+
+   **Note:** The backend uses Supabase Service Role Key (not the anon key) to bypass RLS and update subscriptions. Make sure to set `SUPABASE_SERVICE_ROLE_KEY` in your Vercel environment variables.
+
+6. **Deploy to Vercel:**
+
+   The project is now a Next.js application with API routes. Vercel has first-class support for Next.js!
+
+   **Option 1: Using Vercel CLI**
+
+   ```bash
+   # Install Vercel CLI globally
+   npm i -g vercel
+
+   # Login to Vercel
+   vercel login
+
+   # Deploy (follow the prompts)
+   vercel
+
+   # Deploy to production
+   vercel --prod
+   ```
+
+   **Option 2: Using Vercel Dashboard**
+
+   1. Push your code to GitHub/GitLab/Bitbucket
+   2. Go to [vercel.com](https://vercel.com) and sign in
+   3. Click "New Project"
+   4. Import your repository
+   5. Vercel will automatically detect it's a Next.js project
+   6. Configure environment variables (see below)
+   7. Click "Deploy"
+
+   **Note**: Vercel automatically detects Next.js and configures everything. No additional setup needed!
+
+   **Required Environment Variables in Vercel:**
+
+   Set these in your Vercel project settings (Settings → Environment Variables):
+
+   ```bash
+   # Frontend (for build)
+   GEMINI_API_KEY=your_gemini_api_key
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
+   STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
+   STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
+
+   # Backend API (for serverless functions)
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   STRIPE_SECRET_KEY=sk_live_... (or sk_test_... for testing)
+   STRIPE_WEBHOOK_SECRET=whsec_... (optional but recommended)
+   ```
+
+   **Important Notes:**
+
+   - The `/pages/api` directory contains Next.js API routes that Vercel will automatically deploy as serverless functions
+   - API routes are available at: `https://yourdomain.com/api/*`
+   - Make sure to set environment variables for both Production and Preview environments if needed
+   - Next.js API routes automatically use Node.js runtime on Vercel
+
+7. Run the app locally:
+   ```bash
+   npm install
    npm run dev
    # or
+   yarn install
    yarn dev
    ```
 
 The app will be available at `http://localhost:3300`
+
+**Note**: This project has been migrated from Vite to Next.js. See `MIGRATION.md` for details about the changes.
