@@ -87,10 +87,6 @@ export default async function handler(
       const canceledSubscription = await stripe.subscriptions.cancel(
         subscription.stripe_subscription_id
       );
-
-      console.log(
-        `Subscription ${subscription.stripe_subscription_id} canceled in Stripe for user ${userId}`
-      );
     } catch (stripeError: any) {
       // If subscription is already canceled or doesn't exist in Stripe,
       // still update our database
@@ -126,8 +122,6 @@ export default async function handler(
         details: updateError.message,
       });
     }
-
-    console.log(`Subscription canceled successfully for user ${userId}`);
 
     res.json({
       success: true,

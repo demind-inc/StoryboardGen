@@ -3,6 +3,22 @@ import { createSupabaseClient } from "../../../lib/supabase/server";
 
 type SubscriptionPlan = "basic" | "pro" | "business";
 
+const USAGE_TABLE = "usage_limits";
+const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
+  basic: 60,
+  pro: 180,
+  business: 600,
+};
+
+const getCurrentPeriodStart = () => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  return startOfMonth.toISOString().split("T")[0];
+};
+
+const getPlanCredits = (planType: SubscriptionPlan) =>
+  PLAN_CREDITS[planType] ?? 60;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<
@@ -106,6 +122,16 @@ export default async function handler(
       (metadata.plan as SubscriptionPlan) ||
       "basic";
 
+    // Check if this is a new subscription or plan change by checking existing subscription
+    const { data: existingSubscription } = await supabase
+      .from("subscriptions")
+      .select("plan_type")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const isNewPlan =
+      !existingSubscription || existingSubscription.plan_type !== planType;
+
     // Map Stripe customer → user and sync subscription data
     const { error: syncError } = await supabase.from("subscriptions").upsert(
       {
@@ -132,6 +158,31 @@ export default async function handler(
       });
     }
 
+    // Reset monthly usage limit when subscribing to a new plan
+    if (isNewPlan && subscription.status === "active") {
+      try {
+        const periodStart = getCurrentPeriodStart();
+        const newLimit = getPlanCredits(planType);
+
+        const { error: usageError } = await supabase.from(USAGE_TABLE).upsert({
+          user_id: userId,
+          period_start: periodStart,
+          used: 0,
+          monthly_limit: newLimit,
+        } as any);
+
+        if (usageError) {
+          throw usageError;
+        }
+      } catch (usageError) {
+        // Log error but don't fail the subscription sync
+        console.error(
+          "Failed to reset monthly usage for new plan:",
+          usageError instanceof Error ? usageError.message : "Unknown error"
+        );
+      }
+    }
+
     // Fetch the updated subscription to return
     const { data: syncedSubscription, error: fetchError } = await supabase
       .from("subscriptions")
@@ -146,12 +197,6 @@ export default async function handler(
         details: fetchError.message,
       });
     }
-
-    console.log(
-      `Synced subscription ${subscriptionId} for user ${userId} with plan ${planType} (app: ${
-        appMetadata || "unknown"
-      })`
-    );
 
     res.json({
       success: true,
