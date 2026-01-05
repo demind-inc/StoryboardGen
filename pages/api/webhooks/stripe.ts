@@ -69,7 +69,6 @@ export default async function handler(
       console.error("Webhook signature verification failed:", err.message);
       return res.status(401).json({ error: `Webhook Error: ${err.message}` });
     }
-    console.log("event", event);
 
     // Handle subscription updated event (for expiration checks)
     if (event.type === "customer.subscription.updated") {
@@ -77,9 +76,6 @@ export default async function handler(
 
       // Only process events where metadata.app = "nanogenai"
       if (subscription.metadata?.app !== "nanogenai") {
-        console.log(
-          `Skipping subscription ${subscription.id} - app metadata is not "nanogenai"`
-        );
         return res.json({ received: true });
       }
 
@@ -165,10 +161,6 @@ export default async function handler(
             error: "Failed to update subscription in database",
           });
         }
-
-        console.log(
-          `Subscription ${subscription.id} updated to status "${newStatus}" for user ${dbSubscription.user_id}`
-        );
       } else if (currentPeriodEnd !== dbSubscription.current_period_end) {
         // Update current_period_end even if status hasn't changed
         const { error: updateError } = await supabase
@@ -194,9 +186,6 @@ export default async function handler(
 
       // Only process events where metadata.app = "nanogenai"
       if (subscription.metadata?.app !== "nanogenai") {
-        console.log(
-          `Skipping subscription ${subscription.id} - app metadata is not "nanogenai"`
-        );
         return res.json({ received: true });
       }
 
@@ -242,10 +231,6 @@ export default async function handler(
           error: "Failed to update subscription in database",
         });
       }
-
-      console.log(
-        `Subscription ${subscription.id} canceled for user ${dbSubscription.user_id}`
-      );
     }
 
     // Return a response to acknowledge receipt of the event
