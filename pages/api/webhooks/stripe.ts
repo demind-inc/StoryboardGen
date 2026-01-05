@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createSupabaseClient } from "../../../../lib/supabase/server";
+import { createSupabaseClient } from "../../../lib/supabase/server";
 import type Stripe from "stripe";
 
 export const config = {
