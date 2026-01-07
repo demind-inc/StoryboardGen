@@ -776,9 +776,10 @@
     position: relative;
     max-width: 640px;
     width: 100%;
-    height: 640px;
+    max-height: 90vh;
+    height: auto;
     border-radius: 18px;
-    overflow: hidden;
+    overflow: auto;
 
     &-backdrop {
       position: fixed;
@@ -808,8 +809,9 @@
 
     .auth-shell {
       min-height: unset;
-      height: 100%;
-      padding: 0;
+      height: auto;
+      padding: 24px;
+      background: transparent;
     }
   }
 
