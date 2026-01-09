@@ -76,7 +76,7 @@ export default async function handler(
 
       // Only process events where metadata.app = "storyboardgen"
       if (subscription.metadata?.app !== "storyboardgen") {
-        return res.json({ received: true });
+        return res.status(200).json({ received: true });
       }
 
       // Find the subscription in database by stripe_subscription_id
@@ -100,7 +100,7 @@ export default async function handler(
         console.warn(
           `Subscription ${subscription.id} not found in database, skipping update`
         );
-        return res.json({ received: true });
+        return res.status(200).json({ received: true });
       }
 
       // Check if subscription has expired
@@ -186,7 +186,7 @@ export default async function handler(
 
       // Only process events where metadata.app = "storyboardgen"
       if (subscription.metadata?.app !== "storyboardgen") {
-        return res.json({ received: true });
+        return res.status(200).json({ received: true });
       }
 
       // Find the subscription in database by stripe_subscription_id
@@ -210,7 +210,7 @@ export default async function handler(
         console.warn(
           `Subscription ${subscription.id} not found in database, skipping update`
         );
-        return res.json({ received: true });
+        return res.status(200).json({ received: true });
       }
 
       // Update database to mark subscription as unsubscribed
@@ -234,7 +234,7 @@ export default async function handler(
     }
 
     // Return a response to acknowledge receipt of the event
-    res.json({ received: true });
+    res.status(200).json({ received: true });
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
