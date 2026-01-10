@@ -9,10 +9,12 @@ interface AuthShellProps {
   authError: string | null;
   authStatus: AuthStatus;
   isLoading: boolean;
+  isResettingPassword: boolean;
   isSignUpMode: boolean;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onToggleAuthMode: () => void;
+  onRequestPasswordReset: () => void;
   onSignIn: (event: React.FormEvent<HTMLFormElement>) => void;
   onSignUp: (event: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -24,10 +26,12 @@ const AuthShell: React.FC<AuthShellProps> = ({
   authError,
   authStatus,
   isLoading,
+  isResettingPassword,
   isSignUpMode,
   onEmailChange,
   onPasswordChange,
   onToggleAuthMode,
+  onRequestPasswordReset,
   onSignIn,
   onSignUp,
 }) => {
@@ -103,6 +107,26 @@ const AuthShell: React.FC<AuthShellProps> = ({
             autoComplete={isSignUpMode ? "new-password" : "current-password"}
             minLength={6}
           />
+          {!isSignUpMode && (
+            <div style={{ textAlign: "right" }}>
+              <button
+                type="button"
+                onClick={onRequestPasswordReset}
+                disabled={isResettingPassword}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  padding: 0,
+                  font: "inherit",
+                }}
+              >
+                {isResettingPassword ? "Sending reset email..." : "Forgot password?"}
+              </button>
+            </div>
+          )}
           <button
             type="submit"
             className="primary-button"

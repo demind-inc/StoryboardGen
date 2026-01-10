@@ -19,10 +19,12 @@ interface AuthContextType {
   authMessage: string | null;
   authError: string | null;
   isLoading: boolean;
+  isResettingPassword: boolean;
   isSignUpMode: boolean;
   setAuthEmail: (email: string) => void;
   setAuthPassword: (password: string) => void;
   toggleAuthMode: () => void;
+  requestPasswordReset: () => Promise<void>;
   signIn: (e: React.FormEvent) => Promise<void>;
   signUp: (e: React.FormEvent) => Promise<void>;
   signOut: () => Promise<void>;
@@ -44,6 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [isSignUpMode, setIsSignUpMode] = useState(true); // Default to signup
 
   const displayEmail = profile?.email || session?.user?.email || "";
@@ -269,6 +272,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthError(null);
   };
 
+  const requestPasswordReset = async () => {
+    setAuthMessage(null);
+    setAuthError(null);
+
+    if (!authEmail.trim()) {
+      setAuthError("Enter your email address to reset your password.");
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      const supabase = getSupabaseClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        authEmail.trim(),
+        {
+          redirectTo: `${window.location.origin}/auth`,
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      setAuthMessage(
+        "Password reset email sent. Check your inbox for the reset link."
+      );
+    } catch (error: any) {
+      console.error("Password reset error:", error);
+      setAuthError(
+        error.message || "Failed to send password reset email. Try again."
+      );
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -288,10 +327,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authMessage,
     authError,
     isLoading,
+    isResettingPassword,
     isSignUpMode,
     setAuthEmail,
     setAuthPassword,
     toggleAuthMode,
+    requestPasswordReset,
     signIn: handleSignIn,
     signUp: handleSignUp,
     signOut: handleSignOut,
