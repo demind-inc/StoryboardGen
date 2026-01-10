@@ -12,10 +12,12 @@ const AuthPage: React.FC = () => {
     authMessage,
     authError,
     isLoading,
+    isResettingPassword,
     isSignUpMode,
     setAuthEmail,
     setAuthPassword,
     toggleAuthMode,
+    requestPasswordReset,
     signIn,
     signUp,
   } = useAuth();
@@ -52,10 +54,12 @@ const AuthPage: React.FC = () => {
       authError={authError}
       authStatus={authStatus}
       isLoading={isLoading}
+      isResettingPassword={isResettingPassword}
       isSignUpMode={isSignUpMode}
       onEmailChange={setAuthEmail}
       onPasswordChange={setAuthPassword}
       onToggleAuthMode={toggleAuthMode}
+      onRequestPasswordReset={requestPasswordReset}
       onSignIn={signIn}
       onSignUp={signUp}
     />
