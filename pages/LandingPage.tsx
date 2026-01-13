@@ -135,6 +135,8 @@ const LandingPage: React.FC = () => {
     authError,
     isLoading,
     isSignUpMode,
+    isResettingPassword,
+    requestPasswordReset,
     setAuthEmail,
     setAuthPassword,
     toggleAuthMode,
@@ -523,6 +525,8 @@ const LandingPage: React.FC = () => {
               ×
             </button>
             <AuthShell
+              isResettingPassword={isResettingPassword}
+              onRequestPasswordReset={requestPasswordReset}
               authEmail={authEmail}
               authPassword={authPassword}
               authMessage={authMessage}
