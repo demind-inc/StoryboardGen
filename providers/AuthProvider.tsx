@@ -173,6 +173,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthStatus("signed_in");
         setAuthMessage(null);
         setAuthError(null);
+
+        // Update profile in database
+        try {
+          await upsertProfile({
+            id: data.session.user.id,
+            email: data.session.user.email,
+            user_metadata: data.session.user.user_metadata,
+          });
+        } catch (profileError) {
+          console.error("Failed to update profile:", profileError);
+          // Don't fail the sign in if profile update fails
+        }
       }
       window.location.href = "/dashboard";
     } catch (error: any) {
