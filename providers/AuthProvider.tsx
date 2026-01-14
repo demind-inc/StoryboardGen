@@ -25,6 +25,7 @@ interface AuthContextType {
   setAuthPassword: (password: string) => void;
   toggleAuthMode: () => void;
   requestPasswordReset: () => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
   signIn: (e: React.FormEvent) => Promise<void>;
   signUp: (e: React.FormEvent) => Promise<void>;
   signOut: () => Promise<void>;
@@ -287,7 +288,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { error } = await supabase.auth.resetPasswordForEmail(
         authEmail.trim(),
         {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: `${window.location.origin}/auth/reset-password`,
         }
       );
 
@@ -305,6 +306,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
     } finally {
       setIsResettingPassword(false);
+    }
+  };
+
+  const handleUpdatePassword = async (newPassword: string) => {
+    try {
+      const supabase = getSupabaseClient();
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error("Password update error:", error);
+      throw new Error(
+        error.message || "Failed to update password. Please try again."
+      );
     }
   };
 
@@ -333,6 +352,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthPassword,
     toggleAuthMode,
     requestPasswordReset,
+    updatePassword: handleUpdatePassword,
     signIn: handleSignIn,
     signUp: handleSignUp,
     signOut: handleSignOut,
