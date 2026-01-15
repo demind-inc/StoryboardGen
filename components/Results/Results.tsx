@@ -7,6 +7,7 @@ interface ResultsProps {
   results: SceneResult[];
   isGenerating: boolean;
   onRegenerate: (index: number) => void;
+  onAddPrompt?: (index: number) => void;
 }
 
 const Results: React.FC<ResultsProps> = ({
@@ -14,6 +15,7 @@ const Results: React.FC<ResultsProps> = ({
   results,
   isGenerating,
   onRegenerate,
+  onAddPrompt,
 }) => {
   return (
     <div className={styles["app__results"]}>
@@ -202,9 +204,42 @@ const Results: React.FC<ResultsProps> = ({
                         </p>
                       )}
 
-                      <p className={styles["slide-card__description"]}>
-                        {result.prompt}
-                      </p>
+                      <div className={styles["slide-card__prompts"]}>
+                        <div className={styles["slide-card__prompts-header"]}>
+                          <span className={styles["slide-card__prompts-label"]}>
+                            Prompts
+                          </span>
+                          {onAddPrompt && (
+                            <button
+                              onClick={() => onAddPrompt(idx)}
+                              className={styles["add-prompt-button"]}
+                              title="Add prompt for scene"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M12 4v16m8-8H4"
+                                />
+                              </svg>
+                              Add prompt for scene
+                            </button>
+                          )}
+                        </div>
+                        <ul className={styles["slide-card__prompts-list"]}>
+                          <li className={styles["slide-card__prompts-item"]}>
+                            {result.prompt}
+                          </li>
+                        </ul>
+                      </div>
 
                       <div className={styles["slide-card__foot"]}>
                         <div className={styles["slide-card__foot-label"]}>

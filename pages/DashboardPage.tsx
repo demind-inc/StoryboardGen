@@ -777,6 +777,17 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleAddPrompt = (index: number) => {
+    const promptText = prompt("Enter a new prompt for this scene:");
+    if (promptText && promptText.trim()) {
+      const trimmedPrompts = manualPrompts.trim();
+      const newPrompts = trimmedPrompts
+        ? `${trimmedPrompts}\n${promptText.trim()}`
+        : promptText.trim();
+      setManualPrompts(newPrompts);
+    }
+  };
+
   const startGeneration = async () => {
     if (hasGeneratedFreeImage && !isPaymentUnlocked) {
       openPaymentModal();
@@ -1179,6 +1190,7 @@ const DashboardPage: React.FC = () => {
                     results={results}
                     isGenerating={isGenerating}
                     onRegenerate={handleRegenerate}
+                    onAddPrompt={handleAddPrompt}
                   />
                 ) : (
                   <button
