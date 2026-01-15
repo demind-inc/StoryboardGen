@@ -38,7 +38,6 @@ import Results from "../components/Results/Results";
 import Footer from "../components/Footer/Footer";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
-import PromptEditModal from "../components/DatasetModal/PromptEditModal";
 import NameCaptureModal from "../components/DatasetModal/NameCaptureModal";
 import SavedImagesPanel from "../components/Library/SavedImagesPanel";
 import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
@@ -72,6 +71,9 @@ const DashboardPage: React.FC = () => {
   const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
   const [isSavingReferences, setIsSavingReferences] = useState(false);
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
+  const [savingPromptIndex, setSavingPromptIndex] = useState<number | null>(
+    null
+  );
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [size, setSize] = useState<ImageSize>("1K");
@@ -95,17 +97,10 @@ const DashboardPage: React.FC = () => {
     type: "reference" | "prompt" | null;
     defaultValue: string;
   }>({ type: null, defaultValue: "" });
-  const [promptEditModal, setPromptEditModal] = useState<{
-    isOpen: boolean;
-    isEditing: boolean;
-    index: number | null;
-    defaultValue: string;
-  }>({
-    isOpen: false,
-    isEditing: false,
-    index: null,
-    defaultValue: "",
-  });
+  const [editingPromptIndex, setEditingPromptIndex] = useState<number | null>(
+    null
+  );
+  const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -462,6 +457,33 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleSaveIndividualPrompt = async (index: number) => {
+    const userId = session?.user?.id;
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    const promptText = promptList[index]?.trim();
+
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
+    if (!promptText) {
+      alert("Please select a valid prompt to save.");
+      return;
+    }
+
+    setSavingPromptIndex(index);
+    try {
+      const saved = await savePromptPreset(userId, promptText, promptText);
+      setPromptLibrary((prev) => [saved, ...prev]);
+    } catch (error) {
+      console.error("Failed to save prompt:", error);
+      alert("Could not save prompt. Please try again.");
+    } finally {
+      setSavingPromptIndex(null);
+    }
+  };
+
   const handleUpdatePromptPreset = async (
     presetId: string,
     title: string,
@@ -561,7 +583,12 @@ const DashboardPage: React.FC = () => {
   const closeNameModal = () => setNameModal({ type: null, defaultValue: "" });
 
   const handleUsePromptPreset = (preset: PromptPreset) => {
-    setManualPrompts(preset.content);
+    // Add the single prompt to the list instead of replacing
+    const trimmedPrompts = manualPrompts.trim();
+    const newPrompts = trimmedPrompts
+      ? `${trimmedPrompts}\n${preset.content.trim()}`
+      : preset.content.trim();
+    setManualPrompts(newPrompts);
   };
 
   const openPaymentModal = () => {
@@ -719,12 +746,7 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleAddPrompt = () => {
-    setPromptEditModal({
-      isOpen: true,
-      isEditing: false,
-      index: null,
-      defaultValue: "",
-    });
+    setIsAddingNewPrompt(true);
   };
 
   const handleRemovePrompt = (index: number) => {
@@ -733,46 +755,35 @@ const DashboardPage: React.FC = () => {
     setManualPrompts(promptList.join("\n"));
   };
 
-  const handleEditPrompt = (index: number) => {
-    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
-    const currentPrompt = promptList[index] || "";
-    setPromptEditModal({
-      isOpen: true,
-      isEditing: true,
-      index,
-      defaultValue: currentPrompt,
-    });
+  const handleStartEditPrompt = (index: number) => {
+    setEditingPromptIndex(index);
   };
 
-  const handlePromptModalSave = (value: string) => {
-    if (promptEditModal.isEditing && promptEditModal.index !== null) {
-      // Editing existing prompt
-      const promptList = manualPrompts
-        .split("\n")
-        .filter((p) => p.trim() !== "");
-      promptList[promptEditModal.index] = value;
-      setManualPrompts(promptList.join("\n"));
-    } else {
-      // Adding new prompt
-      const trimmedPrompts = manualPrompts.trim();
-      const newPrompts = trimmedPrompts ? `${trimmedPrompts}\n${value}` : value;
-      setManualPrompts(newPrompts);
+  const handleSavePrompt = (index: number | null, value: string) => {
+    if (value.trim()) {
+      if (index !== null) {
+        // Editing existing prompt
+        const promptList = manualPrompts
+          .split("\n")
+          .filter((p) => p.trim() !== "");
+        promptList[index] = value.trim();
+        setManualPrompts(promptList.join("\n"));
+        setEditingPromptIndex(null);
+      } else {
+        // Adding new prompt
+        const trimmedPrompts = manualPrompts.trim();
+        const newPrompts = trimmedPrompts
+          ? `${trimmedPrompts}\n${value.trim()}`
+          : value.trim();
+        setManualPrompts(newPrompts);
+        setIsAddingNewPrompt(false);
+      }
     }
-    setPromptEditModal({
-      isOpen: false,
-      isEditing: false,
-      index: null,
-      defaultValue: "",
-    });
   };
 
-  const handlePromptModalCancel = () => {
-    setPromptEditModal({
-      isOpen: false,
-      isEditing: false,
-      index: null,
-      defaultValue: "",
-    });
+  const handleCancelEdit = () => {
+    setEditingPromptIndex(null);
+    setIsAddingNewPrompt(false);
   };
 
   const startGeneration = async () => {
@@ -1148,55 +1159,146 @@ const DashboardPage: React.FC = () => {
                     >
                       Use saved prompt
                     </button>
-                    <button
-                      onClick={openPromptNameModal}
-                      disabled={isSavingPrompt || !manualPrompts.trim()}
-                      className="card__action"
-                    >
-                      {isSavingPrompt ? "Saving..." : "Save prompt"}
-                    </button>
                   </div>
                 </div>
                 <div className={styles["prompt-list-container"]}>
-                  {manualPrompts.split("\n").filter((p) => p.trim() !== "")
-                    .length > 0 ? (
-                    <ul className={styles["prompt-list"]}>
-                      {manualPrompts
-                        .split("\n")
-                        .filter((p) => p.trim() !== "")
-                        .map((prompt, idx) => (
-                          <li key={idx} className={styles["prompt-list-item"]}>
-                            <span className={styles["prompt-list-item__text"]}>
+                  <ul className={styles["prompt-list"]}>
+                    {isAddingNewPrompt && (
+                      <li
+                        className={`${styles["prompt-list-item"]} ${styles["prompt-list-item--editing"]}`}
+                      >
+                        <input
+                          type="text"
+                          className={styles["prompt-list-item__input"]}
+                          placeholder="Enter a new prompt..."
+                          autoFocus
+                          onBlur={(e) => {
+                            if (e.target.value.trim()) {
+                              handleSavePrompt(null, e.target.value);
+                            } else {
+                              setIsAddingNewPrompt(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.currentTarget.blur();
+                            } else if (e.key === "Escape") {
+                              setIsAddingNewPrompt(false);
+                            }
+                          }}
+                        />
+                        <div className={styles["prompt-list-item__actions"]}>
+                          <button
+                            onClick={() => setIsAddingNewPrompt(false)}
+                            className={styles["prompt-list-item__button"]}
+                            title="Cancel"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </li>
+                    )}
+                    {manualPrompts
+                      .split("\n")
+                      .filter((p) => p.trim() !== "")
+                      .map((prompt, idx) => (
+                        <li
+                          key={idx}
+                          className={`${styles["prompt-list-item"]} ${
+                            editingPromptIndex === idx
+                              ? styles["prompt-list-item--editing"]
+                              : ""
+                          }`}
+                        >
+                          {editingPromptIndex === idx ? (
+                            <input
+                              type="text"
+                              className={styles["prompt-list-item__input"]}
+                              defaultValue={prompt.trim()}
+                              autoFocus
+                              onBlur={(e) => {
+                                handleSavePrompt(idx, e.target.value);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.currentTarget.blur();
+                                } else if (e.key === "Escape") {
+                                  setEditingPromptIndex(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span
+                              className={styles["prompt-list-item__text"]}
+                              onClick={() => handleStartEditPrompt(idx)}
+                              title="Click to edit"
+                            >
                               {prompt.trim()}
                             </span>
+                          )}
+                          {editingPromptIndex !== idx && (
                             <div
                               className={styles["prompt-list-item__actions"]}
                             >
                               <button
-                                onClick={() => handleEditPrompt(idx)}
+                                onClick={() => handleSaveIndividualPrompt(idx)}
+                                disabled={savingPromptIndex === idx}
                                 className={styles["prompt-list-item__button"]}
-                                title="Edit prompt"
+                                title="Save"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="14"
-                                  height="14"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  />
-                                </svg>
+                                {savingPromptIndex === idx ? (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    className={styles["spinner"]}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                                    />
+                                  </svg>
+                                )}
                               </button>
                               <button
                                 onClick={() => handleRemovePrompt(idx)}
                                 className={styles["prompt-list-item__button"]}
-                                title="Remove prompt"
+                                title="Delete"
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -1215,38 +1317,43 @@ const DashboardPage: React.FC = () => {
                                 </svg>
                               </button>
                             </div>
-                          </li>
-                        ))}
-                    </ul>
-                  ) : (
-                    <div className={styles["prompt-list-empty"]}>
-                      <p className="text text--helper">
-                        No prompts yet. Click "Add prompt for scene" to get
-                        started.
-                      </p>
-                    </div>
-                  )}
-                  <button
-                    onClick={handleAddPrompt}
-                    className={styles["add-prompt-button"]}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                          )}
+                        </li>
+                      ))}
+                    {manualPrompts.split("\n").filter((p) => p.trim() !== "")
+                      .length === 0 &&
+                      !isAddingNewPrompt && (
+                        <div className={styles["prompt-list-empty"]}>
+                          <p className="text text--helper">
+                            No prompts yet. Click "Add prompt for scene" to get
+                            started.
+                          </p>
+                        </div>
+                      )}
+                  </ul>
+                  {!isAddingNewPrompt && (
+                    <button
+                      onClick={handleAddPrompt}
+                      className={styles["add-prompt-button"]}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    Add prompt for scene
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add prompt for scene
+                    </button>
+                  )}
                 </div>
                 <p className="text text--helper">
                   Describe actions, emotions, and props.
@@ -1319,14 +1426,6 @@ const DashboardPage: React.FC = () => {
         defaultValue={nameModal.defaultValue}
         onSave={handleNameModalSave}
         onCancel={closeNameModal}
-      />
-
-      <PromptEditModal
-        isOpen={promptEditModal.isOpen}
-        defaultValue={promptEditModal.defaultValue}
-        isEditing={promptEditModal.isEditing}
-        onSave={handlePromptModalSave}
-        onCancel={handlePromptModalCancel}
       />
 
       <PaymentModal

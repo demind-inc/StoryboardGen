@@ -27,28 +27,27 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
   onUpdatePromptPreset,
 }) => {
   const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
-  const [newPromptTitle, setNewPromptTitle] = useState("");
   const [newPromptContent, setNewPromptContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [editingPromptId, setEditingPromptId] = useState<string | null>(null);
-  const [editingPromptTitle, setEditingPromptTitle] = useState("");
   const [editingPromptContent, setEditingPromptContent] = useState("");
   const [isUpdatingPrompt, setIsUpdatingPrompt] = useState(false);
 
   const handleSaveNewPrompt = async () => {
-    if (!newPromptTitle.trim()) {
-      alert("Please enter a title for the prompt.");
-      return;
-    }
     if (!newPromptContent.trim()) {
       alert("Please enter prompt content.");
       return;
     }
     setIsSaving(true);
     try {
-      await onSaveNewPrompt(newPromptTitle.trim(), newPromptContent.trim());
+      // Use the prompt content as the title (truncated if too long)
+      const title =
+        newPromptContent.trim().length > 50
+          ? `${newPromptContent.trim().substring(0, 50)}...`
+          : newPromptContent.trim();
+
+      await onSaveNewPrompt(title, newPromptContent.trim());
       setIsAddingNewPrompt(false);
-      setNewPromptTitle("");
       setNewPromptContent("");
     } catch (error) {
       console.error("Failed to save new prompt:", error);
@@ -60,22 +59,16 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
 
   const handleCancelNewPrompt = () => {
     setIsAddingNewPrompt(false);
-    setNewPromptTitle("");
     setNewPromptContent("");
   };
 
   const startEditingPrompt = (preset: PromptPreset) => {
     setEditingPromptId(preset.id);
-    setEditingPromptTitle(preset.title);
     setEditingPromptContent(preset.content);
   };
 
   const handleSaveEditedPrompt = async () => {
     if (!editingPromptId) return;
-    if (!editingPromptTitle.trim()) {
-      alert("Please enter a title for the prompt.");
-      return;
-    }
     if (!editingPromptContent.trim()) {
       alert("Please enter prompt content.");
       return;
@@ -84,11 +77,10 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
     try {
       await onUpdatePromptPreset(
         editingPromptId,
-        editingPromptTitle.trim(),
-        editingPromptContent.trim()
+        editingPromptContent,
+        editingPromptContent
       );
       setEditingPromptId(null);
-      setEditingPromptTitle("");
       setEditingPromptContent("");
     } catch (error) {
       console.error("Failed to update prompt preset:", error);
@@ -100,14 +92,12 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
 
   const handleCancelEditPrompt = () => {
     setEditingPromptId(null);
-    setEditingPromptTitle("");
     setEditingPromptContent("");
   };
 
   const handleUploadClick = () => {
     if (!isAddingNewPrompt) {
       setIsAddingNewPrompt(true);
-      setNewPromptTitle("");
       setNewPromptContent("");
     }
   };
@@ -142,44 +132,31 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
           <div className="library-prompt-list custom-scrollbar">
             {isAddingNewPrompt && (
               <div className="library-prompt-item library-prompt-item--new">
-                <div className="library-prompt-header">
-                  <input
-                    type="text"
-                    className="library-prompt-title-input"
-                    placeholder="Prompt title (required)"
-                    value={newPromptTitle}
-                    onChange={(e) => setNewPromptTitle(e.target.value)}
-                    required
-                  />
-                  <div className="library-prompt-actions">
-                    <button
-                      onClick={handleSaveNewPrompt}
-                      disabled={
-                        isSaving ||
-                        !newPromptTitle.trim() ||
-                        !newPromptContent.trim()
-                      }
-                      className="library-prompt-action-btn library-prompt-action-btn--save"
-                    >
-                      {isSaving ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      onClick={handleCancelNewPrompt}
-                      disabled={isSaving}
-                      className="library-prompt-action-btn library-prompt-action-btn--cancel"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
                 <textarea
                   className="library-prompt-content-input"
-                  placeholder="Enter prompt content (required)"
+                  placeholder="Enter prompt..."
                   value={newPromptContent}
                   onChange={(e) => setNewPromptContent(e.target.value)}
-                  rows={4}
+                  rows={3}
+                  autoFocus
                   required
                 />
+                <div className="library-prompt-actions">
+                  <button
+                    onClick={handleSaveNewPrompt}
+                    disabled={isSaving || !newPromptContent.trim()}
+                    className="library-prompt-action-btn library-prompt-action-btn--save"
+                  >
+                    {isSaving ? "Saving..." : "Save"}
+                  </button>
+                  <button
+                    onClick={handleCancelNewPrompt}
+                    disabled={isSaving}
+                    className="library-prompt-action-btn library-prompt-action-btn--cancel"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
             {sortedPrompts.length === 0 && !isAddingNewPrompt ? (
@@ -192,46 +169,34 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                     key={preset.id}
                     className="library-prompt-item library-prompt-item--editing"
                   >
-                    <div className="library-prompt-header">
-                      <input
-                        type="text"
-                        className="library-prompt-title-input"
-                        placeholder="Prompt title (required)"
-                        value={editingPromptTitle}
-                        onChange={(e) => setEditingPromptTitle(e.target.value)}
-                        disabled={isUpdatingPrompt}
-                        required
-                      />
-                      <div className="library-prompt-actions">
-                        <button
-                          onClick={handleSaveEditedPrompt}
-                          disabled={
-                            isUpdatingPrompt ||
-                            !editingPromptTitle.trim() ||
-                            !editingPromptContent.trim()
-                          }
-                          className="library-prompt-action-btn library-prompt-action-btn--save"
-                        >
-                          {isUpdatingPrompt ? "Saving..." : "Save"}
-                        </button>
-                        <button
-                          onClick={handleCancelEditPrompt}
-                          disabled={isUpdatingPrompt}
-                          className="library-prompt-action-btn library-prompt-action-btn--cancel"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
                     <textarea
                       className="library-prompt-content-input"
-                      placeholder="Enter prompt content (required)"
+                      placeholder="Enter prompt..."
                       value={editingPromptContent}
                       onChange={(e) => setEditingPromptContent(e.target.value)}
-                      rows={4}
+                      rows={3}
                       disabled={isUpdatingPrompt}
+                      autoFocus
                       required
                     />
+                    <div className="library-prompt-actions">
+                      <button
+                        onClick={handleSaveEditedPrompt}
+                        disabled={
+                          isUpdatingPrompt || !editingPromptContent.trim()
+                        }
+                        className="library-prompt-action-btn library-prompt-action-btn--save"
+                      >
+                        {isUpdatingPrompt ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={handleCancelEditPrompt}
+                        disabled={isUpdatingPrompt}
+                        className="library-prompt-action-btn library-prompt-action-btn--cancel"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -240,9 +205,7 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                     onClick={() => onSelectPromptPreset(preset)}
                   >
                     <div className="library-prompt-header">
-                      <div className="library-prompt-title">
-                        {preset.title}
-                      </div>
+                      <div className="library-prompt-title">{preset.title}</div>
                       <div className="library-prompt-meta">
                         {preset.createdAt && (
                           <span>
@@ -261,9 +224,6 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                           Edit
                         </button>
                       </div>
-                    </div>
-                    <div className="library-prompt-content">
-                      {preset.content}
                     </div>
                   </button>
                 );

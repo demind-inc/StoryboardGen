@@ -179,6 +179,36 @@
     line-height: 1.5;
     font-weight: 500;
     word-break: break-word;
+    cursor: text;
+    user-select: text;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #e2e8f0;
+    }
+  }
+
+  &__input {
+    flex: 1;
+    font-size: 14px;
+    color: #e2e8f0;
+    line-height: 1.5;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    &::placeholder {
+      color: #94a3b8;
+    }
   }
 
   &__actions {
@@ -188,7 +218,13 @@
     transition: opacity 0.2s ease;
   }
 
+  &:has(input) &__actions,
+  &--editing &__actions {
+    opacity: 1;
+  }
+
   &__button {
+    position: relative;
     border: none;
     background: rgba(255, 255, 255, 0.08);
     color: #cbd5e1;
@@ -200,14 +236,77 @@
     justify-content: center;
     transition: background 0.2s ease, transform 0.15s ease;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: rgba(255, 255, 255, 0.12);
       transform: scale(1.05);
+
+      &::after {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    // Custom tooltip
+    &::after {
+      content: attr(title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      margin-bottom: 6px;
+      padding: 4px 8px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e2e8f0;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      border-radius: 4px;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 2px;
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid rgba(15, 23, 42, 0.95);
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      z-index: 1001;
+    }
+
+    &:hover:not(:disabled)::before {
+      opacity: 1;
+      visibility: visible;
     }
 
     svg {
       width: 14px;
       height: 14px;
+    }
+
+    .spinner {
+      animation: spin 1s linear infinite;
     }
   }
 }
@@ -254,5 +353,14 @@
   svg {
     width: 16px;
     height: 16px;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
