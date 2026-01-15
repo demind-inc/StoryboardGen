@@ -38,6 +38,8 @@ import Results from "../components/Results/Results";
 import Footer from "../components/Footer/Footer";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
+import PromptEditModal from "../components/DatasetModal/PromptEditModal";
+import NameCaptureModal from "../components/DatasetModal/NameCaptureModal";
 import SavedImagesPanel from "../components/Library/SavedImagesPanel";
 import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
 import {
@@ -45,78 +47,6 @@ import {
   trackImageRegeneration,
   trackButtonClick,
 } from "../lib/analytics";
-
-interface NameCaptureModalProps {
-  isOpen: boolean;
-  title: string;
-  defaultValue: string;
-  onSave: (value: string) => void;
-  onCancel: () => void;
-}
-
-const NameCaptureModal: React.FC<NameCaptureModalProps> = ({
-  isOpen,
-  title,
-  defaultValue,
-  onSave,
-  onCancel,
-}) => {
-  const [value, setValue] = useState(defaultValue);
-
-  useEffect(() => {
-    setValue(defaultValue);
-  }, [defaultValue, isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      onCancel();
-    }
-  };
-
-  return (
-    <div
-      className="dataset-modal__backdrop"
-      role="dialog"
-      aria-modal="true"
-      onClick={handleBackdropClick}
-    >
-      <div className="dataset-modal">
-        <div className="dataset-modal__header">
-          <div>
-            <p className="dataset-modal__eyebrow">Save</p>
-            <h3 className="dataset-modal__title">{title}</h3>
-          </div>
-          <button className="dataset-modal__close" onClick={onCancel}>
-            ×
-          </button>
-        </div>
-        <div className="dataset-modal__body">
-          <label className="label">Name</label>
-          <input
-            className="input"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="Enter a name"
-            autoFocus
-          />
-        </div>
-        <div className="dataset-modal__footer">
-          <button className="primary-button" onClick={() => onSave(value)}>
-            Save
-          </button>
-          <button
-            className="primary-button primary-button--ghost"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
@@ -165,6 +95,17 @@ const DashboardPage: React.FC = () => {
     type: "reference" | "prompt" | null;
     defaultValue: string;
   }>({ type: null, defaultValue: "" });
+  const [promptEditModal, setPromptEditModal] = useState<{
+    isOpen: boolean;
+    isEditing: boolean;
+    index: number | null;
+    defaultValue: string;
+  }>({
+    isOpen: false,
+    isEditing: false,
+    index: null,
+    defaultValue: "",
+  });
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -778,14 +719,12 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleAddPrompt = () => {
-    const promptText = prompt("Enter a new prompt for this scene:");
-    if (promptText && promptText.trim()) {
-      const trimmedPrompts = manualPrompts.trim();
-      const newPrompts = trimmedPrompts
-        ? `${trimmedPrompts}\n${promptText.trim()}`
-        : promptText.trim();
-      setManualPrompts(newPrompts);
-    }
+    setPromptEditModal({
+      isOpen: true,
+      isEditing: false,
+      index: null,
+      defaultValue: "",
+    });
   };
 
   const handleRemovePrompt = (index: number) => {
@@ -797,11 +736,43 @@ const DashboardPage: React.FC = () => {
   const handleEditPrompt = (index: number) => {
     const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
     const currentPrompt = promptList[index] || "";
-    const newPrompt = prompt("Edit prompt:", currentPrompt);
-    if (newPrompt !== null && newPrompt.trim()) {
-      promptList[index] = newPrompt.trim();
+    setPromptEditModal({
+      isOpen: true,
+      isEditing: true,
+      index,
+      defaultValue: currentPrompt,
+    });
+  };
+
+  const handlePromptModalSave = (value: string) => {
+    if (promptEditModal.isEditing && promptEditModal.index !== null) {
+      // Editing existing prompt
+      const promptList = manualPrompts
+        .split("\n")
+        .filter((p) => p.trim() !== "");
+      promptList[promptEditModal.index] = value;
       setManualPrompts(promptList.join("\n"));
+    } else {
+      // Adding new prompt
+      const trimmedPrompts = manualPrompts.trim();
+      const newPrompts = trimmedPrompts ? `${trimmedPrompts}\n${value}` : value;
+      setManualPrompts(newPrompts);
     }
+    setPromptEditModal({
+      isOpen: false,
+      isEditing: false,
+      index: null,
+      defaultValue: "",
+    });
+  };
+
+  const handlePromptModalCancel = () => {
+    setPromptEditModal({
+      isOpen: false,
+      isEditing: false,
+      index: null,
+      defaultValue: "",
+    });
   };
 
   const startGeneration = async () => {
@@ -1348,6 +1319,14 @@ const DashboardPage: React.FC = () => {
         defaultValue={nameModal.defaultValue}
         onSave={handleNameModalSave}
         onCancel={closeNameModal}
+      />
+
+      <PromptEditModal
+        isOpen={promptEditModal.isOpen}
+        defaultValue={promptEditModal.defaultValue}
+        isEditing={promptEditModal.isEditing}
+        onSave={handlePromptModalSave}
+        onCancel={handlePromptModalCancel}
       />
 
       <PaymentModal
