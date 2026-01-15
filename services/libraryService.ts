@@ -265,3 +265,61 @@ export async function updateReferenceSetLabel(
     throw error;
   }
 }
+
+export async function deleteReferenceSet(
+  userId: string,
+  setId: string
+): Promise<void> {
+  const supabase = getSupabaseClient();
+
+  // First, get all file paths for this set
+  const { data: items, error: fetchError } = await supabase
+    .from("reference_library")
+    .select("file_path")
+    .eq("set_id", setId)
+    .eq("user_id", userId);
+
+  if (fetchError) {
+    throw fetchError;
+  }
+
+  // Delete files from storage
+  if (items && items.length > 0) {
+    const filePaths = items.map((item: any) => item.file_path);
+    const { error: storageError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .remove(filePaths);
+
+    if (storageError) {
+      console.error("Error deleting files from storage:", storageError);
+      // Continue with database deletion even if storage deletion fails
+    }
+  }
+
+  // Delete database records
+  const { error: deleteError } = await supabase
+    .from("reference_library")
+    .delete()
+    .eq("set_id", setId)
+    .eq("user_id", userId);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+}
+
+export async function deletePromptPreset(
+  userId: string,
+  presetId: string
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase
+    .from("prompt_library")
+    .delete()
+    .eq("id", presetId)
+    .eq("user_id", userId);
+
+  if (error) {
+    throw error;
+  }
+}

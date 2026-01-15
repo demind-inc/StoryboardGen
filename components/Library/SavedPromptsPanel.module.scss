@@ -149,6 +149,18 @@
       background: #f1f5f9;
       border-color: #cbd5e1;
     }
+
+    &--delete {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+
+      &:hover:not(:disabled) {
+        background: #fecaca;
+        border-color: #f87171;
+        color: #7f1d1d;
+      }
+    }
   }
 }
 

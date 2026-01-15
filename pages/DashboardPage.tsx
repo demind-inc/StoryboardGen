@@ -17,6 +17,8 @@ import {
   fetchReferenceLibrary,
   saveReferenceImages,
   savePromptPreset,
+  deleteReferenceSet,
+  deletePromptPreset,
 } from "../services/libraryService";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
@@ -451,6 +453,17 @@ const DashboardPage: React.FC = () => {
                     setReferenceLibrary
                   )
                 }
+                onDeleteReferenceSet={async (setId) => {
+                  const userId = session?.user?.id;
+                  if (!userId) {
+                    alert(
+                      "Unable to verify your account. Please sign in again."
+                    );
+                    return;
+                  }
+                  await deleteReferenceSet(userId, setId);
+                  await refreshReferenceLibrary(userId);
+                }}
               />
             )}
 
@@ -474,6 +487,19 @@ const DashboardPage: React.FC = () => {
                   setPromptLibrary((prev) => [saved, ...prev]);
                 }}
                 onUpdatePromptPreset={handleUpdatePromptPreset}
+                onDeletePromptPreset={async (presetId) => {
+                  const userId = session?.user?.id;
+                  if (!userId) {
+                    alert(
+                      "Unable to verify your account. Please sign in again."
+                    );
+                    return;
+                  }
+                  await deletePromptPreset(userId, presetId);
+                  setPromptLibrary((prev) =>
+                    prev.filter((p) => p.id !== presetId)
+                  );
+                }}
               />
             )}
 
