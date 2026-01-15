@@ -1,0 +1,29 @@
+.dashboardSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+}
+
+.metricCard {
+  &__value {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 900;
+    color: #f8fafc;
+  }
+
+  &__label {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+}

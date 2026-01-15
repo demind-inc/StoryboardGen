@@ -1,51 +1,39 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import styles from "./DashboardPage.module.scss";
 import {
   AppMode,
   ImageSize,
-  MonthlyUsage,
   SubscriptionPlan,
   PromptPreset,
-  ReferenceImage,
   ReferenceSet,
-  SceneResult,
 } from "../types";
-import { generateCharacterScene } from "../services/geminiService";
 import { useAuth } from "../providers/AuthProvider";
 import {
   DEFAULT_MONTHLY_CREDITS,
   PLAN_CREDITS,
-  getMonthlyUsage,
-  recordGeneration,
 } from "../services/usageService";
-import { getSubscription } from "../services/subscriptionService";
-import {
-  getHasGeneratedFreeImage,
-  setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
-} from "../services/authService";
 import {
   fetchPromptLibrary,
   fetchReferenceLibrary,
-  savePromptPreset,
   saveReferenceImages,
-  updatePromptPreset,
-  updateReferenceSetLabel,
+  savePromptPreset,
 } from "../services/libraryService";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
 import Results from "../components/Results/Results";
-import Footer from "../components/Footer/Footer";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
 import NameCaptureModal from "../components/DatasetModal/NameCaptureModal";
 import SavedImagesPanel from "../components/Library/SavedImagesPanel";
 import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
-import {
-  trackImageGeneration,
-  trackImageRegeneration,
-  trackButtonClick,
-} from "../lib/analytics";
+import DashboardSummary from "../components/Dashboard/DashboardSummary";
+import ReferencesSection from "../components/Dashboard/ReferencesSection";
+import PromptsSection from "../components/Dashboard/PromptsSection";
+import { useReferences } from "../hooks/useReferences";
+import { usePrompts } from "../hooks/usePrompts";
+import { useImageGeneration } from "../hooks/useImageGeneration";
+import { useModals } from "../hooks/useModals";
+import { useUsage } from "../hooks/useUsage";
 
 const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
@@ -59,50 +47,118 @@ const DashboardPage: React.FC = () => {
   };
 
   const [activePanel, setActivePanel] = useState<PanelKey>("manual");
-  const mode: AppMode = "manual";
-
-  const [manualPrompts, setManualPrompts] = useState<string>(
-    "Boy looking confused with question marks around him\nBoy feeling lonely at a cafe table\nBoy looking angry while listening to something"
-  );
-  const [references, setReferences] = useState<ReferenceImage[]>([]);
   const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
   const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
-  const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
-  const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
-  const [isSavingReferences, setIsSavingReferences] = useState(false);
-  const [isSavingPrompt, setIsSavingPrompt] = useState(false);
-  const [savingPromptIndex, setSavingPromptIndex] = useState<number | null>(
-    null
-  );
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
-  const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [size, setSize] = useState<ImageSize>("1K");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [usage, setUsage] = useState<MonthlyUsage | null>(null);
-  const [isUsageLoading, setIsUsageLoading] = useState(false);
-  const [usageError, setUsageError] = useState<string | null>(null);
-  const [hasGeneratedFreeImage, setHasGeneratedFreeImage] =
-    useState<boolean>(false);
-  const [isFreeImageLoading, setIsFreeImageLoading] = useState(false);
-  const [isPaymentUnlocked, setIsPaymentUnlocked] = useState<boolean>(false);
-  const [planType, setPlanType] = useState<SubscriptionPlan>("basic");
-  const [planLockedFromSubscription, setPlanLockedFromSubscription] =
-    useState(false);
-  const [stripeSubscriptionId, setStripeSubscriptionId] = useState<
-    string | null | undefined
-  >(null);
-  const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [nameModal, setNameModal] = useState<{
-    type: "reference" | "prompt" | null;
-    defaultValue: string;
-  }>({ type: null, defaultValue: "" });
-  const [editingPromptIndex, setEditingPromptIndex] = useState<number | null>(
-    null
-  );
-  const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const mode: AppMode = "manual";
+
+  // Initialize hooks
+  const usageHook = useUsage(session?.user?.id, authStatus);
+  const {
+    usage,
+    isUsageLoading,
+    usageError,
+    hasGeneratedFreeImage,
+    isPaymentUnlocked,
+    planType,
+    subscription,
+    setUsage,
+    setUsageError,
+    setHasGeneratedFreeImage,
+    setPlanType,
+    refreshUsage,
+    refreshSubscription,
+    refreshHasGeneratedFreeImage,
+  } = usageHook;
+
+  const refreshReferenceLibrary = async (userId: string) => {
+    try {
+      const refs = await fetchReferenceLibrary(userId);
+      setReferenceLibrary(refs);
+    } catch (error) {
+      console.error("Failed to refresh reference library:", error);
+    }
+  };
+
+  const referencesHook = useReferences(
+    session?.user?.id,
+    refreshReferenceLibrary
+  );
+  const {
+    references,
+    fileInputRef,
+    isSavingReferences,
+    setReferences,
+    triggerUpload,
+    handleFileUpload,
+    removeReference,
+    handleSaveReferences,
+    handleAddReferencesFromLibrary,
+    handleUpdateReferenceSetLabel,
+  } = referencesHook;
+
+  const promptsHook = usePrompts(session?.user?.id, setPromptLibrary);
+  const {
+    manualPrompts,
+    isAddingNewPrompt,
+    editingPromptIndex,
+    savingPromptIndex,
+    setManualPrompts,
+    handleAddPrompt,
+    handleRemovePrompt,
+    handleStartEditPrompt,
+    handleSavePrompt,
+    handleCancelEdit,
+    handleSaveIndividualPrompt,
+    handleSavePromptPreset,
+    handleUpdatePromptPreset,
+    handleUsePromptPreset,
+  } = promptsHook;
+
+  const modalsHook = useModals();
+  const {
+    isReferenceLibraryOpen,
+    isPromptLibraryOpen,
+    isPaymentModalOpen,
+    nameModal,
+    setIsReferenceLibraryOpen,
+    setIsPromptLibraryOpen,
+    setIsPaymentModalOpen,
+    openReferenceNameModal,
+    openPromptNameModal,
+    closeNameModal,
+    handleNameModalSave,
+  } = modalsHook;
+
+  const openPaymentModal = () => {
+    setIsPaymentModalOpen(true);
+  };
+
+  const imageGenerationHook = useImageGeneration({
+    mode,
+    userId: session?.user?.id,
+    references,
+    manualPrompts,
+    size,
+    planType,
+    hasGeneratedFreeImage,
+    isPaymentUnlocked,
+    usage,
+    setUsage,
+    setUsageError,
+    setHasGeneratedFreeImage,
+    openPaymentModal,
+    refreshUsage,
+  });
+  const {
+    manualResults,
+    isGenerating,
+    setManualResults,
+    startGeneration,
+    handleRegenerate,
+  } = imageGenerationHook;
 
   // Build payment links with client_reference_id (user_id) as query parameter
   const getStripePlanLinks = (): Partial<Record<SubscriptionPlan, string>> => {
@@ -148,36 +204,6 @@ const DashboardPage: React.FC = () => {
     }
   }, [authStatus, router]);
 
-  useEffect(() => {
-    const userId = session?.user?.id;
-    if (authStatus === "signed_in" && userId) {
-      refreshUsage(userId);
-      refreshSubscription(userId);
-      refreshHasGeneratedFreeImage(userId);
-      loadLibraries(userId);
-    }
-  }, [authStatus, session?.user?.id]);
-
-  useEffect(() => {
-    const userId = session?.user?.id;
-    if (authStatus === "signed_in" && userId) {
-      refreshUsage(userId);
-    }
-  }, [planType]);
-
-  const refreshHasGeneratedFreeImage = async (userId: string) => {
-    setIsFreeImageLoading(true);
-    try {
-      const hasGenerated = await getHasGeneratedFreeImage(userId);
-      setHasGeneratedFreeImage(hasGenerated);
-    } catch (error) {
-      console.error("Failed to fetch has_generated_free_image:", error);
-      setHasGeneratedFreeImage(false);
-    } finally {
-      setIsFreeImageLoading(false);
-    }
-  };
-
   const loadLibraries = async (userId: string) => {
     setIsLibraryLoading(true);
     try {
@@ -194,63 +220,22 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const refreshReferenceLibrary = async (userId: string) => {
-    try {
-      const refs = await fetchReferenceLibrary(userId);
-      setReferenceLibrary(refs);
-    } catch (error) {
-      console.error("Failed to refresh reference library:", error);
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      refreshUsage(userId);
+      refreshSubscription(userId);
+      refreshHasGeneratedFreeImage(userId);
+      loadLibraries(userId);
     }
-  };
-
-  const [subscription, setSubscription] =
-    React.useState<Awaited<ReturnType<typeof getSubscription>>>(null);
-
-  const refreshSubscription = async (userId: string) => {
-    setIsSubscriptionLoading(true);
-    try {
-      const subscription = await getSubscription(userId);
-      setSubscription(subscription);
-      // User has access if subscription is active OR unsubscribed (until period ends)
-      const hasAccess = subscription?.isActive ?? false;
-      setIsPaymentUnlocked(hasAccess);
-      // Keep plan type if subscription exists (even if unsubscribed, they still have access)
-      if (subscription?.planType) {
-        setPlanType(subscription.planType);
-        setPlanLockedFromSubscription(true);
-      } else {
-        setPlanLockedFromSubscription(false);
-      }
-      setStripeSubscriptionId(subscription?.stripeSubscriptionId);
-    } catch (error) {
-      console.error("Failed to fetch subscription:", error);
-      setSubscription(null);
-      setIsPaymentUnlocked(false);
-      setPlanLockedFromSubscription(false);
-      setStripeSubscriptionId(null);
-    } finally {
-      setIsSubscriptionLoading(false);
-    }
-  };
+  }, [authStatus, session?.user?.id]);
 
   useEffect(() => {
-    if (planLockedFromSubscription) return;
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const urlPlan = params.get("plan");
-    const storedPlan = window.localStorage.getItem(
-      "preferred_plan"
-    ) as SubscriptionPlan | null;
-
-    if (urlPlan && ["basic", "pro", "business"].includes(urlPlan)) {
-      setPlanType(urlPlan as SubscriptionPlan);
-    } else if (
-      storedPlan &&
-      ["basic", "pro", "business"].includes(storedPlan)
-    ) {
-      setPlanType(storedPlan as SubscriptionPlan);
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      refreshUsage(userId);
     }
-  }, [authStatus, planLockedFromSubscription]);
+  }, [planType]);
 
   // Warn user before refreshing during image generation
   useEffect(() => {
@@ -278,11 +263,6 @@ const DashboardPage: React.FC = () => {
   }, [isGenerating, manualResults]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem("preferred_plan", planType);
-  }, [planType]);
-
-  useEffect(() => {
     if (typeof window === "undefined" || !session?.user?.id) return;
     const params = new URLSearchParams(window.location.search);
     const openPaymentFlag =
@@ -297,7 +277,7 @@ const DashboardPage: React.FC = () => {
       }`;
       window.history.replaceState(null, "", newUrl);
     }
-  }, [isPaymentUnlocked, session?.user?.id]);
+  }, [isPaymentUnlocked, session?.user?.id, setIsPaymentModalOpen]);
 
   // All hooks must be called before any conditional returns
   const sortedPrompts = useMemo(() => {
@@ -347,551 +327,6 @@ const DashboardPage: React.FC = () => {
   const displayUsageRemaining = hasSubscription
     ? usage?.remaining ?? planCreditLimit
     : undefined;
-
-  const triggerUpload = () => fileInputRef.current?.click();
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    Array.from(files).forEach((file: File) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setReferences((prev) => [
-          ...prev,
-          {
-            id: Math.random().toString(36).substr(2, 9),
-            data: reader.result as string,
-            mimeType: file.type,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const removeReference = (id: string) => {
-    setReferences((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  const handleSaveReferences = async (label?: string) => {
-    const userId = session?.user?.id;
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    if (references.length === 0) {
-      alert("Upload a reference image first.");
-      return;
-    }
-
-    setIsSavingReferences(true);
-    try {
-      await saveReferenceImages(userId, references, label);
-      await refreshReferenceLibrary(userId);
-    } catch (error) {
-      console.error("Failed to save references:", error);
-      alert("Could not save references. Please try again.");
-    } finally {
-      setIsSavingReferences(false);
-    }
-  };
-
-  const handleAddReferencesFromLibrary = async (sets: ReferenceSet[]) => {
-    if (!sets.length) return;
-    // Flatten all images from selected sets
-    const allImages = sets.flatMap((set) => set.images);
-
-    // Convert URLs to base64 data URLs for ReferenceImage (needed for Gemini API)
-    const mapped = await Promise.all(
-      allImages.map(async (item): Promise<ReferenceImage> => {
-        try {
-          const response = await fetch(item.url);
-          const blob = await response.blob();
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              resolve({
-                id: Math.random().toString(36).substring(2, 9),
-                data: reader.result as string,
-                mimeType: item.mimeType,
-              });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (error) {
-          console.error("Failed to load image from storage:", error);
-          throw error;
-        }
-      })
-    );
-
-    setReferences((prev) => [...prev, ...mapped]);
-  };
-
-  const handleSavePromptPreset = async (title?: string) => {
-    const userId = session?.user?.id;
-    const content = manualPrompts.trim();
-
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    if (!content) {
-      alert("Please add a prompt before saving.");
-      return;
-    }
-
-    setIsSavingPrompt(true);
-    try {
-      const saved = await savePromptPreset(userId, content, title);
-      setPromptLibrary((prev) => [saved, ...prev]);
-    } catch (error) {
-      console.error("Failed to save prompt preset:", error);
-      alert("Could not save prompt preset. Please try again.");
-    } finally {
-      setIsSavingPrompt(false);
-    }
-  };
-
-  const handleSaveIndividualPrompt = async (index: number) => {
-    const userId = session?.user?.id;
-    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
-    const promptText = promptList[index]?.trim();
-
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    if (!promptText) {
-      alert("Please select a valid prompt to save.");
-      return;
-    }
-
-    setSavingPromptIndex(index);
-    try {
-      const saved = await savePromptPreset(userId, promptText, promptText);
-      setPromptLibrary((prev) => [saved, ...prev]);
-    } catch (error) {
-      console.error("Failed to save prompt:", error);
-      alert("Could not save prompt. Please try again.");
-    } finally {
-      setSavingPromptIndex(null);
-    }
-  };
-
-  const handleUpdatePromptPreset = async (
-    presetId: string,
-    title: string,
-    content: string
-  ) => {
-    const userId = session?.user?.id;
-    const trimmedTitle = title.trim();
-    const trimmedContent = content.trim();
-
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    if (!trimmedTitle || !trimmedContent) {
-      alert("Please provide both a title and prompt content.");
-      return;
-    }
-
-    try {
-      const updated = await updatePromptPreset(
-        userId,
-        presetId,
-        trimmedTitle,
-        trimmedContent
-      );
-      setPromptLibrary((prev) =>
-        prev.map((prompt) => (prompt.id === presetId ? updated : prompt))
-      );
-    } catch (error) {
-      console.error("Failed to update prompt preset:", error);
-      alert("Could not update prompt preset. Please try again.");
-    }
-  };
-
-  const handleUpdateReferenceSetLabel = async (
-    setId: string,
-    label: string
-  ) => {
-    const userId = session?.user?.id;
-    const trimmedLabel = label.trim();
-
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    if (!trimmedLabel) {
-      alert("Please provide a name for this reference set.");
-      return;
-    }
-
-    try {
-      await updateReferenceSetLabel(userId, setId, trimmedLabel);
-      setReferenceLibrary((prev) =>
-        prev.map((set) =>
-          set.setId === setId
-            ? {
-                ...set,
-                label: trimmedLabel,
-                images: set.images.map((img) => ({
-                  ...img,
-                  label: trimmedLabel,
-                })),
-              }
-            : set
-        )
-      );
-    } catch (error) {
-      console.error("Failed to update reference set label:", error);
-      alert("Could not update reference set. Please try again.");
-    }
-  };
-
-  const openReferenceNameModal = () =>
-    setNameModal({
-      type: "reference",
-      defaultValue: `Reference set (${new Date().toLocaleDateString()})`,
-    });
-
-  const openPromptNameModal = () =>
-    setNameModal({
-      type: "prompt",
-      defaultValue: `Prompt preset (${new Date().toLocaleDateString()})`,
-    });
-
-  const handleNameModalSave = async (value: string) => {
-    const trimmed = value.trim();
-    if (nameModal.type === "reference") {
-      await handleSaveReferences(trimmed || undefined);
-    } else if (nameModal.type === "prompt") {
-      await handleSavePromptPreset(trimmed || undefined);
-    }
-    setNameModal({ type: null, defaultValue: "" });
-  };
-
-  const closeNameModal = () => setNameModal({ type: null, defaultValue: "" });
-
-  const handleUsePromptPreset = (preset: PromptPreset) => {
-    // Add the single prompt to the list instead of replacing
-    const trimmedPrompts = manualPrompts.trim();
-    const newPrompts = trimmedPrompts
-      ? `${trimmedPrompts}\n${preset.content.trim()}`
-      : preset.content.trim();
-    setManualPrompts(newPrompts);
-  };
-
-  const openPaymentModal = () => {
-    trackButtonClick("open_payment_modal");
-    setIsPaymentModalOpen(true);
-  };
-
-  const markFirstGenerationComplete = async () => {
-    const userId = session?.user?.id;
-    if (!hasGeneratedFreeImage && userId) {
-      try {
-        await setHasGeneratedFreeImageInDB(userId, true);
-        setHasGeneratedFreeImage(true);
-      } catch (error) {
-        console.error("Failed to update has_generated_free_image:", error);
-        // Still update local state even if DB update fails
-        setHasGeneratedFreeImage(true);
-      }
-    }
-  };
-
-  const refreshUsage = async (userId: string) => {
-    setIsUsageLoading(true);
-    try {
-      const stats = await getMonthlyUsage(userId, planType);
-      setUsage(stats);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage fetch error:", error);
-      setUsageError("Unable to load credits.");
-    } finally {
-      setIsUsageLoading(false);
-    }
-  };
-
-  const handleRegenerate = async (index: number) => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
-    if (references.length === 0) {
-      alert(
-        "Please upload at least one reference image for character consistency."
-      );
-      return;
-    }
-
-    const userId = session?.user?.id;
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    // Track regeneration event
-    trackImageRegeneration(mode, index);
-
-    const setter = setManualResults;
-    const currentList = manualResults;
-    const targetResult = currentList[index];
-
-    if (!targetResult) return;
-
-    setter((prev) =>
-      prev.map((res, idx) =>
-        idx === index ? { ...res, isLoading: true, error: undefined } : res
-      )
-    );
-
-    let latestUsage: MonthlyUsage | null = usage;
-    try {
-      latestUsage = await getMonthlyUsage(userId, planType);
-      setUsage(latestUsage);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage check error:", error);
-      setter((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? {
-                ...res,
-                isLoading: false,
-                error: "Unable to check credit balance.",
-              }
-            : res
-        )
-      );
-      return;
-    }
-
-    if (
-      !isPaymentUnlocked &&
-      latestUsage &&
-      latestUsage.used >= FREE_CREDIT_CAP
-    ) {
-      openPaymentModal();
-      setter((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? { ...res, isLoading: false, error: "Upgrade to keep generating." }
-            : res
-        )
-      );
-      return;
-    }
-
-    if (latestUsage && latestUsage.remaining <= 0) {
-      setter((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? {
-                ...res,
-                isLoading: false,
-                error: "Monthly credit limit reached.",
-              }
-            : res
-        )
-      );
-      alert("Monthly credit limit reached. Please upgrade for more.");
-      return;
-    }
-
-    try {
-      const imageUrl = await generateCharacterScene(
-        targetResult.prompt,
-        references,
-        size
-      );
-      const updatedUsage = await recordGeneration(userId, 1, planType);
-      setUsage(updatedUsage);
-      markFirstGenerationComplete();
-      setter((prev) =>
-        prev.map((res, idx) =>
-          idx === index ? { ...res, imageUrl, isLoading: false } : res
-        )
-      );
-    } catch (error: any) {
-      console.error("Regeneration error:", error);
-      if (error?.message === "MONTHLY_LIMIT_REACHED") {
-        await refreshUsage(userId);
-        alert("Monthly credit limit reached. Please upgrade for more.");
-      }
-      setter((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? {
-                ...res,
-                error: error.message || "Generation failed",
-                isLoading: false,
-              }
-            : res
-        )
-      );
-    }
-  };
-
-  const handleAddPrompt = () => {
-    setIsAddingNewPrompt(true);
-  };
-
-  const handleRemovePrompt = (index: number) => {
-    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
-    promptList.splice(index, 1);
-    setManualPrompts(promptList.join("\n"));
-  };
-
-  const handleStartEditPrompt = (index: number) => {
-    setEditingPromptIndex(index);
-  };
-
-  const handleSavePrompt = (index: number | null, value: string) => {
-    if (value.trim()) {
-      if (index !== null) {
-        // Editing existing prompt
-        const promptList = manualPrompts
-          .split("\n")
-          .filter((p) => p.trim() !== "");
-        promptList[index] = value.trim();
-        setManualPrompts(promptList.join("\n"));
-        setEditingPromptIndex(null);
-      } else {
-        // Adding new prompt
-        const trimmedPrompts = manualPrompts.trim();
-        const newPrompts = trimmedPrompts
-          ? `${trimmedPrompts}\n${value.trim()}`
-          : value.trim();
-        setManualPrompts(newPrompts);
-        setIsAddingNewPrompt(false);
-      }
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingPromptIndex(null);
-    setIsAddingNewPrompt(false);
-  };
-
-  const startGeneration = async () => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
-    if (references.length === 0) {
-      alert(
-        "Please upload at least one reference image for character consistency."
-      );
-      return;
-    }
-
-    const userId = session?.user?.id;
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
-    if (promptList.length === 0) {
-      alert("Please enter some manual prompts.");
-      return;
-    }
-
-    const scenesToGenerate = promptList.length;
-
-    // Track generation event
-    trackImageGeneration(mode, scenesToGenerate, {
-      references_count: references.length,
-      image_size: size,
-    });
-
-    setIsGenerating(true);
-
-    let latestUsage: MonthlyUsage | null = usage;
-
-    try {
-      latestUsage = await getMonthlyUsage(userId, planType);
-      setUsage(latestUsage);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage check error:", error);
-      setUsageError("Unable to load credits.");
-      alert("Unable to check your monthly credits. Please try again.");
-      setIsGenerating(false);
-      return;
-    }
-
-    if (latestUsage && scenesToGenerate > latestUsage.remaining) {
-      alert(
-        `You can generate ${latestUsage.remaining} more image${
-          latestUsage.remaining === 1 ? "" : "s"
-        } this month (credits ${latestUsage.monthlyLimit}).`
-      );
-      setIsGenerating(false);
-      return;
-    }
-
-    if (
-      !isPaymentUnlocked &&
-      latestUsage &&
-      latestUsage.used >= FREE_CREDIT_CAP
-    ) {
-      openPaymentModal();
-      setIsGenerating(false);
-      return;
-    }
-
-    const initialManualResults = promptList.map(
-      (p) => ({ prompt: p, isLoading: true } as SceneResult)
-    );
-    setManualResults(initialManualResults);
-
-    for (let i = 0; i < initialManualResults.length; i++) {
-      try {
-        const imageUrl = await generateCharacterScene(
-          promptList[i],
-          references,
-          size
-        );
-        const updatedUsage = await recordGeneration(userId, 1, planType);
-        setUsage(updatedUsage);
-        markFirstGenerationComplete();
-        setManualResults((prev) =>
-          prev.map((res, idx) =>
-            idx === i ? { ...res, imageUrl, isLoading: false } : res
-          )
-        );
-      } catch (error: any) {
-        console.error("Manual generation error:", error);
-        if (error?.message === "MONTHLY_LIMIT_REACHED") {
-          await refreshUsage(userId);
-          alert("Monthly credit limit reached. Please upgrade for more.");
-          break;
-        }
-        setManualResults((prev) =>
-          prev.map((res, idx) =>
-            idx === i ? { ...res, error: error.message, isLoading: false } : res
-          )
-        );
-      }
-    }
-
-    setIsGenerating(false);
-  };
 
   return (
     <div className="app">
@@ -958,10 +393,7 @@ const DashboardPage: React.FC = () => {
 
                 const result = await response.json();
 
-                // Update local state
-                setIsPaymentUnlocked(false);
-                setPlanLockedFromSubscription(false);
-                setPlanType("basic");
+                // Update local state - handled by useUsage hook
                 await refreshUsage(userId);
                 await refreshSubscription(userId);
 
@@ -987,44 +419,17 @@ const DashboardPage: React.FC = () => {
               accept="image/*"
               onChange={handleFileUpload}
             />
-            <section className="card dashboard-summary">
-              <div className="dashboard-summary__metrics">
-                <div className="metric-card">
-                  <p className="metric-card__value">
-                    {isUsageLoading
-                      ? "..."
-                      : hasSubscription
-                      ? displayUsageLimit
-                        ? `${
-                            displayUsageRemaining ?? displayUsageLimit
-                          }/${displayUsageLimit}`
-                        : "--/--"
-                      : typeof freeCreditsRemaining === "number"
-                      ? `${freeCreditsRemaining}/3`
-                      : "3"}
-                  </p>
-                  <p className="metric-card__label">
-                    {hasSubscription ? "Credits left" : "Free credits"}
-                  </p>
-                </div>
-                <div className="metric-card">
-                  <p className="metric-card__value">{references.length}</p>
-                  <p className="metric-card__label">References</p>
-                </div>
-                <div className="metric-card">
-                  <p className="metric-card__value">{totalScenes}</p>
-                  <p className="metric-card__label">Scenes</p>
-                </div>
-                <div className="metric-card">
-                  <p className="metric-card__value">{generatedCount}</p>
-                  <p className="metric-card__label">Rendered</p>
-                </div>
-                <div className="metric-card">
-                  <p className="metric-card__value">{size}</p>
-                  <p className="metric-card__label">Resolution</p>
-                </div>
-              </div>
-            </section>
+            <DashboardSummary
+              isUsageLoading={isUsageLoading}
+              hasSubscription={hasSubscription}
+              displayUsageLimit={displayUsageLimit}
+              displayUsageRemaining={displayUsageRemaining}
+              freeCreditsRemaining={freeCreditsRemaining}
+              referencesCount={references.length}
+              totalScenes={totalScenes}
+              generatedCount={generatedCount}
+              size={size}
+            />
 
             {activePanel === "saved" && (
               <SavedImagesPanel
@@ -1044,7 +449,13 @@ const DashboardPage: React.FC = () => {
                   await saveReferenceImages(userId, images, label);
                   await refreshReferenceLibrary(userId);
                 }}
-                onUpdateReferenceSet={handleUpdateReferenceSetLabel}
+                onUpdateReferenceSet={(setId, label) =>
+                  handleUpdateReferenceSetLabel(
+                    setId,
+                    label,
+                    setReferenceLibrary
+                  )
+                }
               />
             )}
 
@@ -1072,293 +483,30 @@ const DashboardPage: React.FC = () => {
             )}
 
             {activePanel === "manual" && (
-              <section className="card">
-                <div className="card__header">
-                  <h3 className="card__title">1. References</h3>
-                  <div className="card__actions">
-                    <button
-                      onClick={() => setIsReferenceLibraryOpen(true)}
-                      className="card__action card__action--ghost"
-                    >
-                      Dataset
-                    </button>
-                    <button onClick={triggerUpload} className="card__action">
-                      Upload
-                    </button>
-                    <button
-                      onClick={openReferenceNameModal}
-                      disabled={isSavingReferences || references.length === 0}
-                      className="card__action"
-                      title="Save current references for reuse"
-                    >
-                      {isSavingReferences ? "Saving..." : "Save to dataset"}
-                    </button>
-                  </div>
-                </div>
-                {references.length === 0 ? (
-                  <div
-                    onClick={triggerUpload}
-                    className={styles["references__placeholder"]}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    <div>Add Character Images</div>
-                  </div>
-                ) : (
-                  <div className={styles["references__grid"]}>
-                    {references.map((ref) => (
-                      <div key={ref.id} className={styles["reference-thumb"]}>
-                        <img src={ref.data} alt="Reference" />
-                        <button
-                          onClick={() => removeReference(ref.id)}
-                          className={styles["reference-thumb__remove"]}
-                          aria-label="Remove reference"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
+              <ReferencesSection
+                references={references}
+                isSavingReferences={isSavingReferences}
+                onUpload={triggerUpload}
+                onRemove={removeReference}
+                onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
+                onSave={openReferenceNameModal}
+              />
             )}
 
             {activePanel === "manual" && (
-              <section className="card sidebar__panel">
-                <div className="card__header">
-                  <h3 className="card__title">2. Manual Scenarios</h3>
-                  <div className="card__actions">
-                    <button
-                      onClick={() => setIsPromptLibraryOpen(true)}
-                      className="card__action card__action--ghost"
-                    >
-                      Use saved prompt
-                    </button>
-                  </div>
-                </div>
-                <div className={styles["prompt-list-container"]}>
-                  <ul className={styles["prompt-list"]}>
-                    {isAddingNewPrompt && (
-                      <li
-                        className={`${styles["prompt-list-item"]} ${styles["prompt-list-item--editing"]}`}
-                      >
-                        <input
-                          type="text"
-                          className={styles["prompt-list-item__input"]}
-                          placeholder="Enter a new prompt..."
-                          autoFocus
-                          onBlur={(e) => {
-                            if (e.target.value.trim()) {
-                              handleSavePrompt(null, e.target.value);
-                            } else {
-                              setIsAddingNewPrompt(false);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.currentTarget.blur();
-                            } else if (e.key === "Escape") {
-                              setIsAddingNewPrompt(false);
-                            }
-                          }}
-                        />
-                        <div className={styles["prompt-list-item__actions"]}>
-                          <button
-                            onClick={() => setIsAddingNewPrompt(false)}
-                            className={styles["prompt-list-item__button"]}
-                            title="Cancel"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="14"
-                              height="14"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </li>
-                    )}
-                    {manualPrompts
-                      .split("\n")
-                      .filter((p) => p.trim() !== "")
-                      .map((prompt, idx) => (
-                        <li
-                          key={idx}
-                          className={`${styles["prompt-list-item"]} ${
-                            editingPromptIndex === idx
-                              ? styles["prompt-list-item--editing"]
-                              : ""
-                          }`}
-                        >
-                          {editingPromptIndex === idx ? (
-                            <input
-                              type="text"
-                              className={styles["prompt-list-item__input"]}
-                              defaultValue={prompt.trim()}
-                              autoFocus
-                              onBlur={(e) => {
-                                handleSavePrompt(idx, e.target.value);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.currentTarget.blur();
-                                } else if (e.key === "Escape") {
-                                  setEditingPromptIndex(null);
-                                }
-                              }}
-                            />
-                          ) : (
-                            <span
-                              className={styles["prompt-list-item__text"]}
-                              onClick={() => handleStartEditPrompt(idx)}
-                              title="Click to edit"
-                            >
-                              {prompt.trim()}
-                            </span>
-                          )}
-                          {editingPromptIndex !== idx && (
-                            <div
-                              className={styles["prompt-list-item__actions"]}
-                            >
-                              <button
-                                onClick={() => handleSaveIndividualPrompt(idx)}
-                                disabled={savingPromptIndex === idx}
-                                className={styles["prompt-list-item__button"]}
-                                title="Save"
-                              >
-                                {savingPromptIndex === idx ? (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="14"
-                                    height="14"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    className={styles["spinner"]}
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                    />
-                                  </svg>
-                                ) : (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="14"
-                                    height="14"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                                    />
-                                  </svg>
-                                )}
-                              </button>
-                              <button
-                                onClick={() => handleRemovePrompt(idx)}
-                                className={styles["prompt-list-item__button"]}
-                                title="Delete"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="14"
-                                  height="14"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                    {manualPrompts.split("\n").filter((p) => p.trim() !== "")
-                      .length === 0 &&
-                      !isAddingNewPrompt && (
-                        <div className={styles["prompt-list-empty"]}>
-                          <p className="text text--helper">
-                            No prompts yet. Click "Add prompt for scene" to get
-                            started.
-                          </p>
-                        </div>
-                      )}
-                  </ul>
-                  {!isAddingNewPrompt && (
-                    <button
-                      onClick={handleAddPrompt}
-                      className={styles["add-prompt-button"]}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      Add prompt for scene
-                    </button>
-                  )}
-                </div>
-                <p className="text text--helper">
-                  Describe actions, emotions, and props.
-                </p>
-              </section>
+              <PromptsSection
+                prompts={manualPrompts}
+                isAddingNewPrompt={isAddingNewPrompt}
+                editingPromptIndex={editingPromptIndex}
+                savingPromptIndex={savingPromptIndex}
+                onAddPrompt={handleAddPrompt}
+                onRemovePrompt={handleRemovePrompt}
+                onStartEdit={handleStartEditPrompt}
+                onSavePrompt={handleSavePrompt}
+                onCancelEdit={handleCancelEdit}
+                onSaveIndividualPrompt={handleSaveIndividualPrompt}
+                onOpenLibrary={() => setIsPromptLibraryOpen(true)}
+              />
             )}
 
             {activePanel !== "saved" && activePanel !== "references" && (
@@ -1424,7 +572,13 @@ const DashboardPage: React.FC = () => {
             : "Name this prompt preset"
         }
         defaultValue={nameModal.defaultValue}
-        onSave={handleNameModalSave}
+        onSave={(value) =>
+          handleNameModalSave(
+            value,
+            handleSaveReferences,
+            handleSavePromptPreset
+          )
+        }
         onCancel={closeNameModal}
       />
 
