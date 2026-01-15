@@ -330,11 +330,6 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="app">
-      <div className="app__background">
-        <span className="app__orb app__orb--left" />
-        <span className="app__orb app__orb--right" />
-      </div>
-
       <main className="app__body">
         <div className="app__content">
           <Sidebar

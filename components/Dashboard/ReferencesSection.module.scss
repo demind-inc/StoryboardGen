@@ -1,16 +1,16 @@
 .referencesSection {
   &__placeholder {
-    border: 2px dashed rgba(226, 232, 240, 0.4);
+    border: 2px dashed #cbd5e1;
     border-radius: 12px;
     padding: 24px 16px;
     text-align: center;
-    color: #cbd5e1;
+    color: #64748b;
     font-weight: 800;
     font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.03);
+    background: #ffffff;
     transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
     display: flex;
     flex-direction: column;
@@ -34,8 +34,8 @@
 
     &:hover {
       border-color: #f97316;
-      color: #fbbf24;
-      background: rgba(249, 115, 22, 0.08);
+      color: #ea580c;
+      background: #fff7ed;
 
       svg {
         opacity: 1;
@@ -53,12 +53,12 @@
   &__thumb {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     height: 250px;
     aspect-ratio: auto;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
-    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #f8fafc;
 
     img {
       width: 100%;
