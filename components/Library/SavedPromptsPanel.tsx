@@ -107,13 +107,13 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
       <div className="card__header">
         <h3 className="card__title">Saved prompts</h3>
         <div className="card__actions">
-          <div className="library-filter">
-            <label htmlFor="prompt-sort" className="library-filter__label">
+          <div className="libraryFilter">
+            <label htmlFor="prompt-sort" className="libraryFilter__label">
               Sort
             </label>
             <select
               id="prompt-sort"
-              className="library-filter__select"
+              className="libraryFilter__select"
               value={sortDirection}
               onChange={(e) =>
                 onSortChange(e.target.value as "newest" | "oldest")
@@ -129,11 +129,11 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
         <p className="sidebar__empty">Loading prompts...</p>
       ) : (
         <>
-          <div className="library-prompt-list custom-scrollbar">
+          <div className="libraryPrompt__list custom-scrollbar">
             {isAddingNewPrompt && (
-              <div className="library-prompt-item library-prompt-item--new">
+              <div className="libraryPrompt__item libraryPrompt__item--new">
                 <textarea
-                  className="library-prompt-content-input"
+                  className="libraryPrompt__contentInput"
                   placeholder="Enter prompt..."
                   value={newPromptContent}
                   onChange={(e) => setNewPromptContent(e.target.value)}
@@ -141,18 +141,18 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                   autoFocus
                   required
                 />
-                <div className="library-prompt-actions">
+                <div className="libraryPrompt__actions">
                   <button
                     onClick={handleSaveNewPrompt}
                     disabled={isSaving || !newPromptContent.trim()}
-                    className="library-prompt-action-btn library-prompt-action-btn--save"
+                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
                   >
                     {isSaving ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={handleCancelNewPrompt}
                     disabled={isSaving}
-                    className="library-prompt-action-btn library-prompt-action-btn--cancel"
+                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
                   >
                     Cancel
                   </button>
@@ -167,10 +167,10 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                 return isEditing ? (
                   <div
                     key={preset.id}
-                    className="library-prompt-item library-prompt-item--editing"
+                    className="libraryPrompt__item libraryPrompt__item--editing"
                   >
                     <textarea
-                      className="library-prompt-content-input"
+                      className="libraryPrompt__contentInput"
                       placeholder="Enter prompt..."
                       value={editingPromptContent}
                       onChange={(e) => setEditingPromptContent(e.target.value)}
@@ -179,20 +179,20 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                       autoFocus
                       required
                     />
-                    <div className="library-prompt-actions">
+                    <div className="libraryPrompt__actions">
                       <button
                         onClick={handleSaveEditedPrompt}
                         disabled={
                           isUpdatingPrompt || !editingPromptContent.trim()
                         }
-                        className="library-prompt-action-btn library-prompt-action-btn--save"
+                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
                       >
                         {isUpdatingPrompt ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={handleCancelEditPrompt}
                         disabled={isUpdatingPrompt}
-                        className="library-prompt-action-btn library-prompt-action-btn--cancel"
+                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
                       >
                         Cancel
                       </button>
@@ -201,12 +201,12 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                 ) : (
                   <button
                     key={preset.id}
-                    className="library-prompt-item"
+                    className="libraryPrompt__item"
                     onClick={() => onSelectPromptPreset(preset)}
                   >
-                    <div className="library-prompt-header">
-                      <div className="library-prompt-title">{preset.title}</div>
-                      <div className="library-prompt-meta">
+                    <div className="libraryPrompt__header">
+                      <div className="libraryPrompt__title">{preset.title}</div>
+                      <div className="libraryPrompt__meta">
                         {preset.createdAt && (
                           <span>
                             {new Date(preset.createdAt).toLocaleDateString()}
@@ -217,7 +217,7 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                             e.stopPropagation();
                             startEditingPrompt(preset);
                           }}
-                          className="library-prompt-action-btn"
+                          className="libraryPrompt__actionBtn"
                           disabled={isSaving || isUpdatingPrompt}
                           title="Edit prompt"
                         >
@@ -230,7 +230,7 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
               })
             )}
           </div>
-          <div className="library-sets-actions">
+          <div className="librarySet__actions">
             <button
               onClick={handleUploadClick}
               className="primary-button primary-button--full"

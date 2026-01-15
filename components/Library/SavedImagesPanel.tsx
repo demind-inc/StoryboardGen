@@ -22,14 +22,14 @@ const ImageExpandModal: React.FC<ImageExpandModalProps> = ({
 
   return (
     <div
-      className="image-expand-modal__backdrop"
+      className="imageExpandModal__backdrop"
       role="dialog"
       aria-modal="true"
       onClick={handleBackdropClick}
     >
-      <div className="image-expand-modal">
+      <div className="imageExpandModal">
         <button
-          className="image-expand-modal__close"
+          className="imageExpandModal__close"
           onClick={onClose}
           aria-label="Close"
         >
@@ -51,7 +51,7 @@ const ImageExpandModal: React.FC<ImageExpandModalProps> = ({
         <img
           src={imageUrl}
           alt="Expanded view"
-          className="image-expand-modal__image"
+          className="imageExpandModal__image"
         />
       </div>
     </div>
@@ -192,13 +192,13 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       <div className="card__header">
         <h3 className="card__title">Saved images</h3>
         <div className="card__actions">
-          <div className="library-filter">
-            <label htmlFor="library-sort" className="library-filter__label">
+          <div className="libraryFilter">
+            <label htmlFor="library-sort" className="libraryFilter__label">
               Sort
             </label>
             <select
               id="library-sort"
-              className="library-filter__select"
+              className="libraryFilter__select"
               value={sortDirection}
               onChange={(e) =>
                 onSortChange(e.target.value as "newest" | "oldest")
@@ -214,19 +214,19 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
         <p className="sidebar__empty">Loading saved images...</p>
       ) : (
         <>
-          <div className="library-sets-list custom-scrollbar">
+          <div className="librarySet__list custom-scrollbar">
             {isAddingNewSet && (
-              <div className="library-set-item library-set-item--new">
-                <div className="library-set-header">
+              <div className="librarySet__item librarySet__item--new">
+                <div className="librarySet__header">
                   <input
                     type="text"
-                    className="library-set-title-input"
+                    className="librarySet__titleInput"
                     placeholder="Set name (required)"
                     value={newSetLabel}
                     onChange={(e) => setNewSetLabel(e.target.value)}
                     required
                   />
-                  <div className="library-set-actions">
+                  <div className="librarySet__actions">
                     <button
                       onClick={handleSaveNewSet}
                       disabled={
@@ -234,29 +234,29 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                         newSetImages.length === 0 ||
                         !newSetLabel.trim()
                       }
-                      className="library-set-action-btn library-set-action-btn--save"
+                      className="librarySet__actionBtn librarySet__actionBtn--save"
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </button>
                     <button
                       onClick={handleCancelNewSet}
                       disabled={isSaving}
-                      className="library-set-action-btn library-set-action-btn--cancel"
+                      className="librarySet__actionBtn librarySet__actionBtn--cancel"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
-                <div className="library-set-images">
+                <div className="librarySet__images">
                   {newSetImages.map((img) => (
                     <div
                       key={img.id}
-                      className="library-set-image-thumb library-set-image-thumb--new"
+                      className="librarySetImage__thumb librarySetImage__thumb--new"
                     >
                       <img src={img.data} alt="New reference" />
                       <button
                         onClick={() => removeNewSetImage(img.id)}
-                        className="library-set-image-remove"
+                        className="librarySetImage__remove"
                         aria-label="Remove image"
                       >
                         <svg
@@ -277,7 +277,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                   ))}
                   <button
                     onClick={handleUploadClick}
-                    className="library-set-image-upload-placeholder"
+                    className="librarySetImage__uploadPlaceholder"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -305,30 +305,30 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
               sortedSets.map((set) => {
                 const isEditing = editingSetId === set.setId;
                 return (
-                  <div key={set.setId} className="library-set-item">
-                    <div className="library-set-header">
+                  <div key={set.setId} className="librarySet__item">
+                    <div className="librarySet__header">
                       {isEditing ? (
                         <>
                           <input
                             type="text"
-                            className="library-set-title-input"
+                            className="librarySet__titleInput"
                             placeholder="Set name"
                             value={editingSetLabel}
                             onChange={(e) => setEditingSetLabel(e.target.value)}
                             disabled={isUpdatingSet}
                           />
-                          <div className="library-set-actions">
+                          <div className="librarySet__actions">
                             <button
                               onClick={handleSaveEditedSet}
                               disabled={isUpdatingSet || !editingSetLabel.trim()}
-                              className="library-set-action-btn library-set-action-btn--save"
+                              className="librarySet__actionBtn librarySet__actionBtn--save"
                             >
                               {isUpdatingSet ? "Saving..." : "Save"}
                             </button>
                             <button
                               onClick={handleCancelEditSet}
                               disabled={isUpdatingSet}
-                              className="library-set-action-btn library-set-action-btn--cancel"
+                              className="librarySet__actionBtn librarySet__actionBtn--cancel"
                             >
                               Cancel
                             </button>
@@ -336,21 +336,21 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                         </>
                       ) : (
                         <>
-                          <h4 className="library-set-title">
+                          <h4 className="librarySet__title">
                             {set.label ||
                               `Reference set (${new Date(
                                 set.createdAt || Date.now()
                               ).toLocaleDateString()})`}
                           </h4>
-                          <div className="library-set-actions">
+                          <div className="librarySet__actions">
                             {set.createdAt && (
-                              <span className="library-set-date">
+                              <span className="librarySet__date">
                                 {new Date(set.createdAt).toLocaleDateString()}
                               </span>
                             )}
                             <button
                               onClick={() => startEditingSet(set)}
-                              className="library-set-action-btn"
+                              className="librarySet__actionBtn"
                               disabled={
                                 isSaving || isUpdatingSet || isAddingNewSet
                               }
@@ -378,7 +378,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                             <img src={img.url} alt={set.label || "Reference"} />
                           </button>
                           <button
-                            className="library-set-image-expand"
+                            className="librarySetImage__expand"
                             onClick={(e) => {
                               e.stopPropagation();
                               setExpandedImage(img.url);
@@ -408,7 +408,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
               })
             )}
           </div>
-          <div className="library-sets-actions">
+          <div className="librarySet__actions">
             <input
               type="file"
               ref={fileInputRef}
