@@ -124,7 +124,7 @@ const DashboardPage: React.FC = () => {
 
   const FREE_CREDIT_CAP = 3;
   const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
-    basic: "$9/mo",
+    basic: "$15/mo",
     pro: "$29/mo",
     business: "$79/mo",
   };

@@ -5,7 +5,7 @@ type SubscriptionPlan = "basic" | "pro" | "business";
 
 const USAGE_TABLE = "usage_limits";
 const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
-  basic: 60,
+  basic: 90,
   pro: 180,
   business: 600,
 };

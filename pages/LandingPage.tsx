@@ -86,11 +86,11 @@ const pricingPlans = [
   {
     badge: "Basic",
     title: "For trying the workflow",
-    price: "$9/mo",
-    credits: "60 credits / month",
+    price: "$15/mo",
+    credits: "90 credits / month",
     note: "1 credit = 1 image. Credits reset monthly.",
     perks: [
-      "60 images each month",
+      "90 images each month",
       "Scene-consistent renders",
       "Email support",
     ],

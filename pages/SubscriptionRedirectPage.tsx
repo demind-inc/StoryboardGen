@@ -100,7 +100,7 @@ const SubscriptionRedirectPage: React.FC = () => {
         if (finalPlan) {
           // Map plan to price for tracking
           const planPrices: Record<SubscriptionPlan, number> = {
-            basic: 9,
+            basic: 15,
             pro: 29,
             business: 79,
           };

@@ -4,7 +4,7 @@ import { getSupabaseClient } from "./supabaseClient";
 const USAGE_TABLE = "usage_limits";
 export const DEFAULT_MONTHLY_CREDITS = 60;
 export const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
-  basic: 60,
+  basic: 90,
   pro: 180,
   business: 600,
 };
