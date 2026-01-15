@@ -52,10 +52,9 @@ export default async function handler(
 
   try {
     // Get the base URL for success/cancel URLs
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3300";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+      ? `https://${process.env.NEXT_PUBLIC_BASE_URL}`
+      : "http://localhost:3300";
 
     // Create Checkout Session with metadata
     const session = await stripe.checkout.sessions.create({
