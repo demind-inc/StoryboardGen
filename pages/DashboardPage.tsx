@@ -656,7 +656,6 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-
   const handleRegenerate = async (index: number) => {
     if (hasGeneratedFreeImage && !isPaymentUnlocked) {
       openPaymentModal();
@@ -876,9 +875,7 @@ const DashboardPage: React.FC = () => {
         }
         setManualResults((prev) =>
           prev.map((res, idx) =>
-            idx === i
-              ? { ...res, error: error.message, isLoading: false }
-              : res
+            idx === i ? { ...res, error: error.message, isLoading: false } : res
           )
         );
       }

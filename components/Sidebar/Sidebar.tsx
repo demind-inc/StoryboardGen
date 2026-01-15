@@ -168,7 +168,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-
       <div className={styles["sidebar__section"]}>
         <p className={styles["sidebar__eyebrow"]}>Saved</p>
         <nav className={styles["sidebar__nav"]}>
