@@ -96,9 +96,7 @@ const Hero: React.FC<HeroProps> = ({
             <p className={styles["metric-card__label"]}>Resolution</p>
           </div>
           <div className={styles["metric-card"]}>
-            <p className={styles["metric-card__value"]}>
-              {mode === "slideshow" ? "Auto" : "Manual"}
-            </p>
+            <p className={styles["metric-card__value"]}>Manual</p>
             <p className={styles["metric-card__label"]}>Mode</p>
           </div>
         </div>

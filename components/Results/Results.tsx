@@ -19,9 +19,7 @@ const Results: React.FC<ResultsProps> = ({
     <div className={styles["app__results"]}>
       <div className={styles["results-card"]}>
         <div className={styles["results-card__header"]}>
-          <span>
-            {mode === "slideshow" ? "Slideshow Timeline" : "Generated Scenes"}
-          </span>
+          <span>Generated Scenes</span>
           {isGenerating && <span className={styles.badge}>Rendering set...</span>}
         </div>
 
@@ -52,24 +50,19 @@ const Results: React.FC<ResultsProps> = ({
                 No Content Ready
               </p>
               <p className="text text--helper" style={{ margin: 0 }}>
-                Upload references and{" "}
-                {mode === "slideshow" ? "create a storyboard" : "input prompts"}
+                Upload references and input prompts
               </p>
             </div>
           ) : (
             <div className={`${styles["results-scroll"]} custom-scrollbar`}>
               <div className={styles["results-list"]}>
                 {results.map((result, idx) => {
-                  const isFirstSlide = mode === "slideshow" && idx === 0;
                   return (
                     <div
                       key={idx}
-                      className={`${styles["slide-card"]} ${
-                        result.isCTA ? styles["slide-card--cta"] : ""
-                      }`}
+                      className={styles["slide-card"]}
                     >
-                      {!result.isCTA && (
-                        <div className={styles["slide-card__media"]}>
+                      <div className={styles["slide-card__media"]}>
                           {result.isLoading ? (
                             <div className={`${styles["slide-card__overlay"]} ${styles["slide-card__overlay--loading"]}`}>
                               <div className="spinner" />
@@ -188,65 +181,33 @@ const Results: React.FC<ResultsProps> = ({
                             </div>
                           )}
                         </div>
-                      )}
-
-                      {result.isCTA && (
-                        <div className={styles["cta-placeholder"]}>
-                          <div>
-                            <div style={{ marginBottom: "12px" }}>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="42"
-                                height="42"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4-4 4m0 0-4-4m4 4V4"
-                                />
-                              </svg>
-                            </div>
-                            <div>Action Slide</div>
-                          </div>
-                        </div>
-                      )}
+                      </div>
 
                       <div className={styles["slide-card__meta"]}>
                         <span className={styles["slide-card__index"]}>{idx + 1}</span>
                         <h3 className={styles["slide-card__title"]}>
-                          {result.title ||
-                            (mode === "manual"
-                              ? `Scene ${idx + 1}`
-                              : `Slide ${idx + 1}`)}
+                          {result.title || `Scene ${idx + 1}`}
                         </h3>
                       </div>
 
-                      {!isFirstSlide && result.description && (
+                      {result.description && (
                         <p className={styles["slide-card__description"]}>
                           {result.description}
                         </p>
                       )}
 
-                      {mode === "manual" && (
-                        <p className={styles["slide-card__description"]}>
-                          {result.prompt}
-                        </p>
-                      )}
+                      <p className={styles["slide-card__description"]}>
+                        {result.prompt}
+                      </p>
 
-                      {!result.isCTA && (
-                        <div className={styles["slide-card__foot"]}>
-                          <div className={styles["slide-card__foot-label"]}>
-                            Character Guidance
-                          </div>
-                          <p className={styles["slide-card__foot-text"]}>
-                            "{result.prompt}"
-                          </p>
+                      <div className={styles["slide-card__foot"]}>
+                        <div className={styles["slide-card__foot-label"]}>
+                          Character Guidance
                         </div>
-                      )}
+                        <p className={styles["slide-card__foot-text"]}>
+                          "{result.prompt}"
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
