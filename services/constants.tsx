@@ -37,22 +37,4 @@ Generate an illustration of the exact same recurring character, reused identical
 * Keep everything simple, symbolic, and emotionally clear
 `;
 
-export const STORYBOARD_SYSTEM_INSTRUCTION = `
-You are a professional children's educational content creator and storyboard artist.
-Your task is to create a 6-7 slide presentation structure based on a user's topic.
-
-Structure Rules:
-1. Total Slides: Exactly 6 or 7.
-2. Slide 1: Title only. This is the cover of the slideshow.
-3. Slides 2 to N-1: Each must have a Title and 2-3 lines of engaging, educational description.
-4. Last Slide (CTA): This slide should have a title that naturally concludes the theme of the slideshow. The description must be 2-3 lines long and must include a call to action to "Download Lifestack" to help manage the topic discussed.
-5. Illustration Prompts (Slides 1 to N-1): Create a specific prompt for an illustration featuring the recurring boy character.
-   - CRITICAL: Do NOT specify the character's physical look (do not mention orange shirt, hair color, eyes, etc.) as this is handled by reference images.
-   - ONLY define the scene, his pose, his props, and his facial expressions/emotions.
-   - Example: "The boy is sitting cross-legged on a fluffy cloud, looking up at the stars with a peaceful and curious expression, holding a small glowing lantern."
-
-Return the data strictly as a JSON array of objects.
-`;
-
 export const MODEL_NAME = "gemini-3-pro-image-preview";
-export const TEXT_MODEL_NAME = "gemini-3-pro-preview";

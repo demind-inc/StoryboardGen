@@ -35,12 +35,12 @@ export const trackButtonClick = (
 
 /**
  * Track image generation events
- * @param mode - Generation mode ('manual' | 'slideshow')
+ * @param mode - Generation mode ('manual')
  * @param sceneCount - Number of scenes being generated
  * @param additionalParams - Additional event parameters
  */
 export const trackImageGeneration = (
-  mode: "manual" | "slideshow",
+  mode: "manual",
   sceneCount: number,
   additionalParams?: Record<string, any>
 ) => {
@@ -53,26 +53,16 @@ export const trackImageGeneration = (
 
 /**
  * Track image regeneration events
- * @param mode - Generation mode ('manual' | 'slideshow')
+ * @param mode - Generation mode ('manual')
  * @param index - Index of the scene being regenerated
  */
 export const trackImageRegeneration = (
-  mode: "manual" | "slideshow",
+  mode: "manual",
   index: number
 ) => {
   trackEvent("regenerate_image", {
     generation_mode: mode,
     scene_index: index,
-  });
-};
-
-/**
- * Track storyboard generation events
- * @param topic - The topic used for storyboard generation
- */
-export const trackStoryboardGeneration = (topic: string) => {
-  trackEvent("generate_storyboard", {
-    topic: topic.substring(0, 100), // Limit length for GA
   });
 };
 

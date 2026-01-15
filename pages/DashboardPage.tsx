@@ -11,10 +11,7 @@ import {
   ReferenceSet,
   SceneResult,
 } from "../types";
-import {
-  generateCharacterScene,
-  generateSlideshowStructure,
-} from "../services/geminiService";
+import { generateCharacterScene } from "../services/geminiService";
 import { useAuth } from "../providers/AuthProvider";
 import {
   DEFAULT_MONTHLY_CREDITS,
@@ -46,7 +43,6 @@ import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
 import {
   trackImageGeneration,
   trackImageRegeneration,
-  trackStoryboardGeneration,
   trackButtonClick,
 } from "../lib/analytics";
 
@@ -134,12 +130,8 @@ const DashboardPage: React.FC = () => {
   };
 
   const [activePanel, setActivePanel] = useState<PanelKey>("manual");
-  // Derive mode from activePanel
-  const mode: AppMode = useMemo(() => {
-    return activePanel === "storyboard" ? "slideshow" : "manual";
-  }, [activePanel]);
+  const mode: AppMode = "manual";
 
-  const [topic, setTopic] = useState<string>("");
   const [manualPrompts, setManualPrompts] = useState<string>(
     "Boy looking confused with question marks around him\nBoy feeling lonely at a cafe table\nBoy looking angry while listening to something"
   );
@@ -151,11 +143,9 @@ const DashboardPage: React.FC = () => {
   const [isSavingReferences, setIsSavingReferences] = useState(false);
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
-  const [slideshowResults, setSlideshowResults] = useState<SceneResult[]>([]);
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [size, setSize] = useState<ImageSize>("1K");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isCreatingStoryboard, setIsCreatingStoryboard] = useState(false);
   const [usage, setUsage] = useState<MonthlyUsage | null>(null);
   const [isUsageLoading, setIsUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState<string | null>(null);
@@ -330,12 +320,9 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       // Check if generation is in progress
-      const isAnyGenerating = isGenerating || isCreatingStoryboard;
-      const hasLoadingResults =
-        slideshowResults.some((r) => r.isLoading) ||
-        manualResults.some((r) => r.isLoading);
+      const hasLoadingResults = manualResults.some((r) => r.isLoading);
 
-      if (isAnyGenerating || hasLoadingResults) {
+      if (isGenerating || hasLoadingResults) {
         // Modern browsers ignore custom messages, but we still need to set returnValue
         e.preventDefault();
         e.returnValue = ""; // Required for Chrome
@@ -352,7 +339,7 @@ const DashboardPage: React.FC = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [isGenerating, isCreatingStoryboard, slideshowResults, manualResults]);
+  }, [isGenerating, manualResults]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -406,7 +393,7 @@ const DashboardPage: React.FC = () => {
     return null;
   }
 
-  const results = mode === "slideshow" ? slideshowResults : manualResults;
+  const results = manualResults;
   const generatedCount = results.filter((item) => item.imageUrl).length;
   const totalScenes = results.length;
   const hasSubscription = isPaymentUnlocked;
@@ -669,33 +656,6 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleGenerateStoryboard = async () => {
-    if (!topic.trim()) {
-      alert("Please enter a topic first.");
-      return;
-    }
-    trackStoryboardGeneration(topic);
-    setIsCreatingStoryboard(true);
-    try {
-      const slides = await generateSlideshowStructure(topic);
-      if (slides.length > 0) {
-        const newResults: SceneResult[] = slides.map((slide, idx) => ({
-          title: slide.title,
-          description: slide.description,
-          prompt: slide.prompt,
-          isLoading: false,
-          isCTA: idx === slides.length - 1,
-        }));
-        setSlideshowResults(newResults);
-      }
-    } catch (error) {
-      console.error("Storyboard error:", error);
-      alert("Failed to generate storyboard. Check your connection/key.");
-    } finally {
-      setIsCreatingStoryboard(false);
-    }
-  };
-
   const handleRegenerate = async (index: number) => {
     if (hasGeneratedFreeImage && !isPaymentUnlocked) {
       openPaymentModal();
@@ -718,12 +678,11 @@ const DashboardPage: React.FC = () => {
     // Track regeneration event
     trackImageRegeneration(mode, index);
 
-    const setter =
-      mode === "slideshow" ? setSlideshowResults : setManualResults;
-    const currentList = mode === "slideshow" ? slideshowResults : manualResults;
+    const setter = setManualResults;
+    const currentList = manualResults;
     const targetResult = currentList[index];
 
-    if (!targetResult || targetResult.isCTA) return;
+    if (!targetResult) return;
 
     setter((prev) =>
       prev.map((res, idx) =>
@@ -837,32 +796,13 @@ const DashboardPage: React.FC = () => {
       return;
     }
 
-    let promptList: string[] = [];
-    let scenesToGenerate = 0;
-
-    if (mode === "manual") {
-      promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
-      if (promptList.length === 0) {
-        alert("Please enter some manual prompts.");
-        return;
-      }
-
-      scenesToGenerate = promptList.length;
-    } else {
-      if (slideshowResults.length === 0) {
-        alert("Please create a storyboard first.");
-        return;
-      }
-
-      scenesToGenerate = slideshowResults.filter(
-        (res) => !res.isCTA && !res.imageUrl
-      ).length;
-
-      if (scenesToGenerate === 0) {
-        alert("All scenes are already generated.");
-        return;
-      }
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    if (promptList.length === 0) {
+      alert("Please enter some manual prompts.");
+      return;
     }
+
+    const scenesToGenerate = promptList.length;
 
     // Track generation event
     trackImageGeneration(mode, scenesToGenerate, {
@@ -906,81 +846,38 @@ const DashboardPage: React.FC = () => {
       return;
     }
 
-    if (mode === "manual") {
-      const initialManualResults = promptList.map(
-        (p) => ({ prompt: p, isLoading: true } as SceneResult)
-      );
-      setManualResults(initialManualResults);
+    const initialManualResults = promptList.map(
+      (p) => ({ prompt: p, isLoading: true } as SceneResult)
+    );
+    setManualResults(initialManualResults);
 
-      for (let i = 0; i < initialManualResults.length; i++) {
-        try {
-          const imageUrl = await generateCharacterScene(
-            promptList[i],
-            references,
-            size
-          );
-          const updatedUsage = await recordGeneration(userId, 1, planType);
-          setUsage(updatedUsage);
-          markFirstGenerationComplete();
-          setManualResults((prev) =>
-            prev.map((res, idx) =>
-              idx === i ? { ...res, imageUrl, isLoading: false } : res
-            )
-          );
-        } catch (error: any) {
-          console.error("Manual generation error:", error);
-          if (error?.message === "MONTHLY_LIMIT_REACHED") {
-            await refreshUsage(userId);
-            alert("Monthly credit limit reached. Please upgrade for more.");
-            break;
-          }
-          setManualResults((prev) =>
-            prev.map((res, idx) =>
-              idx === i
-                ? { ...res, error: error.message, isLoading: false }
-                : res
-            )
-          );
+    for (let i = 0; i < initialManualResults.length; i++) {
+      try {
+        const imageUrl = await generateCharacterScene(
+          promptList[i],
+          references,
+          size
+        );
+        const updatedUsage = await recordGeneration(userId, 1, planType);
+        setUsage(updatedUsage);
+        markFirstGenerationComplete();
+        setManualResults((prev) =>
+          prev.map((res, idx) =>
+            idx === i ? { ...res, imageUrl, isLoading: false } : res
+          )
+        );
+      } catch (error: any) {
+        console.error("Manual generation error:", error);
+        if (error?.message === "MONTHLY_LIMIT_REACHED") {
+          await refreshUsage(userId);
+          alert("Monthly credit limit reached. Please upgrade for more.");
+          break;
         }
-      }
-    } else {
-      setSlideshowResults((prev) =>
-        prev.map((res) => ({ ...res, isLoading: !res.isCTA && !res.imageUrl }))
-      );
-
-      for (let i = 0; i < slideshowResults.length; i++) {
-        const currentRes = slideshowResults[i];
-        if (currentRes.isCTA || currentRes.imageUrl) continue;
-
-        try {
-          const imageUrl = await generateCharacterScene(
-            currentRes.prompt,
-            references,
-            size
-          );
-          const updatedUsage = await recordGeneration(userId, 1, planType);
-          setUsage(updatedUsage);
-          markFirstGenerationComplete();
-          setSlideshowResults((prev) =>
-            prev.map((res, idx) =>
-              idx === i ? { ...res, imageUrl, isLoading: false } : res
-            )
-          );
-        } catch (error: any) {
-          console.error("Slideshow generation error:", error);
-          if (error?.message === "MONTHLY_LIMIT_REACHED") {
-            await refreshUsage(userId);
-            alert("Monthly credit limit reached. Please upgrade for more.");
-            break;
-          }
-          setSlideshowResults((prev) =>
-            prev.map((res, idx) =>
-              idx === i
-                ? { ...res, error: error.message, isLoading: false }
-                : res
-            )
-          );
-        }
+        setManualResults((prev) =>
+          prev.map((res, idx) =>
+            idx === i ? { ...res, error: error.message, isLoading: false } : res
+          )
+        );
       }
     }
 
@@ -998,9 +895,7 @@ const DashboardPage: React.FC = () => {
         <div className="app__content">
           <Sidebar
             mode={mode}
-            onModeChange={(newMode) => {
-              setActivePanel(newMode === "slideshow" ? "storyboard" : "manual");
-            }}
+            onModeChange={() => {}}
             activePanel={activePanel}
             onPanelChange={(panel) => {
               setActivePanel(panel);
@@ -1167,7 +1062,7 @@ const DashboardPage: React.FC = () => {
               />
             )}
 
-            {(activePanel === "storyboard" || activePanel === "manual") && (
+            {activePanel === "manual" && (
               <section className="card">
                 <div className="card__header">
                   <h3 className="card__title">1. References</h3>
@@ -1241,39 +1136,6 @@ const DashboardPage: React.FC = () => {
                     ))}
                   </div>
                 )}
-              </section>
-            )}
-
-            {activePanel === "storyboard" && (
-              <section className="card">
-                <h3 className="card__title">2. Slideshow Story</h3>
-                <div className={styles["sidebar__panel-content"]}>
-                  <div>
-                    <label className="label">Overall Topic</label>
-                    <input
-                      type="text"
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      placeholder="e.g. Benefits of Yoga"
-                      className="input"
-                    />
-                  </div>
-                  <button
-                    onClick={handleGenerateStoryboard}
-                    disabled={isCreatingStoryboard || !topic.trim()}
-                    className="button button--storyboard"
-                  >
-                    {isCreatingStoryboard
-                      ? "Creating Script..."
-                      : "Generate Storyboard"}
-                  </button>
-                  <div className="sidebar__helper">
-                    <p className="text text--helper">
-                      This will automatically create a title slide, informative
-                      slides, and a CTA slide.
-                    </p>
-                  </div>
-                </div>
               </section>
             )}
 

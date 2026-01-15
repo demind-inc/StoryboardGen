@@ -3,7 +3,7 @@ import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
 import styles from "./Sidebar.module.scss";
 
-export type PanelKey = "saved" | "references" | "storyboard" | "manual";
+export type PanelKey = "saved" | "references" | "manual";
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -165,38 +165,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      <div className={styles["sidebar__section"]}>
-        <p className={styles["sidebar__eyebrow"]}>Mode</p>
-        <div className={styles["sidebar__mode-toggle"]}>
-          <button
-            className={`${styles["sidebar__mode-link"]} ${
-              mode === "manual" && activePanel === "manual"
-                ? styles["is-active"]
-                : ""
-            }`}
-            onClick={() => {
-              onModeChange("manual");
-              onPanelChange("manual");
-            }}
-          >
-            Multi image generation
-          </button>
-          <button
-            className={`${styles["sidebar__mode-link"]} ${
-              mode === "slideshow" && activePanel === "storyboard"
-                ? styles["is-active"]
-                : ""
-            }`}
-            onClick={() => {
-              onModeChange("slideshow");
-              onPanelChange("storyboard");
-            }}
-          >
-            Slideshow
-          </button>
         </div>
       </div>
 

@@ -1,13 +1,7 @@
 export type ImageSize = "1K";
-export type AppMode = "slideshow" | "manual";
+export type AppMode = "manual";
 export type AuthStatus = "checking" | "signed_out" | "signed_in";
 export type SubscriptionPlan = "basic" | "pro" | "business";
-
-export interface SlideContent {
-  title: string;
-  description: string;
-  prompt: string;
-}
 
 export interface SceneResult {
   prompt: string;
@@ -16,7 +10,6 @@ export interface SceneResult {
   imageUrl?: string;
   isLoading: boolean;
   error?: string;
-  isCTA?: boolean;
 }
 
 export interface ReferenceImage {
