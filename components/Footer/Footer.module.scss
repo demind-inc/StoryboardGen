@@ -18,6 +18,19 @@
     letter-spacing: 0.18em;
   }
 
+  &__support {
+    display: inline-flex;
+    align-items: center;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+
   &__status {
     display: flex;
     align-items: center;

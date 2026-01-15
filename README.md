@@ -83,7 +83,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
 
    Credit defaults per plan are:
 
-   - basic: 60 credits/month
+   - basic: 90 credits/month
    - pro: 180 credits/month
    - business: 600 credits/month
 

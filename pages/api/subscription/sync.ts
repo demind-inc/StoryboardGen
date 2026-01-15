@@ -17,7 +17,7 @@ const getCurrentPeriodStart = () => {
 };
 
 const getPlanCredits = (planType: SubscriptionPlan) =>
-  PLAN_CREDITS[planType] ?? 60;
+  PLAN_CREDITS[planType] ?? 90;
 
 export default async function handler(
   req: NextApiRequest,

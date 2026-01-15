@@ -777,7 +777,7 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleAddPrompt = (index: number) => {
+  const handleAddPrompt = () => {
     const promptText = prompt("Enter a new prompt for this scene:");
     if (promptText && promptText.trim()) {
       const trimmedPrompts = manualPrompts.trim();
@@ -785,6 +785,22 @@ const DashboardPage: React.FC = () => {
         ? `${trimmedPrompts}\n${promptText.trim()}`
         : promptText.trim();
       setManualPrompts(newPrompts);
+    }
+  };
+
+  const handleRemovePrompt = (index: number) => {
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    promptList.splice(index, 1);
+    setManualPrompts(promptList.join("\n"));
+  };
+
+  const handleEditPrompt = (index: number) => {
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    const currentPrompt = promptList[index] || "";
+    const newPrompt = prompt("Edit prompt:", currentPrompt);
+    if (newPrompt !== null && newPrompt.trim()) {
+      promptList[index] = newPrompt.trim();
+      setManualPrompts(promptList.join("\n"));
     }
   };
 
@@ -1170,12 +1186,97 @@ const DashboardPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  value={manualPrompts}
-                  onChange={(e) => setManualPrompts(e.target.value)}
-                  placeholder="One scene prompt per line..."
-                  className="input input--textarea"
-                />
+                <div className={styles["prompt-list-container"]}>
+                  {manualPrompts.split("\n").filter((p) => p.trim() !== "")
+                    .length > 0 ? (
+                    <ul className={styles["prompt-list"]}>
+                      {manualPrompts
+                        .split("\n")
+                        .filter((p) => p.trim() !== "")
+                        .map((prompt, idx) => (
+                          <li key={idx} className={styles["prompt-list-item"]}>
+                            <span className={styles["prompt-list-item__text"]}>
+                              {prompt.trim()}
+                            </span>
+                            <div
+                              className={styles["prompt-list-item__actions"]}
+                            >
+                              <button
+                                onClick={() => handleEditPrompt(idx)}
+                                className={styles["prompt-list-item__button"]}
+                                title="Edit prompt"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="14"
+                                  height="14"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleRemovePrompt(idx)}
+                                className={styles["prompt-list-item__button"]}
+                                title="Remove prompt"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="14"
+                                  height="14"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <div className={styles["prompt-list-empty"]}>
+                      <p className="text text--helper">
+                        No prompts yet. Click "Add prompt for scene" to get
+                        started.
+                      </p>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleAddPrompt}
+                    className={styles["add-prompt-button"]}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    Add prompt for scene
+                  </button>
+                </div>
                 <p className="text text--helper">
                   Describe actions, emotions, and props.
                 </p>
@@ -1190,7 +1291,6 @@ const DashboardPage: React.FC = () => {
                     results={results}
                     isGenerating={isGenerating}
                     onRegenerate={handleRegenerate}
-                    onAddPrompt={handleAddPrompt}
                   />
                 ) : (
                   <button
