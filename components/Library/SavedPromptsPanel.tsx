@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { PromptPreset } from "../../types";
+import styles from "./SavedPromptsPanel.module.scss";
 
 interface SavedPromptsPanelProps {
   promptLibrary: PromptPreset[];
@@ -126,14 +127,14 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
         </div>
       </div>
       {isLoading ? (
-        <p className="sidebar__empty">Loading prompts...</p>
+        <p className={styles.empty}>Loading prompts...</p>
       ) : (
         <>
-          <div className="libraryPrompt__list custom-scrollbar">
+          <div className={`${styles.libraryPrompt__list} custom-scrollbar`}>
             {isAddingNewPrompt && (
-              <div className="libraryPrompt__item libraryPrompt__item--new">
+              <div className={`${styles.libraryPrompt__item} ${styles["libraryPrompt__item--new"]}`}>
                 <textarea
-                  className="libraryPrompt__contentInput"
+                  className={styles.libraryPrompt__contentInput}
                   placeholder="Enter prompt..."
                   value={newPromptContent}
                   onChange={(e) => setNewPromptContent(e.target.value)}
@@ -141,18 +142,18 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                   autoFocus
                   required
                 />
-                <div className="libraryPrompt__actions">
+                <div className={styles.libraryPrompt__actions}>
                   <button
                     onClick={handleSaveNewPrompt}
                     disabled={isSaving || !newPromptContent.trim()}
-                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
+                    className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--save"]}`}
                   >
                     {isSaving ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={handleCancelNewPrompt}
                     disabled={isSaving}
-                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
+                    className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--cancel"]}`}
                   >
                     Cancel
                   </button>
@@ -160,17 +161,17 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
               </div>
             )}
             {sortedPrompts.length === 0 && !isAddingNewPrompt ? (
-              <p className="sidebar__empty">No saved prompts.</p>
+              <p className={styles.empty}>No saved prompts.</p>
             ) : (
               sortedPrompts.map((preset) => {
                 const isEditing = editingPromptId === preset.id;
                 return isEditing ? (
                   <div
                     key={preset.id}
-                    className="libraryPrompt__item libraryPrompt__item--editing"
+                    className={`${styles.libraryPrompt__item} ${styles["libraryPrompt__item--editing"]}`}
                   >
                     <textarea
-                      className="libraryPrompt__contentInput"
+                      className={styles.libraryPrompt__contentInput}
                       placeholder="Enter prompt..."
                       value={editingPromptContent}
                       onChange={(e) => setEditingPromptContent(e.target.value)}
@@ -179,20 +180,20 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                       autoFocus
                       required
                     />
-                    <div className="libraryPrompt__actions">
+                    <div className={styles.libraryPrompt__actions}>
                       <button
                         onClick={handleSaveEditedPrompt}
                         disabled={
                           isUpdatingPrompt || !editingPromptContent.trim()
                         }
-                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
+                        className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--save"]}`}
                       >
                         {isUpdatingPrompt ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={handleCancelEditPrompt}
                         disabled={isUpdatingPrompt}
-                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
+                        className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--cancel"]}`}
                       >
                         Cancel
                       </button>
@@ -201,12 +202,12 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                 ) : (
                   <button
                     key={preset.id}
-                    className="libraryPrompt__item"
+                    className={styles.libraryPrompt__item}
                     onClick={() => onSelectPromptPreset(preset)}
                   >
-                    <div className="libraryPrompt__header">
-                      <div className="libraryPrompt__title">{preset.title}</div>
-                      <div className="libraryPrompt__meta">
+                    <div className={styles.libraryPrompt__header}>
+                      <div className={styles.libraryPrompt__title}>{preset.title}</div>
+                      <div className={styles.libraryPrompt__meta}>
                         {preset.createdAt && (
                           <span>
                             {new Date(preset.createdAt).toLocaleDateString()}
@@ -217,7 +218,7 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                             e.stopPropagation();
                             startEditingPrompt(preset);
                           }}
-                          className="libraryPrompt__actionBtn"
+                          className={styles.libraryPrompt__actionBtn}
                           disabled={isSaving || isUpdatingPrompt}
                           title="Edit prompt"
                         >
