@@ -38,6 +38,7 @@ import Results from "../components/Results/Results";
 import Footer from "../components/Footer/Footer";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
+import NameCaptureModal from "../components/DatasetModal/NameCaptureModal";
 import SavedImagesPanel from "../components/Library/SavedImagesPanel";
 import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
 import {
@@ -46,85 +47,13 @@ import {
   trackButtonClick,
 } from "../lib/analytics";
 
-interface NameCaptureModalProps {
-  isOpen: boolean;
-  title: string;
-  defaultValue: string;
-  onSave: (value: string) => void;
-  onCancel: () => void;
-}
-
-const NameCaptureModal: React.FC<NameCaptureModalProps> = ({
-  isOpen,
-  title,
-  defaultValue,
-  onSave,
-  onCancel,
-}) => {
-  const [value, setValue] = useState(defaultValue);
-
-  useEffect(() => {
-    setValue(defaultValue);
-  }, [defaultValue, isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      onCancel();
-    }
-  };
-
-  return (
-    <div
-      className="dataset-modal__backdrop"
-      role="dialog"
-      aria-modal="true"
-      onClick={handleBackdropClick}
-    >
-      <div className="dataset-modal">
-        <div className="dataset-modal__header">
-          <div>
-            <p className="dataset-modal__eyebrow">Save</p>
-            <h3 className="dataset-modal__title">{title}</h3>
-          </div>
-          <button className="dataset-modal__close" onClick={onCancel}>
-            ×
-          </button>
-        </div>
-        <div className="dataset-modal__body">
-          <label className="label">Name</label>
-          <input
-            className="input"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="Enter a name"
-            autoFocus
-          />
-        </div>
-        <div className="dataset-modal__footer">
-          <button className="primary-button" onClick={() => onSave(value)}>
-            Save
-          </button>
-          <button
-            className="primary-button primary-button--ghost"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const DashboardPage: React.FC = () => {
   const { session, authStatus, displayEmail, signOut } = useAuth();
   const router = useRouter();
 
   const FREE_CREDIT_CAP = 3;
   const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
-    basic: "$9/mo",
+    basic: "$15/mo",
     pro: "$29/mo",
     business: "$79/mo",
   };
@@ -142,6 +71,9 @@ const DashboardPage: React.FC = () => {
   const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
   const [isSavingReferences, setIsSavingReferences] = useState(false);
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
+  const [savingPromptIndex, setSavingPromptIndex] = useState<number | null>(
+    null
+  );
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [size, setSize] = useState<ImageSize>("1K");
@@ -165,6 +97,10 @@ const DashboardPage: React.FC = () => {
     type: "reference" | "prompt" | null;
     defaultValue: string;
   }>({ type: null, defaultValue: "" });
+  const [editingPromptIndex, setEditingPromptIndex] = useState<number | null>(
+    null
+  );
+  const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -521,6 +457,33 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleSaveIndividualPrompt = async (index: number) => {
+    const userId = session?.user?.id;
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    const promptText = promptList[index]?.trim();
+
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
+    if (!promptText) {
+      alert("Please select a valid prompt to save.");
+      return;
+    }
+
+    setSavingPromptIndex(index);
+    try {
+      const saved = await savePromptPreset(userId, promptText, promptText);
+      setPromptLibrary((prev) => [saved, ...prev]);
+    } catch (error) {
+      console.error("Failed to save prompt:", error);
+      alert("Could not save prompt. Please try again.");
+    } finally {
+      setSavingPromptIndex(null);
+    }
+  };
+
   const handleUpdatePromptPreset = async (
     presetId: string,
     title: string,
@@ -620,7 +583,12 @@ const DashboardPage: React.FC = () => {
   const closeNameModal = () => setNameModal({ type: null, defaultValue: "" });
 
   const handleUsePromptPreset = (preset: PromptPreset) => {
-    setManualPrompts(preset.content);
+    // Add the single prompt to the list instead of replacing
+    const trimmedPrompts = manualPrompts.trim();
+    const newPrompts = trimmedPrompts
+      ? `${trimmedPrompts}\n${preset.content.trim()}`
+      : preset.content.trim();
+    setManualPrompts(newPrompts);
   };
 
   const openPaymentModal = () => {
@@ -775,6 +743,47 @@ const DashboardPage: React.FC = () => {
         )
       );
     }
+  };
+
+  const handleAddPrompt = () => {
+    setIsAddingNewPrompt(true);
+  };
+
+  const handleRemovePrompt = (index: number) => {
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    promptList.splice(index, 1);
+    setManualPrompts(promptList.join("\n"));
+  };
+
+  const handleStartEditPrompt = (index: number) => {
+    setEditingPromptIndex(index);
+  };
+
+  const handleSavePrompt = (index: number | null, value: string) => {
+    if (value.trim()) {
+      if (index !== null) {
+        // Editing existing prompt
+        const promptList = manualPrompts
+          .split("\n")
+          .filter((p) => p.trim() !== "");
+        promptList[index] = value.trim();
+        setManualPrompts(promptList.join("\n"));
+        setEditingPromptIndex(null);
+      } else {
+        // Adding new prompt
+        const trimmedPrompts = manualPrompts.trim();
+        const newPrompts = trimmedPrompts
+          ? `${trimmedPrompts}\n${value.trim()}`
+          : value.trim();
+        setManualPrompts(newPrompts);
+        setIsAddingNewPrompt(false);
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPromptIndex(null);
+    setIsAddingNewPrompt(false);
   };
 
   const startGeneration = async () => {
@@ -1150,21 +1159,202 @@ const DashboardPage: React.FC = () => {
                     >
                       Use saved prompt
                     </button>
-                    <button
-                      onClick={openPromptNameModal}
-                      disabled={isSavingPrompt || !manualPrompts.trim()}
-                      className="card__action"
-                    >
-                      {isSavingPrompt ? "Saving..." : "Save prompt"}
-                    </button>
                   </div>
                 </div>
-                <textarea
-                  value={manualPrompts}
-                  onChange={(e) => setManualPrompts(e.target.value)}
-                  placeholder="One scene prompt per line..."
-                  className="input input--textarea"
-                />
+                <div className={styles["prompt-list-container"]}>
+                  <ul className={styles["prompt-list"]}>
+                    {isAddingNewPrompt && (
+                      <li
+                        className={`${styles["prompt-list-item"]} ${styles["prompt-list-item--editing"]}`}
+                      >
+                        <input
+                          type="text"
+                          className={styles["prompt-list-item__input"]}
+                          placeholder="Enter a new prompt..."
+                          autoFocus
+                          onBlur={(e) => {
+                            if (e.target.value.trim()) {
+                              handleSavePrompt(null, e.target.value);
+                            } else {
+                              setIsAddingNewPrompt(false);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.currentTarget.blur();
+                            } else if (e.key === "Escape") {
+                              setIsAddingNewPrompt(false);
+                            }
+                          }}
+                        />
+                        <div className={styles["prompt-list-item__actions"]}>
+                          <button
+                            onClick={() => setIsAddingNewPrompt(false)}
+                            className={styles["prompt-list-item__button"]}
+                            title="Cancel"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </li>
+                    )}
+                    {manualPrompts
+                      .split("\n")
+                      .filter((p) => p.trim() !== "")
+                      .map((prompt, idx) => (
+                        <li
+                          key={idx}
+                          className={`${styles["prompt-list-item"]} ${
+                            editingPromptIndex === idx
+                              ? styles["prompt-list-item--editing"]
+                              : ""
+                          }`}
+                        >
+                          {editingPromptIndex === idx ? (
+                            <input
+                              type="text"
+                              className={styles["prompt-list-item__input"]}
+                              defaultValue={prompt.trim()}
+                              autoFocus
+                              onBlur={(e) => {
+                                handleSavePrompt(idx, e.target.value);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.currentTarget.blur();
+                                } else if (e.key === "Escape") {
+                                  setEditingPromptIndex(null);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span
+                              className={styles["prompt-list-item__text"]}
+                              onClick={() => handleStartEditPrompt(idx)}
+                              title="Click to edit"
+                            >
+                              {prompt.trim()}
+                            </span>
+                          )}
+                          {editingPromptIndex !== idx && (
+                            <div
+                              className={styles["prompt-list-item__actions"]}
+                            >
+                              <button
+                                onClick={() => handleSaveIndividualPrompt(idx)}
+                                disabled={savingPromptIndex === idx}
+                                className={styles["prompt-list-item__button"]}
+                                title="Save"
+                              >
+                                {savingPromptIndex === idx ? (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    className={styles["spinner"]}
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                                    />
+                                  </svg>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleRemovePrompt(idx)}
+                                className={styles["prompt-list-item__button"]}
+                                title="Delete"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="14"
+                                  height="14"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    {manualPrompts.split("\n").filter((p) => p.trim() !== "")
+                      .length === 0 &&
+                      !isAddingNewPrompt && (
+                        <div className={styles["prompt-list-empty"]}>
+                          <p className="text text--helper">
+                            No prompts yet. Click "Add prompt for scene" to get
+                            started.
+                          </p>
+                        </div>
+                      )}
+                  </ul>
+                  {!isAddingNewPrompt && (
+                    <button
+                      onClick={handleAddPrompt}
+                      className={styles["add-prompt-button"]}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add prompt for scene
+                    </button>
+                  )}
+                </div>
                 <p className="text text--helper">
                   Describe actions, emotions, and props.
                 </p>

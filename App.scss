@@ -939,12 +939,20 @@ body {
 .library-prompt-title {
   font-weight: 800;
   font-size: 14px;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .library-prompt-meta {
   font-size: 11px;
   color: #94a3b8;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .library-prompt-content {

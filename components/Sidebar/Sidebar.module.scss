@@ -271,6 +271,8 @@
     font-size: 13px;
     letter-spacing: -0.01em;
     transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
 
     &:hover {
       background: rgba(255, 255, 255, 0.06);

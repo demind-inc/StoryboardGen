@@ -5,7 +5,7 @@ type SubscriptionPlan = "basic" | "pro" | "business";
 
 const USAGE_TABLE = "usage_limits";
 const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
-  basic: 60,
+  basic: 90,
   pro: 180,
   business: 600,
 };
@@ -17,7 +17,7 @@ const getCurrentPeriodStart = () => {
 };
 
 const getPlanCredits = (planType: SubscriptionPlan) =>
-  PLAN_CREDITS[planType] ?? 60;
+  PLAN_CREDITS[planType] ?? 90;
 
 export default async function handler(
   req: NextApiRequest,

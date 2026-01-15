@@ -75,8 +75,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     {
       plan: "basic" as SubscriptionPlan,
       badge: "Basic",
-      price: "$9/mo",
-      credits: "60 credits/month",
+      price: "$15/mo",
+      credits: "90 credits/month",
     },
     {
       plan: "pro" as SubscriptionPlan,
