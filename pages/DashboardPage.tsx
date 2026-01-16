@@ -94,6 +94,7 @@ const DashboardPage: React.FC = () => {
     isAddingNewPrompt,
     editingPromptIndex,
     savingPromptIndex,
+    handleReorderPrompt,
     setManualPrompts,
     handleAddPrompt,
     handleRemovePrompt,
@@ -421,6 +422,7 @@ const DashboardPage: React.FC = () => {
                 onSaveReferences={openReferenceNameModal}
                 onAddPrompt={handleAddPrompt}
                 onRemovePrompt={handleRemovePrompt}
+                onReorderPrompt={handleReorderPrompt}
                 onStartEditPrompt={handleStartEditPrompt}
                 onSavePrompt={handleSavePrompt}
                 onCancelEdit={handleCancelEdit}
@@ -438,11 +440,12 @@ const DashboardPage: React.FC = () => {
                     isGenerating={isGenerating}
                     onRegenerate={handleRegenerate}
                   />
-                ) : (
+                ) : null}
+                <div className="app__generateBar">
                   <button
                     onClick={startGeneration}
                     disabled={disableGenerate}
-                    className="primary-button primary-button--full"
+                    className="primary-button"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -461,7 +464,7 @@ const DashboardPage: React.FC = () => {
                     </svg>
                     Generate
                   </button>
-                )}
+                </div>
               </>
             )}
           </div>

@@ -16,6 +16,7 @@ interface ManualPanelProps {
   onSaveReferences: () => void;
   onAddPrompt: () => void;
   onRemovePrompt: (index: number) => void;
+  onReorderPrompt: (fromIndex: number, toIndex: number) => void;
   onStartEditPrompt: (index: number) => void;
   onSavePrompt: (index: number | null, value: string) => void;
   onCancelEdit: () => void;
@@ -36,6 +37,7 @@ const ManualPanel: React.FC<ManualPanelProps> = ({
   onSaveReferences,
   onAddPrompt,
   onRemovePrompt,
+  onReorderPrompt,
   onStartEditPrompt,
   onSavePrompt,
   onCancelEdit,
@@ -57,8 +59,10 @@ const ManualPanel: React.FC<ManualPanelProps> = ({
         isAddingNewPrompt={isAddingNewPrompt}
         editingPromptIndex={editingPromptIndex}
         savingPromptIndex={savingPromptIndex}
+        references={references}
         onAddPrompt={onAddPrompt}
         onRemovePrompt={onRemovePrompt}
+        onReorderPrompt={onReorderPrompt}
         onStartEdit={onStartEditPrompt}
         onSavePrompt={onSavePrompt}
         onCancelEdit={onCancelEdit}

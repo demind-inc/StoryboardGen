@@ -33,7 +33,9 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               ? "..."
               : hasSubscription
               ? displayUsageLimit
-                ? `${displayUsageRemaining ?? displayUsageLimit}/${displayUsageLimit}`
+                ? `${
+                    displayUsageRemaining ?? displayUsageLimit
+                  }/${displayUsageLimit}`
                 : "--/--"
               : typeof freeCreditsRemaining === "number"
               ? `${freeCreditsRemaining}/3`
@@ -50,10 +52,6 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
         <div className={styles.metricCard}>
           <p className={styles.metricCard__value}>{totalScenes}</p>
           <p className={styles.metricCard__label}>Scenes</p>
-        </div>
-        <div className={styles.metricCard}>
-          <p className={styles.metricCard__value}>{generatedCount}</p>
-          <p className={styles.metricCard__label}>Rendered</p>
         </div>
         <div className={styles.metricCard}>
           <p className={styles.metricCard__value}>{size}</p>
