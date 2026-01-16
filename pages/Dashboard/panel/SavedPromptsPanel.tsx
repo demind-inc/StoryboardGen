@@ -1,31 +1,28 @@
-import React, { useState } from "react";
-import { PromptPreset } from "../../types";
+import React, { useState, useEffect, useMemo } from "react";
+import { PromptPreset } from "../../../types";
+import { useAuth } from "../../../providers/AuthProvider";
+import {
+  fetchPromptLibrary,
+  savePromptPreset,
+  updatePromptPreset,
+  deletePromptPreset,
+} from "../../../services/libraryService";
+import styles from "./SavedPromptsPanel.module.scss";
 
 interface SavedPromptsPanelProps {
-  promptLibrary: PromptPreset[];
-  isLoading?: boolean;
-  sortedPrompts: PromptPreset[];
   sortDirection: "newest" | "oldest";
   onSortChange: (value: "newest" | "oldest") => void;
   onSelectPromptPreset: (preset: PromptPreset) => void;
-  onSaveNewPrompt: (title: string, content: string) => Promise<void>;
-  onUpdatePromptPreset: (
-    presetId: string,
-    title: string,
-    content: string
-  ) => Promise<void>;
 }
 
 const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
-  promptLibrary,
-  isLoading,
-  sortedPrompts,
   sortDirection,
   onSortChange,
   onSelectPromptPreset,
-  onSaveNewPrompt,
-  onUpdatePromptPreset,
 }) => {
+  const { session, authStatus } = useAuth();
+  const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [newPromptContent, setNewPromptContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -33,9 +30,41 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
   const [editingPromptContent, setEditingPromptContent] = useState("");
   const [isUpdatingPrompt, setIsUpdatingPrompt] = useState(false);
 
+  const loadPromptLibrary = async (userId: string) => {
+    setIsLoading(true);
+    try {
+      const prompts = await fetchPromptLibrary(userId);
+      setPromptLibrary(prompts);
+    } catch (error) {
+      console.error("Failed to load prompt library:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      loadPromptLibrary(userId);
+    }
+  }, [authStatus, session?.user?.id]);
+
+  const sortedPrompts = useMemo(() => {
+    return [...promptLibrary].sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return sortDirection === "newest" ? bTime - aTime : aTime - bTime;
+    });
+  }, [promptLibrary, sortDirection]);
+
   const handleSaveNewPrompt = async () => {
     if (!newPromptContent.trim()) {
       alert("Please enter prompt content.");
+      return;
+    }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
       return;
     }
     setIsSaving(true);
@@ -46,9 +75,10 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
           ? `${newPromptContent.trim().substring(0, 50)}...`
           : newPromptContent.trim();
 
-      await onSaveNewPrompt(title, newPromptContent.trim());
+      await savePromptPreset(userId, newPromptContent.trim(), title);
       setIsAddingNewPrompt(false);
       setNewPromptContent("");
+      await loadPromptLibrary(userId);
     } catch (error) {
       console.error("Failed to save new prompt:", error);
       alert("Could not save prompt. Please try again.");
@@ -73,15 +103,22 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
       alert("Please enter prompt content.");
       return;
     }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
     setIsUpdatingPrompt(true);
     try {
-      await onUpdatePromptPreset(
+      await updatePromptPreset(
+        userId,
         editingPromptId,
         editingPromptContent,
         editingPromptContent
       );
       setEditingPromptId(null);
       setEditingPromptContent("");
+      await loadPromptLibrary(userId);
     } catch (error) {
       console.error("Failed to update prompt preset:", error);
       alert("Could not update prompt. Please try again.");
@@ -93,6 +130,30 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
   const handleCancelEditPrompt = () => {
     setEditingPromptId(null);
     setEditingPromptContent("");
+  };
+
+  const handleDeletePrompt = async (presetId: string) => {
+    if (
+      !confirm(
+        "Are you sure you want to delete this prompt? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
+    try {
+      await deletePromptPreset(userId, presetId);
+      await loadPromptLibrary(userId);
+    } catch (error) {
+      console.error("Failed to delete prompt:", error);
+      alert("Could not delete this prompt. Please try again.");
+    }
   };
 
   const handleUploadClick = () => {
@@ -126,14 +187,14 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
         </div>
       </div>
       {isLoading ? (
-        <p className="sidebar__empty">Loading prompts...</p>
+        <p className={styles.empty}>Loading prompts...</p>
       ) : (
         <>
-          <div className="libraryPrompt__list custom-scrollbar">
+          <div className={`${styles.libraryPrompt__list} custom-scrollbar`}>
             {isAddingNewPrompt && (
-              <div className="libraryPrompt__item libraryPrompt__item--new">
+              <div className={`${styles.libraryPrompt__item} ${styles["libraryPrompt__item--new"]}`}>
                 <textarea
-                  className="libraryPrompt__contentInput"
+                  className={styles.libraryPrompt__contentInput}
                   placeholder="Enter prompt..."
                   value={newPromptContent}
                   onChange={(e) => setNewPromptContent(e.target.value)}
@@ -141,18 +202,18 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                   autoFocus
                   required
                 />
-                <div className="libraryPrompt__actions">
+                <div className={styles.libraryPrompt__actions}>
                   <button
                     onClick={handleSaveNewPrompt}
                     disabled={isSaving || !newPromptContent.trim()}
-                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
+                    className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--save"]}`}
                   >
                     {isSaving ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={handleCancelNewPrompt}
                     disabled={isSaving}
-                    className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
+                    className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--cancel"]}`}
                   >
                     Cancel
                   </button>
@@ -160,17 +221,17 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
               </div>
             )}
             {sortedPrompts.length === 0 && !isAddingNewPrompt ? (
-              <p className="sidebar__empty">No saved prompts.</p>
+              <p className={styles.empty}>No saved prompts.</p>
             ) : (
               sortedPrompts.map((preset) => {
                 const isEditing = editingPromptId === preset.id;
                 return isEditing ? (
                   <div
                     key={preset.id}
-                    className="libraryPrompt__item libraryPrompt__item--editing"
+                    className={`${styles.libraryPrompt__item} ${styles["libraryPrompt__item--editing"]}`}
                   >
                     <textarea
-                      className="libraryPrompt__contentInput"
+                      className={styles.libraryPrompt__contentInput}
                       placeholder="Enter prompt..."
                       value={editingPromptContent}
                       onChange={(e) => setEditingPromptContent(e.target.value)}
@@ -179,20 +240,20 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                       autoFocus
                       required
                     />
-                    <div className="libraryPrompt__actions">
+                    <div className={styles.libraryPrompt__actions}>
                       <button
                         onClick={handleSaveEditedPrompt}
                         disabled={
                           isUpdatingPrompt || !editingPromptContent.trim()
                         }
-                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--save"
+                        className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--save"]}`}
                       >
                         {isUpdatingPrompt ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={handleCancelEditPrompt}
                         disabled={isUpdatingPrompt}
-                        className="libraryPrompt__actionBtn libraryPrompt__actionBtn--cancel"
+                        className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--cancel"]}`}
                       >
                         Cancel
                       </button>
@@ -201,12 +262,12 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                 ) : (
                   <button
                     key={preset.id}
-                    className="libraryPrompt__item"
+                    className={styles.libraryPrompt__item}
                     onClick={() => onSelectPromptPreset(preset)}
                   >
-                    <div className="libraryPrompt__header">
-                      <div className="libraryPrompt__title">{preset.title}</div>
-                      <div className="libraryPrompt__meta">
+                    <div className={styles.libraryPrompt__header}>
+                      <div className={styles.libraryPrompt__title}>{preset.title}</div>
+                      <div className={styles.libraryPrompt__meta}>
                         {preset.createdAt && (
                           <span>
                             {new Date(preset.createdAt).toLocaleDateString()}
@@ -217,11 +278,34 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
                             e.stopPropagation();
                             startEditingPrompt(preset);
                           }}
-                          className="libraryPrompt__actionBtn"
+                          className={styles.libraryPrompt__actionBtn}
                           disabled={isSaving || isUpdatingPrompt}
                           title="Edit prompt"
                         >
                           Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePrompt(preset.id);
+                          }}
+                          className={`${styles.libraryPrompt__actionBtn} ${styles["libraryPrompt__actionBtn--delete"]}`}
+                          disabled={isSaving || isUpdatingPrompt}
+                          title="Delete prompt"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
                         </button>
                       </div>
                     </div>

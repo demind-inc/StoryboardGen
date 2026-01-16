@@ -1,22 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PromptPreset } from "../../types";
+import { useAuth } from "../../providers/AuthProvider";
+import { fetchPromptLibrary } from "../../services/libraryService";
 import styles from "./DatasetModal.module.scss";
 
 interface PromptLibraryModalProps {
   isOpen: boolean;
-  items: PromptPreset[];
-  isLoading?: boolean;
   onClose: () => void;
   onSelect: (item: PromptPreset) => void;
 }
 
 const PromptLibraryModal: React.FC<PromptLibraryModalProps> = ({
   isOpen,
-  items,
-  isLoading,
   onClose,
   onSelect,
 }) => {
+  const { session, authStatus } = useAuth();
+  const [items, setItems] = useState<PromptPreset[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const loadLibrary = async () => {
+      const userId = session?.user?.id;
+      if (isOpen && authStatus === "signed_in" && userId) {
+        setIsLoading(true);
+        try {
+          const prompts = await fetchPromptLibrary(userId);
+          setItems(prompts);
+        } catch (error) {
+          console.error("Failed to load prompt library:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadLibrary();
+  }, [isOpen, authStatus, session?.user?.id]);
+
   if (!isOpen) return null;
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {

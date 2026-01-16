@@ -13,6 +13,7 @@ interface UsePromptsReturn {
   setManualPrompts: React.Dispatch<React.SetStateAction<string>>;
   handleAddPrompt: () => void;
   handleRemovePrompt: (index: number) => void;
+  handleReorderPrompt: (fromIndex: number, toIndex: number) => void;
   handleStartEditPrompt: (index: number) => void;
   handleSavePrompt: (index: number | null, value: string) => void;
   handleCancelEdit: () => void;
@@ -50,6 +51,22 @@ export const usePrompts = (
     const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
     promptList.splice(index, 1);
     setManualPrompts(promptList.join("\n"));
+  };
+
+  const handleReorderPrompt = (fromIndex: number, toIndex: number) => {
+    const promptList = manualPrompts.split("\n").filter((p) => p.trim() !== "");
+    if (
+      fromIndex < 0 ||
+      fromIndex >= promptList.length ||
+      toIndex < 0 ||
+      toIndex >= promptList.length
+    ) {
+      return;
+    }
+    const [moved] = promptList.splice(fromIndex, 1);
+    promptList.splice(toIndex, 0, moved);
+    setManualPrompts(promptList.join("\n"));
+    setEditingPromptIndex(null);
   };
 
   const handleStartEditPrompt = (index: number) => {
@@ -182,6 +199,7 @@ export const usePrompts = (
     setManualPrompts,
     handleAddPrompt,
     handleRemovePrompt,
+    handleReorderPrompt,
     handleStartEditPrompt,
     handleSavePrompt,
     handleCancelEdit,

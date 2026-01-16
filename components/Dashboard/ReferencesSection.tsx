@@ -44,23 +44,33 @@ const ReferencesSection: React.FC<ReferencesSectionProps> = ({
         </div>
       </div>
       {references.length === 0 ? (
-        <div onClick={onUpload} className={styles.referencesSection__placeholder}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          <div>Add Character Images</div>
+        <div className={styles.referencesSection__placeholder}>
+          <div className={styles.referencesSection__illustration}>
+            <span>🧑‍🎤</span>
+            <span>🖼️</span>
+            <span>🎯</span>
+          </div>
+          <div className={styles.referencesSection__text}>
+            <h4>Add Character Images</h4>
+            <p>
+              Upload reference images to keep characters consistent across
+              scenes.
+            </p>
+            <p className={styles.referencesSection__meta}>
+              Supports JPG, PNG, WEBP · Best with 3-5 angles per character
+            </p>
+          </div>
+          <div className={styles.referencesSection__actions}>
+            <button onClick={onUpload} className="primary-button">
+              Upload references
+            </button>
+            <button
+              onClick={onOpenLibrary}
+              className="primary-button primary-button--border-purple"
+            >
+              Try with saved dataset
+            </button>
+          </div>
         </div>
       ) : (
         <div className={styles.referencesSection__grid}>

@@ -1,13 +1,16 @@
 import React from "react";
 import styles from "./PromptsSection.module.scss";
+import { ReferenceImage } from "../../types";
 
 interface PromptsSectionProps {
   prompts: string;
   isAddingNewPrompt: boolean;
   editingPromptIndex: number | null;
   savingPromptIndex: number | null;
+  references: ReferenceImage[];
   onAddPrompt: () => void;
   onRemovePrompt: (index: number) => void;
+  onReorderPrompt: (fromIndex: number, toIndex: number) => void;
   onStartEdit: (index: number) => void;
   onSavePrompt: (index: number | null, value: string) => void;
   onCancelEdit: () => void;
@@ -20,8 +23,10 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
   isAddingNewPrompt,
   editingPromptIndex,
   savingPromptIndex,
+  references,
   onAddPrompt,
   onRemovePrompt,
+  onReorderPrompt,
   onStartEdit,
   onSavePrompt,
   onCancelEdit,
@@ -29,11 +34,12 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
   onOpenLibrary,
 }) => {
   const promptList = prompts.split("\n").filter((p) => p.trim() !== "");
+  const visibleReferences = references.slice(0, 3);
 
   return (
     <section className="card sidebar__panel">
       <div className="card__header">
-        <h3 className="card__title">2. Manual Scenarios</h3>
+        <h3 className="card__title">2. Scene Prompts</h3>
         <div className="card__actions">
           <button
             onClick={onOpenLibrary}
@@ -49,10 +55,12 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
             <li
               className={`${styles.promptsSection__item} ${styles["promptsSection__item--editing"]}`}
             >
-              <input
-                type="text"
+              <div className={styles.promptsSection__itemHead}>
+                <div className={styles.promptsSection__sceneTag}>Scene</div>
+              </div>
+              <textarea
                 className={styles.promptsSection__itemInput}
-                placeholder="Enter a new prompt..."
+                placeholder="Describe what happens in this scene..."
                 autoFocus
                 onBlur={(e) => {
                   if (e.target.value.trim()) {
@@ -62,7 +70,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                   }
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.currentTarget.blur();
                   } else if (e.key === "Escape") {
                     onCancelEdit();
@@ -75,21 +83,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                   className={styles.promptsSection__itemButton}
                   title="Cancel"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  Cancel
                 </button>
               </div>
             </li>
@@ -103,9 +97,14 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                   : ""
               }`}
             >
+              <div className={styles.promptsSection__itemHead}>
+                <div className={styles.promptsSection__sceneTag}>
+                  Scene {idx + 1}
+                </div>
+              </div>
+
               {editingPromptIndex === idx ? (
-                <input
-                  type="text"
+                <textarea
                   className={styles.promptsSection__itemInput}
                   defaultValue={prompt.trim()}
                   autoFocus
@@ -113,7 +112,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                     onSavePrompt(idx, e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                       e.currentTarget.blur();
                     } else if (e.key === "Escape") {
                       onCancelEdit();
@@ -129,78 +128,53 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                   {prompt.trim()}
                 </span>
               )}
-              {editingPromptIndex !== idx && (
-                <div className={styles.promptsSection__itemActions}>
+
+              <div className={styles.promptsSection__itemActions}>
+                <div className={styles.promptsSection__reorder}>
+                  <button
+                    onClick={() => onReorderPrompt(idx, Math.max(0, idx - 1))}
+                    disabled={idx === 0}
+                    title="Move up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    onClick={() =>
+                      onReorderPrompt(
+                        idx,
+                        Math.min(promptList.length - 1, idx + 1)
+                      )
+                    }
+                    disabled={idx === promptList.length - 1}
+                    title="Move down"
+                  >
+                    ↓
+                  </button>
+                </div>
+                <div className={styles.promptsSection__ctaGroup}>
                   <button
                     onClick={() => onSaveIndividualPrompt(idx)}
                     disabled={savingPromptIndex === idx}
                     className={styles.promptsSection__itemButton}
                     title="Save"
                   >
-                    {savingPromptIndex === idx ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className={styles.promptsSection__spinner}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                        />
-                      </svg>
-                    )}
+                    {savingPromptIndex === idx ? "Saving..." : "Save scene"}
                   </button>
                   <button
                     onClick={() => onRemovePrompt(idx)}
                     className={styles.promptsSection__itemButton}
                     title="Delete"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
+                    Delete
                   </button>
                 </div>
-              )}
+              </div>
             </li>
           ))}
           {promptList.length === 0 && !isAddingNewPrompt && (
             <div className={styles.promptsSection__empty}>
               <p className="text text--helper">
-                No prompts yet. Click "Add prompt for scene" to get started.
+                No prompts yet. Start with a single scene to preview the flow.
               </p>
             </div>
           )}
@@ -225,12 +199,12 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Add prompt for scene
+            Add Scene
           </button>
         )}
       </div>
       <p className="text text--helper">
-        Describe actions, emotions, and props.
+        Describe what’s happening in this scene.
       </p>
     </section>
   );

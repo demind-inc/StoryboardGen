@@ -84,7 +84,7 @@ const Results: React.FC<ResultsProps> = ({
                             <div className={styles["slide-card__actions"]}>
                               <button
                                 onClick={() => onRegenerate(idx)}
-                                className="icon-button"
+                                className={styles["icon-button"]}
                                 title="Regenerate this scene"
                               >
                                 <svg
@@ -106,7 +106,7 @@ const Results: React.FC<ResultsProps> = ({
                               <a
                                 href={result.imageUrl}
                                 download={`scene-${idx + 1}.png`}
-                                className="icon-button"
+                                className={styles["icon-button"]}
                                 title="Download PNG"
                               >
                                 <svg
