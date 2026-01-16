@@ -53,7 +53,8 @@ const ReferencesSection: React.FC<ReferencesSectionProps> = ({
           <div className={styles.referencesSection__text}>
             <h4>Add Character Images</h4>
             <p>
-              Upload reference images to keep characters consistent across scenes.
+              Upload reference images to keep characters consistent across
+              scenes.
             </p>
             <p className={styles.referencesSection__meta}>
               Supports JPG, PNG, WEBP · Best with 3-5 angles per character
@@ -65,9 +66,9 @@ const ReferencesSection: React.FC<ReferencesSectionProps> = ({
             </button>
             <button
               onClick={onOpenLibrary}
-              className="primary-button primary-button--ghost"
+              className="primary-button primary-button--border-purple"
             >
-              Try with example character
+              Try with saved dataset
             </button>
           </div>
         </div>

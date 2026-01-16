@@ -239,6 +239,14 @@ const ManualPanel: React.FC = () => {
         >
           {isGenerating ? "Generating..." : `Generate`}
         </button>
+        {manualResults.length > 0 && !isGenerating && (
+          <button
+            onClick={() => setManualResults([])}
+            className="button button--ghost"
+          >
+            Start again
+          </button>
+        )}
       </div>
 
       <ReferenceLibraryModal
