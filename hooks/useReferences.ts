@@ -7,7 +7,7 @@ import {
 
 interface UseReferencesReturn {
   references: ReferenceImage[];
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   isSavingReferences: boolean;
   setReferences: React.Dispatch<React.SetStateAction<ReferenceImage[]>>;
   triggerUpload: () => void;
