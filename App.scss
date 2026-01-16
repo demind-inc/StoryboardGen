@@ -338,6 +338,9 @@ body {
   padding: 20px;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   &--gradient {
     background: linear-gradient(

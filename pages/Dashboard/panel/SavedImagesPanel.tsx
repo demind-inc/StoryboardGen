@@ -1,5 +1,12 @@
-import React, { useMemo, useState, useRef } from "react";
-import { ReferenceSet, ReferenceImage } from "../../types";
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import { ReferenceSet, ReferenceImage } from "../../../types";
+import { useAuth } from "../../../providers/AuthProvider";
+import {
+  fetchReferenceLibrary,
+  saveReferenceImages,
+  updateReferenceSetLabel,
+  deleteReferenceSet,
+} from "../../../services/libraryService";
 import styles from "./SavedImagesPanel.module.scss";
 
 interface ImageExpandModalProps {
@@ -60,26 +67,19 @@ const ImageExpandModal: React.FC<ImageExpandModalProps> = ({
 };
 
 interface SavedImagesPanelProps {
-  referenceLibrary: ReferenceSet[];
-  isLoading?: boolean;
   sortDirection: "newest" | "oldest";
   onSortChange: (value: "newest" | "oldest") => void;
   onSelectReferenceSet: (sets: ReferenceSet[]) => void;
-  onSaveNewSet: (images: ReferenceImage[], label?: string) => Promise<void>;
-  onUpdateReferenceSet: (setId: string, label: string) => Promise<void>;
-  onDeleteReferenceSet: (setId: string) => Promise<void>;
 }
 
 const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
-  referenceLibrary,
-  isLoading,
   sortDirection,
   onSortChange,
   onSelectReferenceSet,
-  onSaveNewSet,
-  onUpdateReferenceSet,
-  onDeleteReferenceSet,
 }) => {
+  const { session, authStatus } = useAuth();
+  const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAddingNewSet, setIsAddingNewSet] = useState(false);
   const [newSetImages, setNewSetImages] = useState<ReferenceImage[]>([]);
   const [newSetLabel, setNewSetLabel] = useState("");
@@ -89,6 +89,25 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
   const [editingSetLabel, setEditingSetLabel] = useState("");
   const [isUpdatingSet, setIsUpdatingSet] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const loadReferenceLibrary = async (userId: string) => {
+    setIsLoading(true);
+    try {
+      const refs = await fetchReferenceLibrary(userId);
+      setReferenceLibrary(refs);
+    } catch (error) {
+      console.error("Failed to load reference library:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      loadReferenceLibrary(userId);
+    }
+  }, [authStatus, session?.user?.id]);
 
   const sortedSets = useMemo(() => {
     return [...referenceLibrary].sort((a, b) => {
@@ -141,12 +160,18 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       alert("Please enter a name for the set.");
       return;
     }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
     setIsSaving(true);
     try {
-      await onSaveNewSet(newSetImages, newSetLabel.trim());
+      await saveReferenceImages(userId, newSetImages, newSetLabel.trim());
       setIsAddingNewSet(false);
       setNewSetImages([]);
       setNewSetLabel("");
+      await loadReferenceLibrary(userId);
     } catch (error) {
       console.error("Failed to save new set:", error);
       alert("Could not save images. Please try again.");
@@ -172,11 +197,17 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       alert("Please enter a name for the set.");
       return;
     }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
     setIsUpdatingSet(true);
     try {
-      await onUpdateReferenceSet(editingSetId, editingSetLabel.trim());
+      await updateReferenceSetLabel(userId, editingSetId, editingSetLabel.trim());
       setEditingSetId(null);
       setEditingSetLabel("");
+      await loadReferenceLibrary(userId);
     } catch (error) {
       console.error("Failed to update reference set:", error);
       alert("Could not update this set. Please try again.");
@@ -199,8 +230,15 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       return;
     }
 
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
     try {
-      await onDeleteReferenceSet(setId);
+      await deleteReferenceSet(userId, setId);
+      await loadReferenceLibrary(userId);
     } catch (error) {
       console.error("Failed to delete reference set:", error);
       alert("Could not delete this set. Please try again.");

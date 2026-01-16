@@ -1,34 +1,28 @@
-import React, { useState } from "react";
-import { PromptPreset } from "../../types";
+import React, { useState, useEffect, useMemo } from "react";
+import { PromptPreset } from "../../../types";
+import { useAuth } from "../../../providers/AuthProvider";
+import {
+  fetchPromptLibrary,
+  savePromptPreset,
+  updatePromptPreset,
+  deletePromptPreset,
+} from "../../../services/libraryService";
 import styles from "./SavedPromptsPanel.module.scss";
 
 interface SavedPromptsPanelProps {
-  promptLibrary: PromptPreset[];
-  isLoading?: boolean;
-  sortedPrompts: PromptPreset[];
   sortDirection: "newest" | "oldest";
   onSortChange: (value: "newest" | "oldest") => void;
   onSelectPromptPreset: (preset: PromptPreset) => void;
-  onSaveNewPrompt: (title: string, content: string) => Promise<void>;
-  onUpdatePromptPreset: (
-    presetId: string,
-    title: string,
-    content: string
-  ) => Promise<void>;
-  onDeletePromptPreset: (presetId: string) => Promise<void>;
 }
 
 const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
-  promptLibrary,
-  isLoading,
-  sortedPrompts,
   sortDirection,
   onSortChange,
   onSelectPromptPreset,
-  onSaveNewPrompt,
-  onUpdatePromptPreset,
-  onDeletePromptPreset,
 }) => {
+  const { session, authStatus } = useAuth();
+  const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [newPromptContent, setNewPromptContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -36,9 +30,41 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
   const [editingPromptContent, setEditingPromptContent] = useState("");
   const [isUpdatingPrompt, setIsUpdatingPrompt] = useState(false);
 
+  const loadPromptLibrary = async (userId: string) => {
+    setIsLoading(true);
+    try {
+      const prompts = await fetchPromptLibrary(userId);
+      setPromptLibrary(prompts);
+    } catch (error) {
+      console.error("Failed to load prompt library:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      loadPromptLibrary(userId);
+    }
+  }, [authStatus, session?.user?.id]);
+
+  const sortedPrompts = useMemo(() => {
+    return [...promptLibrary].sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return sortDirection === "newest" ? bTime - aTime : aTime - bTime;
+    });
+  }, [promptLibrary, sortDirection]);
+
   const handleSaveNewPrompt = async () => {
     if (!newPromptContent.trim()) {
       alert("Please enter prompt content.");
+      return;
+    }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
       return;
     }
     setIsSaving(true);
@@ -49,9 +75,10 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
           ? `${newPromptContent.trim().substring(0, 50)}...`
           : newPromptContent.trim();
 
-      await onSaveNewPrompt(title, newPromptContent.trim());
+      await savePromptPreset(userId, newPromptContent.trim(), title);
       setIsAddingNewPrompt(false);
       setNewPromptContent("");
+      await loadPromptLibrary(userId);
     } catch (error) {
       console.error("Failed to save new prompt:", error);
       alert("Could not save prompt. Please try again.");
@@ -76,15 +103,22 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
       alert("Please enter prompt content.");
       return;
     }
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
     setIsUpdatingPrompt(true);
     try {
-      await onUpdatePromptPreset(
+      await updatePromptPreset(
+        userId,
         editingPromptId,
         editingPromptContent,
         editingPromptContent
       );
       setEditingPromptId(null);
       setEditingPromptContent("");
+      await loadPromptLibrary(userId);
     } catch (error) {
       console.error("Failed to update prompt preset:", error);
       alert("Could not update prompt. Please try again.");
@@ -107,8 +141,15 @@ const SavedPromptsPanel: React.FC<SavedPromptsPanelProps> = ({
       return;
     }
 
+    const userId = session?.user?.id;
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      return;
+    }
+
     try {
-      await onDeletePromptPreset(presetId);
+      await deletePromptPreset(userId, presetId);
+      await loadPromptLibrary(userId);
     } catch (error) {
       console.error("Failed to delete prompt:", error);
       alert("Could not delete this prompt. Please try again.");

@@ -13,12 +13,8 @@ import {
   PLAN_CREDITS,
 } from "../services/usageService";
 import {
-  fetchPromptLibrary,
   fetchReferenceLibrary,
-  saveReferenceImages,
-  savePromptPreset,
-  deleteReferenceSet,
-  deletePromptPreset,
+  fetchPromptLibrary,
 } from "../services/libraryService";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
@@ -26,11 +22,10 @@ import Results from "../components/Results/Results";
 import ReferenceLibraryModal from "../components/DatasetModal/ReferenceLibraryModal";
 import PromptLibraryModal from "../components/DatasetModal/PromptLibraryModal";
 import NameCaptureModal from "../components/DatasetModal/NameCaptureModal";
-import SavedImagesPanel from "../components/Library/SavedImagesPanel";
-import SavedPromptsPanel from "../components/Library/SavedPromptsPanel";
+import SavedImagesPanel from "./Dashboard/panel/SavedImagesPanel";
+import SavedPromptsPanel from "./Dashboard/panel/SavedPromptsPanel";
 import DashboardSummary from "../components/Dashboard/DashboardSummary";
-import ReferencesSection from "../components/Dashboard/ReferencesSection";
-import PromptsSection from "../components/Dashboard/PromptsSection";
+import ManualPanel from "./Dashboard/panel/ManualPanel";
 import { useReferences } from "../hooks/useReferences";
 import { usePrompts } from "../hooks/usePrompts";
 import { useImageGeneration } from "../hooks/useImageGeneration";
@@ -49,11 +44,9 @@ const DashboardPage: React.FC = () => {
   };
 
   const [activePanel, setActivePanel] = useState<PanelKey>("manual");
-  const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
-  const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
-  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [size, setSize] = useState<ImageSize>("1K");
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
+  const [promptLibrary, setPromptLibrary] = useState<PromptPreset[]>([]);
   const mode: AppMode = "manual";
 
   // Initialize hooks
@@ -76,12 +69,7 @@ const DashboardPage: React.FC = () => {
   } = usageHook;
 
   const refreshReferenceLibrary = async (userId: string) => {
-    try {
-      const refs = await fetchReferenceLibrary(userId);
-      setReferenceLibrary(refs);
-    } catch (error) {
-      console.error("Failed to refresh reference library:", error);
-    }
+    await fetchReferenceLibrary(userId);
   };
 
   const referencesHook = useReferences(
@@ -98,7 +86,6 @@ const DashboardPage: React.FC = () => {
     removeReference,
     handleSaveReferences,
     handleAddReferencesFromLibrary,
-    handleUpdateReferenceSetLabel,
   } = referencesHook;
 
   const promptsHook = usePrompts(session?.user?.id, setPromptLibrary);
@@ -206,29 +193,12 @@ const DashboardPage: React.FC = () => {
     }
   }, [authStatus, router]);
 
-  const loadLibraries = async (userId: string) => {
-    setIsLibraryLoading(true);
-    try {
-      const [refs, prompts] = await Promise.all([
-        fetchReferenceLibrary(userId),
-        fetchPromptLibrary(userId),
-      ]);
-      setReferenceLibrary(refs);
-      setPromptLibrary(prompts);
-    } catch (error) {
-      console.error("Failed to load saved datasets:", error);
-    } finally {
-      setIsLibraryLoading(false);
-    }
-  };
-
   useEffect(() => {
     const userId = session?.user?.id;
     if (authStatus === "signed_in" && userId) {
       refreshUsage(userId);
       refreshSubscription(userId);
       refreshHasGeneratedFreeImage(userId);
-      loadLibraries(userId);
     }
   }, [authStatus, session?.user?.id]);
 
@@ -282,13 +252,6 @@ const DashboardPage: React.FC = () => {
   }, [isPaymentUnlocked, session?.user?.id, setIsPaymentModalOpen]);
 
   // All hooks must be called before any conditional returns
-  const sortedPrompts = useMemo(() => {
-    return [...promptLibrary].sort((a, b) => {
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return librarySort === "newest" ? bTime - aTime : aTime - bTime;
-    });
-  }, [promptLibrary, librarySort]);
 
   // Show loading state while checking auth
   if (authStatus === "checking") {
@@ -430,103 +393,39 @@ const DashboardPage: React.FC = () => {
 
             {activePanel === "saved" && (
               <SavedImagesPanel
-                referenceLibrary={referenceLibrary}
-                isLoading={isLibraryLoading}
                 sortDirection={librarySort}
                 onSortChange={setLibrarySort}
                 onSelectReferenceSet={handleAddReferencesFromLibrary}
-                onSaveNewSet={async (images, label) => {
-                  const userId = session?.user?.id;
-                  if (!userId) {
-                    alert(
-                      "Unable to verify your account. Please sign in again."
-                    );
-                    return;
-                  }
-                  await saveReferenceImages(userId, images, label);
-                  await refreshReferenceLibrary(userId);
-                }}
-                onUpdateReferenceSet={(setId, label) =>
-                  handleUpdateReferenceSetLabel(
-                    setId,
-                    label,
-                    setReferenceLibrary
-                  )
-                }
-                onDeleteReferenceSet={async (setId) => {
-                  const userId = session?.user?.id;
-                  if (!userId) {
-                    alert(
-                      "Unable to verify your account. Please sign in again."
-                    );
-                    return;
-                  }
-                  await deleteReferenceSet(userId, setId);
-                  await refreshReferenceLibrary(userId);
-                }}
               />
             )}
 
             {activePanel === "references" && (
               <SavedPromptsPanel
-                promptLibrary={promptLibrary}
-                isLoading={isLibraryLoading}
-                sortedPrompts={sortedPrompts}
                 sortDirection={librarySort}
                 onSortChange={setLibrarySort}
                 onSelectPromptPreset={handleUsePromptPreset}
-                onSaveNewPrompt={async (title, content) => {
-                  const userId = session?.user?.id;
-                  if (!userId) {
-                    alert(
-                      "Unable to verify your account. Please sign in again."
-                    );
-                    return;
-                  }
-                  const saved = await savePromptPreset(userId, content, title);
-                  setPromptLibrary((prev) => [saved, ...prev]);
-                }}
-                onUpdatePromptPreset={handleUpdatePromptPreset}
-                onDeletePromptPreset={async (presetId) => {
-                  const userId = session?.user?.id;
-                  if (!userId) {
-                    alert(
-                      "Unable to verify your account. Please sign in again."
-                    );
-                    return;
-                  }
-                  await deletePromptPreset(userId, presetId);
-                  setPromptLibrary((prev) =>
-                    prev.filter((p) => p.id !== presetId)
-                  );
-                }}
               />
             )}
 
             {activePanel === "manual" && (
-              <ReferencesSection
+              <ManualPanel
                 references={references}
                 isSavingReferences={isSavingReferences}
-                onUpload={triggerUpload}
-                onRemove={removeReference}
-                onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
-                onSave={openReferenceNameModal}
-              />
-            )}
-
-            {activePanel === "manual" && (
-              <PromptsSection
-                prompts={manualPrompts}
+                manualPrompts={manualPrompts}
                 isAddingNewPrompt={isAddingNewPrompt}
                 editingPromptIndex={editingPromptIndex}
                 savingPromptIndex={savingPromptIndex}
+                onUpload={triggerUpload}
+                onRemoveReference={removeReference}
+                onOpenReferenceLibrary={() => setIsReferenceLibraryOpen(true)}
+                onSaveReferences={openReferenceNameModal}
                 onAddPrompt={handleAddPrompt}
                 onRemovePrompt={handleRemovePrompt}
-                onStartEdit={handleStartEditPrompt}
+                onStartEditPrompt={handleStartEditPrompt}
                 onSavePrompt={handleSavePrompt}
                 onCancelEdit={handleCancelEdit}
                 onSaveIndividualPrompt={handleSaveIndividualPrompt}
-                onOpenLibrary={() => setIsPromptLibraryOpen(true)}
+                onOpenPromptLibrary={() => setIsPromptLibraryOpen(true)}
               />
             )}
 
@@ -571,16 +470,12 @@ const DashboardPage: React.FC = () => {
 
       <ReferenceLibraryModal
         isOpen={isReferenceLibraryOpen}
-        items={referenceLibrary}
-        isLoading={isLibraryLoading}
         onClose={() => setIsReferenceLibraryOpen(false)}
         onSelect={handleAddReferencesFromLibrary}
       />
 
       <PromptLibraryModal
         isOpen={isPromptLibraryOpen}
-        items={promptLibrary}
-        isLoading={isLibraryLoading}
         onClose={() => setIsPromptLibraryOpen(false)}
         onSelect={handleUsePromptPreset}
       />
