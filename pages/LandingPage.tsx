@@ -26,50 +26,51 @@ const generatedImages = [
 
 const quickSteps = [
   {
-    title: "Upload once",
-    detail: "1–3 clear reference shots to lock the look.",
+    title: "Upload Once",
+    detail: "Upload reference images once to lock the character and style.",
   },
   {
-    title: "List scenes",
-    detail: "Coffee shop, stage, study desk—add the scenes, not the ref.",
+    title: "List Scenes",
+    detail:
+      "Describe all scenes in a single textbox. Each paragraph becomes one image.",
   },
   {
-    title: "Generate a set",
-    detail: "We keep the same character and illustration across every scene.",
+    title: "Generate a Set",
+    detail:
+      "We generate multiple images at once with the same character across every scene.",
   },
 ];
 
 const valuePoints = [
   {
-    title: "Scene-consistent sets",
-    detail: "Same character, outfit, and illustration style in every render.",
-  },
-  {
-    title: "No copy/paste loops",
-    detail: "Upload once—your reference follows each scene automatically.",
-  },
-  {
-    title: 'Better than "one upload"',
+    title: "Scene-Consistent Images",
     detail:
-      "The value is keeping scenes aligned, not just saving an extra click.",
+      "Generate multiple scenes with the same character and illustration style.",
+  },
+  {
+    title: "Reference images, Once",
+    detail:
+      "Upload reference images once and reuse them across future generations.",
+  },
+  {
+    title: "One Textbox for All Scenes",
+    detail:
+      "Describe every scene in a single textbox. No copying or re-prompting.",
   },
 ];
 
 const problems = [
   {
     title: "Style drifts without a reference",
-    detail:
-      "Faces, outfits, and illustration style change scene to scene when you prompt from scratch.",
+    detail: "Faces, outfits, and illustration style change between scenes.",
   },
   {
-    title: "Re-upload, re-prompt, repeat",
-    detail:
-      "Copying prompts and uploading the same image for every scene wastes time.",
+    title: "You keep re-uploading the same images",
+    detail: "Uploading the same reference over and over slows everything down.",
   },
   {
-    title: "Stories break when scenes don’t match",
-    detail:
-      "Slides, comics, or lesson plans look disjointed when characters keep changing.",
+    title: "You can only generate one image at a time",
+    detail: "Building a full carousel or storyboard takes multiple runs.",
   },
 ];
 
@@ -79,8 +80,8 @@ const pricingPlans = [
     title: "Try it out",
     price: "$0",
     credits: "3 credits",
-    note: "Sign up and test 3 images for free.",
-    perks: ["3 free images", "No card required", "Keep your references"],
+    note: "Generate 3 images for free.",
+    perks: ["3 free images", "No card required"],
     cta: "Start free",
   },
   {
@@ -89,11 +90,7 @@ const pricingPlans = [
     price: "$15/mo",
     credits: "90 credits / month",
     note: "1 credit = 1 image. Credits reset monthly.",
-    perks: [
-      "90 images each month",
-      "Scene-consistent renders",
-      "Email support",
-    ],
+    perks: ["90 images each month", "Email support"],
     cta: "Choose Basic",
   },
   {
@@ -102,11 +99,7 @@ const pricingPlans = [
     price: "$29/mo",
     credits: "180 credits / month",
     note: "1 credit = 1 image. Credits reset monthly.",
-    perks: [
-      "180 images each month",
-      "Priority rendering",
-      "Reference libraries saved",
-    ],
+    perks: ["180 images each month", "Email support"],
     cta: "Choose Pro",
     highlight: true,
   },
@@ -116,11 +109,7 @@ const pricingPlans = [
     price: "$79/mo",
     credits: "600 credits / month",
     note: "1 credit = 1 image. Credits reset monthly.",
-    perks: [
-      "600 images each month",
-      "Team-friendly storage",
-      "Fastest support response",
-    ],
+    perks: ["600 images each month", "Email support"],
     cta: "Choose Business",
   },
 ];
@@ -220,7 +209,7 @@ const LandingPage: React.FC = () => {
           <div className="brand__text">
             <p className="brand__title">StoryboardGen</p>
             <div className="brand__subtitle">
-              <span className="brand__eyebrow">Scene aware</span>
+              <span className="brand__eyebrow">Scene-consistent</span>
               <span className="brand__subtitle-text">
                 Multi-image generator
               </span>
@@ -230,8 +219,8 @@ const LandingPage: React.FC = () => {
 
         <nav className="landing__nav">
           <button onClick={() => scrollToSection("gallery")}>Examples</button>
-          <button onClick={() => scrollToSection("problem")}>Why scenes</button>
-          <button onClick={() => scrollToSection("flow")}>Flow</button>
+          <button onClick={() => scrollToSection("problem")}>Problem</button>
+          <button onClick={() => scrollToSection("flow")}>How it works</button>
           <button onClick={() => scrollToSection("pricing")}>Pricing</button>
           <button onClick={() => scrollToSection("faq")}>FAQ</button>
         </nav>
@@ -257,9 +246,10 @@ const LandingPage: React.FC = () => {
         <section className="landing__hero">
           <div className="landing__hero-copy">
             <div className="landing__badge">Scene-consistent illustration</div>
-            <h1>AI Storyboard Generator</h1>
+            <h1>Scene-Consistent Images in One Prompt</h1>
             <p className="landing__lead">
-              Turn prompts into consistent AI-generated storyboards.
+              Create multiple images with the same character across different
+              scenes. No prompt copying. No style drift. One textbox.
             </p>
             <div className="landing__cta">
               <button className="primary-button" onClick={handleStart}>
@@ -289,9 +279,9 @@ const LandingPage: React.FC = () => {
                   <span />
                 </div>
                 <div className="proof-item__copy">
-                  <p className="proof-item__title">1 free render after login</p>
+                  <p className="proof-item__title">3 Free Images</p>
                   <p className="proof-item__detail">
-                    Test a scene set before upgrading.
+                    Try it instantly. No credit card required.
                   </p>
                 </div>
               </div>
@@ -301,7 +291,7 @@ const LandingPage: React.FC = () => {
           <div className="landing__hero-panel">
             <div className="landing__form-card">
               <div className="landing__form-row">
-                <div className="landing__label">Upload</div>
+                <div className="landing__label">Reference images</div>
                 <div
                   className="landing__solid-upload"
                   role="button"
@@ -319,7 +309,7 @@ const LandingPage: React.FC = () => {
                     <div className="landing__drop-text">
                       <strong>Click to upload</strong>
                       <span className="landing__hint">
-                        1–3 clear shots, PNG or JPG.
+                        Multiple images, PNG or JPG.
                       </span>
                     </div>
                   </div>
@@ -335,10 +325,13 @@ const LandingPage: React.FC = () => {
               </div>
 
               <div className="landing__form-row">
-                <div className="landing__label">Scene prompt</div>
+                <div className="landing__label">
+                  Scene prompt (Each paragraph = one scene)
+                </div>
                 <div className="landing__prompt landing__prompt--textarea">
-                  Same boy, same illustration. Listening closely in a busy café
-                  with warm light and soft blur behind him.
+                  <p>Boy with a question mark around him</p>
+                  <p>Boy writing in a notebook</p>
+                  <p>Boy feeling annoyed at a noisy cafe.</p>
                 </div>
               </div>
 
@@ -353,14 +346,6 @@ const LandingPage: React.FC = () => {
           id="gallery"
           className="landing__section landing__section--gallery"
         >
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">Real outputs</p>
-            <h2>Same character, multiple scenes</h2>
-            <p className="landing__section-subhead">
-              Built from a single reference—each scene holds the same face,
-              outfit, and illustration style.
-            </p>
-          </div>
           <div className="landing__mosaic">
             <div className="mosaic__reference">
               <div className="landing__card-label">Reference</div>
@@ -372,7 +357,7 @@ const LandingPage: React.FC = () => {
                 />
               </div>
               <p className="landing__hint">
-                We keep this character locked while scenes change.
+                This character will be used for all scenes.
               </p>
             </div>
             {generatedImages.map((image) => (
@@ -393,12 +378,8 @@ const LandingPage: React.FC = () => {
           className="landing__section landing__section--problem"
         >
           <div className="landing__section-head">
-            <p className="landing__eyebrow">The usual pain</p>
-            <h2>Scene consistency is hard to keep</h2>
-            <p className="landing__section-subhead">
-              Here is what happens when you generate scene-by-scene without a
-              persistent reference.
-            </p>
+            <p className="landing__eyebrow">The problem</p>
+            <h2>Creating Consistent Visuals Is Painful</h2>
           </div>
           <div className="landing__problem-grid">
             {problems.map((problem) => (
@@ -418,7 +399,7 @@ const LandingPage: React.FC = () => {
         <section id="flow" className="landing__section landing__section--flow">
           <div className="landing__section-head">
             <p className="landing__eyebrow">How it works</p>
-            <h2>Three steps to a scene set</h2>
+            <h2>Just 3 Steps</h2>
           </div>
           <div className="landing__flow-grid">
             {quickSteps.map((step, index) => (
@@ -475,7 +456,7 @@ const LandingPage: React.FC = () => {
         <section id="faq" className="landing__section landing__section--faq">
           <div className="landing__section-head">
             <p className="landing__eyebrow">FAQ</p>
-            <h2>Quick answers</h2>
+            <h2>Quick Answers</h2>
           </div>
           <div className="faq">
             <div className="faq__item">
@@ -483,28 +464,29 @@ const LandingPage: React.FC = () => {
                 Do I need to sign in to generate?
               </div>
               <div className="faq__answer">
-                Yes—sign in or create an account to unlock your first free
-                image.
+                Yes. Sign in or create an account to unlock your free images.
               </div>
             </div>
             <div className="faq__item">
               <div className="faq__question">
-                How many photos should I upload?
+                How many images should I upload?
               </div>
               <div className="faq__answer">
-                Upload 1–3 clear shots with good lighting to lock your look.
+                We recomend uploading 1–3 reference images with to lock your
+                character and style.
               </div>
             </div>
             <div className="faq__item">
               <div className="faq__question">Are the outputs watermarked?</div>
               <div className="faq__answer">
-                No—download your generated images without watermarks.
+                No. You can download your generated images without watermarks.
               </div>
             </div>
             <div className="faq__item">
               <div className="faq__question">Can I edit the prompt?</div>
               <div className="faq__answer">
-                Yes—start from the suggested prompt or type your own scene.
+                Yes. You can update your prompt and regenerate the images at any
+                time.
               </div>
             </div>
           </div>
