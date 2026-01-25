@@ -4,7 +4,7 @@ import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
 import styles from "./Sidebar.module.scss";
 
-export type PanelKey = "saved" | "references" | "manual";
+export type PanelKey = "saved" | "manual";
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -212,14 +212,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onPanelChange("saved")}
           >
             Images
-          </button>
-          <button
-            className={`${styles["sidebar__nav-item"]} ${
-              activePanel === "references" ? styles["is-active"] : ""
-            }`}
-            onClick={() => onPanelChange("references")}
-          >
-            Prompts
           </button>
         </nav>
       </div>
