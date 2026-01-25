@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { AppMode, SubscriptionPlan } from "../types";
-import { useAuth } from "../providers/AuthProvider";
-import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
-import SavedImagesPanel from "./saved/SavedImagesPanel";
-import ManualPanel from "./Dashboard/panel/ManualPanel";
+import { AppMode, SubscriptionPlan } from "../../types";
+import { useAuth } from "../../providers/AuthProvider";
+import Sidebar, { PanelKey } from "../../components/Sidebar/Sidebar";
+import SavedImagesPanel from "./SavedImagesPanel";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -12,10 +11,9 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const DashboardPage: React.FC = () => {
+const SavedImagesPage: React.FC = () => {
   const { authStatus, displayEmail, signOut } = useAuth();
   const router = useRouter();
-  const [activePanel, setActivePanel] = useState<PanelKey>("manual");
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const mode: AppMode = "manual";
 
@@ -51,8 +49,14 @@ const DashboardPage: React.FC = () => {
           <Sidebar
             mode={mode}
             onModeChange={() => {}}
-            activePanel={activePanel}
-            onPanelChange={(panel) => setActivePanel(panel)}
+            activePanel="saved"
+            onPanelChange={(panel) => {
+              if (panel === "manual") {
+                router.push("/dashboard");
+              } else if (panel === "saved") {
+                router.push("/saved/image");
+              }
+            }}
             onOpenSettings={() => {}}
             displayEmail={displayEmail}
             isSubscribed={false}
@@ -70,15 +74,11 @@ const DashboardPage: React.FC = () => {
           />
 
           <div className="app__main">
-            {activePanel === "saved" && (
-              <SavedImagesPanel
-                sortDirection={librarySort}
-                onSortChange={setLibrarySort}
-                onSelectReferenceSet={() => {}}
-              />
-            )}
-
-            {activePanel === "manual" && <ManualPanel />}
+            <SavedImagesPanel
+              sortDirection={librarySort}
+              onSortChange={setLibrarySort}
+              onSelectReferenceSet={() => {}}
+            />
           </div>
         </div>
       </main>
@@ -86,4 +86,4 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default DashboardPage;
+export default SavedImagesPage;

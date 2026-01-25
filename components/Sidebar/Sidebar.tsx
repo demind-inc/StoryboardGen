@@ -209,7 +209,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             className={`${styles["sidebar__nav-item"]} ${
               activePanel === "saved" ? styles["is-active"] : ""
             }`}
-            onClick={() => onPanelChange("saved")}
+            onClick={() => {
+              onPanelChange("saved");
+              router.push("/saved/image");
+            }}
           >
             Images
           </button>

@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
-import { ReferenceSet, ReferenceImage } from "../../../types";
-import { useAuth } from "../../../providers/AuthProvider";
+import { ReferenceSet, ReferenceImage } from "../../types";
+import { useAuth } from "../../providers/AuthProvider";
 import {
   fetchReferenceLibrary,
   saveReferenceImages,
   updateReferenceSetLabel,
   deleteReferenceSet,
-} from "../../../services/libraryService";
+} from "../../services/libraryService";
 import styles from "./SavedImagesPanel.module.scss";
 
 interface ImageExpandModalProps {
