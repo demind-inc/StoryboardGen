@@ -4,7 +4,6 @@ import PromptsSection from "../../../components/Dashboard/PromptsSection";
 import Results from "../../../components/Results/Results";
 import DashboardSummary from "../../../components/Dashboard/DashboardSummary";
 import ReferenceLibraryModal from "../../../components/DatasetModal/ReferenceLibraryModal";
-import PromptLibraryModal from "../../../components/DatasetModal/PromptLibraryModal";
 import NameCaptureModal from "../../../components/DatasetModal/NameCaptureModal";
 import PaymentModal from "../../../components/PaymentModal/PaymentModal";
 import { useAuth } from "../../../providers/AuthProvider";
@@ -14,7 +13,7 @@ import { useImageGeneration } from "../../../hooks/useImageGeneration";
 import { useModals } from "../../../hooks/useModals";
 import { useUsage } from "../../../hooks/useUsage";
 import { fetchReferenceLibrary } from "../../../services/libraryService";
-import { SubscriptionPlan, ReferenceSet, PromptPreset } from "../../../types";
+import { SubscriptionPlan, ReferenceSet } from "../../../types";
 import { DEFAULT_MONTHLY_CREDITS, PLAN_CREDITS } from "@/services/usageService";
 const ManualPanel: React.FC = () => {
   const { session, authStatus } = useAuth();
@@ -60,28 +59,22 @@ const ManualPanel: React.FC = () => {
     manualPrompts,
     isAddingNewPrompt,
     editingPromptIndex,
-    savingPromptIndex,
     handleAddPrompt,
     handleRemovePrompt,
     handleReorderPrompt,
     handleStartEditPrompt,
     handleSavePrompt,
     handleCancelEdit,
-    handleSaveIndividualPrompt,
-    handleUsePromptPreset,
   } = promptsHook;
 
   const modalsHook = useModals();
   const {
     isReferenceLibraryOpen,
-    isPromptLibraryOpen,
     isPaymentModalOpen,
     nameModal,
     setIsReferenceLibraryOpen,
-    setIsPromptLibraryOpen,
     setIsPaymentModalOpen,
     openReferenceNameModal,
-    openPromptNameModal,
     closeNameModal,
     handleNameModalSave,
   } = modalsHook;
@@ -209,7 +202,6 @@ const ManualPanel: React.FC = () => {
         prompts={manualPrompts}
         isAddingNewPrompt={isAddingNewPrompt}
         editingPromptIndex={editingPromptIndex}
-        savingPromptIndex={savingPromptIndex}
         references={references}
         onAddPrompt={handleAddPrompt}
         onRemovePrompt={handleRemovePrompt}
@@ -217,8 +209,6 @@ const ManualPanel: React.FC = () => {
         onStartEdit={handleStartEditPrompt}
         onSavePrompt={handleSavePrompt}
         onCancelEdit={handleCancelEdit}
-        onSaveIndividualPrompt={handleSaveIndividualPrompt}
-        onOpenLibrary={() => setIsPromptLibraryOpen(true)}
       />
       {manualResults.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -255,15 +245,6 @@ const ManualPanel: React.FC = () => {
         onSelect={(sets: ReferenceSet[]) => {
           handleAddReferencesFromLibrary(sets);
           setManualResults([]);
-        }}
-      />
-
-      <PromptLibraryModal
-        isOpen={isPromptLibraryOpen}
-        onClose={() => setIsPromptLibraryOpen(false)}
-        onSelect={(preset: PromptPreset) => {
-          handleUsePromptPreset(preset);
-          setIsPromptLibraryOpen(false);
         }}
       />
 

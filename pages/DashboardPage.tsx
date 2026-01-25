@@ -4,7 +4,6 @@ import { AppMode, SubscriptionPlan } from "../types";
 import { useAuth } from "../providers/AuthProvider";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
 import SavedImagesPanel from "./Dashboard/panel/SavedImagesPanel";
-import SavedPromptsPanel from "./Dashboard/panel/SavedPromptsPanel";
 import ManualPanel from "./Dashboard/panel/ManualPanel";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -76,14 +75,6 @@ const DashboardPage: React.FC = () => {
                 sortDirection={librarySort}
                 onSortChange={setLibrarySort}
                 onSelectReferenceSet={() => {}}
-              />
-            )}
-
-            {activePanel === "references" && (
-              <SavedPromptsPanel
-                sortDirection={librarySort}
-                onSortChange={setLibrarySort}
-                onSelectPromptPreset={() => {}}
               />
             )}
 
