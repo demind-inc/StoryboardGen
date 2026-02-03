@@ -7,8 +7,8 @@
   position: sticky;
   top: 24px;
   height: calc(100vh - 48px);
-  background: #151618;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #18181b;
+  border: none;
   font-size: 13px;
   color: #f2f3f4;
 
@@ -21,8 +21,15 @@
 
   &__brand {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__brandText {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: nowrap;
   }
 
   &__brandIcon {
@@ -48,12 +55,14 @@
     letter-spacing: 0.2em;
     color: #ff8a00;
     font-weight: 700;
+    white-space: nowrap;
   }
 
   &__brandTitle {
     font-size: 16px;
     font-weight: 700;
     letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   &__headerActions {

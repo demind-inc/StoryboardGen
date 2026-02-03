@@ -1,18 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { useRouter } from "next/router";
 import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
 import styles from "./Sidebar.module.scss";
 
 export type PanelKey = "saved" | "manual";
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const day = date.getDate();
-  return `${year} ${month} ${day}`;
-};
 
 interface SidebarProps {
   mode: AppMode;
@@ -70,49 +62,36 @@ const SidebarIcon: React.FC<{ name: string }> = ({ name }) => {
   );
 };
 
-const Sidebar: React.FC<SidebarProps> = ({
-  activePanel,
-  onPanelChange,
-  onOpenSettings,
-  displayEmail,
-  isSubscribed,
-  subscriptionLabel,
-  subscriptionPrice,
-  planType,
-  remainingCredits,
-  totalCredits,
-  expiredAt,
-  unsubscribedAt,
-  subscriptionStatus,
-  onOpenBilling,
-  onCancelSubscription,
-  onSignOut,
-}) => {
+const Sidebar: React.FC<SidebarProps> = (props) => {
+  const {
+    activePanel,
+    onPanelChange,
+    onOpenSettings,
+    isSubscribed,
+    planType,
+    remainingCredits,
+    totalCredits,
+    onOpenBilling,
+  } = props;
   const router = useRouter();
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   const isManualActive = activePanel === "manual";
   const isSavedActive = activePanel === "saved";
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+  const creditText = useMemo(() => {
+    if (isSubscribed) {
       if (
-        accountMenuRef.current &&
-        !accountMenuRef.current.contains(event.target as Node)
+        typeof remainingCredits === "number" &&
+        typeof totalCredits === "number"
       ) {
-        setIsAccountMenuOpen(false);
+        return `${remainingCredits}/${totalCredits} credits`;
       }
-    };
-
-    if (isAccountMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      return "--/-- credits";
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isAccountMenuOpen]);
+    if (typeof remainingCredits === "number") {
+      return `${remainingCredits}/3 credits`;
+    }
+    return "0/3 credits";
+  }, [isSubscribed, remainingCredits, totalCredits]);
 
   return (
     <div className={`${styles.sidebar} custom-scrollbar`}>
@@ -125,61 +104,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               className={styles.sidebar__brandImage}
             />
           </div>
-          <div className={styles.sidebar__brandEyebrow}>Prompt Gen</div>
-          <div className={styles.sidebar__brandTitle}>StoryboardGen</div>
-        </div>
-        <div className={styles.sidebar__headerActions}>
-          <div className={styles.sidebar__profile} ref={accountMenuRef}>
-            <button
-              className={styles.sidebar__profileBtn}
-              onClick={() => setIsAccountMenuOpen((prev) => !prev)}
-              title="Account"
-            >
-              <SidebarIcon name="settings" />
-            </button>
-            {isAccountMenuOpen && (
-              <div className={styles.sidebar__profileMenu}>
-                <div className={styles.sidebar__profileEmail}>
-                  {displayEmail}
-                </div>
-                <div className={styles.sidebar__profileSub}>
-                  <p className={styles.sidebar__profileLabel}>
-                    {subscriptionLabel ||
-                      (isSubscribed ? "Subscribed" : "Free")}
-                  </p>
-                  <p className={styles.sidebar__profileMeta}>
-                    {isSubscribed
-                      ? subscriptionPrice || "Active"
-                      : "3 credits included"}
-                  </p>
-                  {isSubscribed && expiredAt && (
-                    <p className={styles.sidebar__profileMeta}>
-                      Expired: {formatDate(expiredAt)}
-                    </p>
-                  )}
-                  {isSubscribed && unsubscribedAt && (
-                    <p className={styles.sidebar__profileMeta}>
-                      Unsubscribed: {formatDate(unsubscribedAt)}
-                    </p>
-                  )}
-                  <div className={styles.sidebar__profileActions}>
-                    {isSubscribed && subscriptionStatus !== "unsubscribed" ? (
-                      <button onClick={onCancelSubscription}>
-                        Cancel subscription
-                      </button>
-                    ) : !isSubscribed ? (
-                      <button onClick={onOpenBilling}>Upgrade</button>
-                    ) : null}
-                  </div>
-                </div>
-                <button
-                  className={styles.sidebar__profileSignout}
-                  onClick={onSignOut}
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
+          <div className={styles.sidebar__brandText}>
+            <span className={styles.sidebar__brandTitle}>StoryboardGen</span>
           </div>
         </div>
       </div>
@@ -257,15 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               ? "500 images/month • Unlimited prompts"
               : "3 images/month • Limited prompts"}
           </div>
-          <div className={styles.sidebar__planCredits}>
-            {isSubscribed
-              ? remainingCredits !== undefined && totalCredits !== undefined
-                ? `${remainingCredits}/${totalCredits} credits`
-                : "--/-- credits"
-              : remainingCredits !== undefined
-              ? `${remainingCredits}/3 credits`
-              : "3 credits"}
-          </div>
+          <div className={styles.sidebar__planCredits}>{creditText}</div>
         </div>
         {!isSubscribed && onOpenBilling && (
           <button

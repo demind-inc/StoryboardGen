@@ -21,7 +21,15 @@ const DEFAULT_RULES = {
   ],
 };
 
-const DashboardMain: React.FC = () => {
+interface DashboardMainProps {
+  openBilling?: boolean;
+  onBillingHandled?: () => void;
+}
+
+const DashboardMain: React.FC<DashboardMainProps> = ({
+  openBilling = false,
+  onBillingHandled,
+}) => {
   const { session, authStatus } = useAuth();
   const dashboard = useDashboardManual({
     userId: session?.user?.id,
@@ -60,6 +68,13 @@ const DashboardMain: React.FC = () => {
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
+
+  React.useEffect(() => {
+    if (openBilling) {
+      setIsPaymentModalOpen(true);
+      onBillingHandled?.();
+    }
+  }, [openBilling, onBillingHandled, setIsPaymentModalOpen]);
 
   if (isGenerating && manualResults.length === 0) {
     return (

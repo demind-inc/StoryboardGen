@@ -18,6 +18,7 @@ const DashboardPage: React.FC = () => {
   const router = useRouter();
   const [activePanel, setActivePanel] = useState<PanelKey>("manual");
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
+  const [isBillingOpen, setIsBillingOpen] = useState(false);
   const mode: AppMode = "manual";
 
   useEffect(() => {
@@ -65,7 +66,7 @@ const DashboardPage: React.FC = () => {
             expiredAt={null}
             unsubscribedAt={null}
             subscriptionStatus={null}
-            onOpenBilling={() => {}}
+            onOpenBilling={() => setIsBillingOpen(true)}
             onCancelSubscription={() => {}}
             onSignOut={signOut}
           />
@@ -81,7 +82,12 @@ const DashboardPage: React.FC = () => {
               />
             )}
 
-            {activePanel === "manual" && <DashboardMain />}
+            {activePanel === "manual" && (
+              <DashboardMain
+                openBilling={isBillingOpen}
+                onBillingHandled={() => setIsBillingOpen(false)}
+              />
+            )}
           </div>
         </div>
       </main>
