@@ -41,12 +41,6 @@ const Header: React.FC<{
         <span className={styles.projectLabel}>Project</span>
         <h1 className={styles.projectTitle}>{projectName}</h1>
       </div>
-      <div className={styles.headerActions}>
-        <button className={styles.buttonPrimary} onClick={onAddScene}>
-          New Scene
-        </button>
-        <button className={styles.buttonGhost}>Export</button>
-      </div>
     </header>
   );
 };
