@@ -89,7 +89,9 @@ const SettingsPage: React.FC = () => {
                   <span className={styles.value}>{displayName}</span>
                 </div>
                 <div className={styles.cardActions}>
-                  <button className={styles.actionButton}>Change Password</button>
+                  <button className={styles.actionButton}>
+                    Change Password
+                  </button>
                 </div>
               </div>
             </section>
@@ -123,7 +125,7 @@ const SettingsPage: React.FC = () => {
               </div>
             </section>
 
-            <section className={styles.card}>
+            {/* <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h2>Preferences</h2>
               </div>
@@ -170,7 +172,7 @@ const SettingsPage: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </section>
+            </section> */}
 
             <section className={styles.card}>
               <div className={styles.cardHeader}>
