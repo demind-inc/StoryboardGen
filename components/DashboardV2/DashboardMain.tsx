@@ -7,18 +7,15 @@ import DashboardLayout from "./DashboardLayout";
 import { useDashboardManual } from "../../hooks/useDashboardManual";
 import { ReferenceSet } from "../../types";
 
-const DEFAULT_RULES = {
-  tiktok: [
-    "Slightly long captions with line breaks",
-    "Natural brand mention integration",
-    "Exactly 5 approved hashtags",
-  ],
-  instagram: [
-    "Longer, educational captions",
-    "Natural brand mention integration",
-    "More hashtags allowed (no #apps/#iphoneapps)",
-    "Hashtags at bottom of caption",
-  ],
+export interface Rule {
+  tiktok: string;
+  instagram: string;
+}
+const DEFAULT_RULES: Rule = {
+  tiktok:
+    "・Slightly long captions with line breaks\n・Natural brand mention integration\n・Exactly 5 approved hashtags",
+  instagram:
+    "・Longer, educational captions\n・Natural brand mention integration\n・More hashtags allowed (no #apps/#iphoneapps)\n・Hashtags at bottom of caption",
 };
 
 interface DashboardMainProps {
@@ -36,10 +33,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     authStatus,
   });
 
-  const [projectName, setProjectName] = React.useState(
-    "Coffee Brand Campaign"
-  );
-  const [rules, setRules] = React.useState(DEFAULT_RULES);
+  const [projectName, setProjectName] = React.useState("Coffee Brand Campaign");
+  const [rules, setRules] = React.useState<Rule>(DEFAULT_RULES);
 
   const {
     fileInputRef,

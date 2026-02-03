@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ReferenceImage, SceneResult } from "../../types";
 import Results from "../Results/Results";
 import styles from "./DashboardLayout.module.scss";
+import { Rule } from "./DashboardMain";
 
 interface DashboardLayoutProps {
   projectName: string;
@@ -19,11 +20,8 @@ interface DashboardLayoutProps {
   disableGenerate: boolean;
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
-  rules: {
-    tiktok: string[];
-    instagram: string[];
-  };
-  onRulesChange?: (rules: { tiktok: string[]; instagram: string[] }) => void;
+  rules: Rule;
+  onRulesChange?: (rules: Rule) => void;
   guidelines: string[];
   onGuidelinesChange?: (guidelines: string[]) => void;
   captions: {
@@ -270,20 +268,25 @@ const RulesCard: React.FC<{
   rules: { tiktok: string[]; instagram: string[] };
   onRulesChange?: (rules: { tiktok: string[]; instagram: string[] }) => void;
 }> = ({ rules, onRulesChange }) => {
-  const updateRule = (
-    platform: "tiktok" | "instagram",
-    index: number,
-    value: string
-  ) => {
+  const [isEditingTikTok, setIsEditingTikTok] = useState(false);
+  const [isEditingInstagram, setIsEditingInstagram] = useState(false);
+  const updateRules = (platform: "tiktok" | "instagram", value: string) => {
     if (!onRulesChange) return;
     const next = {
       ...rules,
-      [platform]: rules[platform].map((rule, idx) =>
-        idx === index ? value : rule
-      ),
+      [platform]: value
+        .split("\n")
+        .map((rule) => rule.replace(/^•\s?/, "").trim())
+        .filter(Boolean),
     };
     onRulesChange(next);
   };
+  const tiktokText = rules.tiktok.join("\n");
+  const instagramText = rules.instagram.join("\n");
+  const formatBullet = (rule: string) =>
+    rule.trim().startsWith("•") ? rule.trim() : `• ${rule}`;
+  const tiktokDisplay = rules.tiktok.map(formatBullet).join("\n");
+  const instagramDisplay = rules.instagram.map(formatBullet).join("\n");
 
   return (
     <section className={styles.card}>
@@ -291,9 +294,6 @@ const RulesCard: React.FC<{
         <div>
           <div className={styles.cardTitleRow}>
             <h2 className={styles.cardTitle}>Platform Rules</h2>
-            <span className={styles.editIcon} title="Editable">
-              <PencilIcon />
-            </span>
           </div>
           <p className={styles.cardDescription}>
             Rule-locked generation active
@@ -302,50 +302,52 @@ const RulesCard: React.FC<{
       </div>
       <div className={styles.cardBody}>
         <div className={styles.ruleList}>
-          <strong>TikTok Caption Rules</strong>
-          {rules.tiktok.map((rule, idx) => {
-            const key = `${rule}-${idx}`;
-            return (
-              <div key={key} className={styles.ruleItem}>
-                <span className={styles.checkDot} />
-                {onRulesChange ? (
-                  <input
-                    className={styles.ruleInput}
-                    value={rule}
-                    onChange={(event) =>
-                      updateRule("tiktok", idx, event.target.value)
-                    }
-                    aria-label={`TikTok rule ${idx + 1}`}
-                  />
-                ) : (
-                  <span>{rule}</span>
-                )}
-              </div>
-            );
-          })}
+          <div className={styles.cardTitleRow}>
+            <strong>TikTok Caption Rules</strong>
+            {onRulesChange && (
+              <button
+                type="button"
+                className={styles.editIcon}
+                title={isEditingTikTok ? "Stop editing" : "Edit TikTok rules"}
+                onClick={() => setIsEditingTikTok((prev) => !prev)}
+                aria-pressed={isEditingTikTok}
+              >
+                <PencilIcon />
+              </button>
+            )}
+          </div>
+          <textarea
+            className={styles.ruleTextarea}
+            value={isEditingTikTok ? tiktokText : tiktokDisplay}
+            readOnly={!isEditingTikTok}
+            onChange={(event) => updateRules("tiktok", event.target.value)}
+            aria-label="TikTok caption rules"
+          />
         </div>
         <div className={styles.ruleList}>
-          <strong>Instagram Caption Rules</strong>
-          {rules.instagram.map((rule, idx) => {
-            const key = `${rule}-${idx}`;
-            return (
-              <div key={key} className={styles.ruleItem}>
-                <span className={styles.checkDot} />
-                {onRulesChange ? (
-                  <input
-                    className={styles.ruleInput}
-                    value={rule}
-                    onChange={(event) =>
-                      updateRule("instagram", idx, event.target.value)
-                    }
-                    aria-label={`Instagram rule ${idx + 1}`}
-                  />
-                ) : (
-                  <span>{rule}</span>
-                )}
-              </div>
-            );
-          })}
+          <div className={styles.cardTitleRow}>
+            <strong>Instagram Caption Rules</strong>
+            {onRulesChange && (
+              <button
+                type="button"
+                className={styles.editIcon}
+                title={
+                  isEditingInstagram ? "Stop editing" : "Edit Instagram rules"
+                }
+                onClick={() => setIsEditingInstagram((prev) => !prev)}
+                aria-pressed={isEditingInstagram}
+              >
+                <PencilIcon />
+              </button>
+            )}
+          </div>
+          <textarea
+            className={styles.ruleTextarea}
+            value={isEditingInstagram ? instagramText : instagramDisplay}
+            readOnly={!isEditingInstagram}
+            onChange={(event) => updateRules("instagram", event.target.value)}
+            aria-label="Instagram caption rules"
+          />
         </div>
       </div>
     </section>
@@ -356,12 +358,20 @@ const GuidelinesCard: React.FC<{
   guidelines: string[];
   onGuidelinesChange?: (guidelines: string[]) => void;
 }> = ({ guidelines, onGuidelinesChange }) => {
-  const updateGuideline = (index: number, value: string) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const updateGuidelines = (value: string) => {
     if (!onGuidelinesChange) return;
     onGuidelinesChange(
-      guidelines.map((item, idx) => (idx === index ? value : item))
+      value
+        .split("\n")
+        .map((item) => item.replace(/^•\s?/, "").trim())
+        .filter(Boolean)
     );
   };
+  const guidelineText = guidelines.join("\n");
+  const guidelineDisplay = guidelines
+    .map((item) => (item.trim().startsWith("•") ? item.trim() : `• ${item}`))
+    .join("\n");
 
   return (
     <section className={styles.card}>
@@ -369,35 +379,30 @@ const GuidelinesCard: React.FC<{
         <div>
           <div className={styles.cardTitleRow}>
             <h2 className={styles.cardTitle}>Custom Guidelines</h2>
-            <span className={styles.editIcon} title="Editable">
-              <PencilIcon />
-            </span>
+            {onGuidelinesChange && (
+              <button
+                type="button"
+                className={styles.editIcon}
+                title={isEditing ? "Stop editing" : "Edit guidelines"}
+                onClick={() => setIsEditing((prev) => !prev)}
+                aria-pressed={isEditing}
+              >
+                <PencilIcon />
+              </button>
+            )}
           </div>
           <p className={styles.cardDescription}>Brand-specific constraints</p>
         </div>
       </div>
       <div className={styles.cardBody}>
         <div className={styles.guidelineList}>
-          {guidelines.map((item, idx) => {
-            const key = `${item}-${idx}`;
-            return (
-              <div key={key} className={styles.ruleItem}>
-                <span className={styles.checkDot} />
-                {onGuidelinesChange ? (
-                  <input
-                    className={styles.ruleInput}
-                    value={item}
-                    onChange={(event) =>
-                      updateGuideline(idx, event.target.value)
-                    }
-                    aria-label={`Guideline ${idx + 1}`}
-                  />
-                ) : (
-                  <span>{item}</span>
-                )}
-              </div>
-            );
-          })}
+          <textarea
+            className={styles.ruleTextarea}
+            value={isEditing ? guidelineText : guidelineDisplay}
+            readOnly={!isEditing}
+            onChange={(event) => updateGuidelines(event.target.value)}
+            aria-label="Custom guidelines"
+          />
         </div>
       </div>
     </section>
