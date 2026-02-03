@@ -37,7 +37,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     authStatus,
   });
 
-  const [projectName, setProjectName] = React.useState("Coffee Brand Campaign");
+  const [projectName, setProjectName] = React.useState("(Untitled)");
   const [rules, setRules] = React.useState<Rule>(DEFAULT_RULES);
 
   const {

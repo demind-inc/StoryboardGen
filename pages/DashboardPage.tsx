@@ -71,13 +71,7 @@ const DashboardPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          {activePanel === "saved" && (
-            <SavedImagesPanel
-              sortDirection={librarySort}
-              onSortChange={setLibrarySort}
-              onSelectReferenceSet={() => {}}
-            />
-          )}
+          <DashboardMain />
         </div>
       </main>
     </div>

@@ -103,7 +103,6 @@ body {
     overflow: auto;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
     align-items: stretch;
 
     @media (min-width: 1024px) {

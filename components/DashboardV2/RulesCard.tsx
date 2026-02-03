@@ -41,7 +41,7 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
   const tiktokText = rules.tiktok.join("\n");
   const instagramText = rules.instagram.join("\n");
   const formatBullet = (rule: string) =>
-    rule.trim().startsWith("•") ? rule.trim() : `• ${rule}`;
+    rule.trim().startsWith("•") ? rule.trim() : `${rule}`;
   const tiktokDisplay = rules.tiktok.map(formatBullet).join("\n");
   const instagramDisplay = rules.instagram.map(formatBullet).join("\n");
 
