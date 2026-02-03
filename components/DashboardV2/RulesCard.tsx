@@ -78,6 +78,8 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
             className={styles.ruleTextarea}
             value={isEditingTikTok ? tiktokText : tiktokDisplay}
             readOnly={!isEditingTikTok}
+            tabIndex={isEditingTikTok ? 0 : -1}
+            onMouseDown={(e) => !isEditingTikTok && e.preventDefault()}
             onChange={(event) => updateRules("tiktok", event.target.value)}
             aria-label="TikTok caption rules"
           />
