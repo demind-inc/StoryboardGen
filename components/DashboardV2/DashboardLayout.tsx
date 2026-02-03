@@ -31,6 +31,24 @@ interface DashboardLayoutProps {
   onRegenerateResult: (index: number) => void;
 }
 
+const PencilIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+  </svg>
+);
+
 const Header: React.FC<{
   projectName: string;
   onAddScene: () => void;
@@ -39,7 +57,12 @@ const Header: React.FC<{
     <header className={styles.header}>
       <div className={styles.titleArea}>
         <span className={styles.projectLabel}>Project</span>
-        <h1 className={styles.projectTitle}>{projectName}</h1>
+        <div className={styles.projectRow}>
+          <h1 className={styles.projectTitle}>{projectName}</h1>
+          <span className={styles.editIcon} title="Editable">
+            <PencilIcon />
+          </span>
+        </div>
       </div>
     </header>
   );
@@ -237,7 +260,12 @@ const RulesCard: React.FC<{
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>Platform Rules</h2>
+          <div className={styles.cardTitleRow}>
+            <h2 className={styles.cardTitle}>Platform Rules</h2>
+            <span className={styles.editIcon} title="Editable">
+              <PencilIcon />
+            </span>
+          </div>
           <p className={styles.cardDescription}>
             Rule-locked generation active
           </p>
@@ -272,7 +300,12 @@ const GuidelinesCard: React.FC<{ guidelines: string[] }> = ({ guidelines }) => {
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>Custom Guidelines</h2>
+          <div className={styles.cardTitleRow}>
+            <h2 className={styles.cardTitle}>Custom Guidelines</h2>
+            <span className={styles.editIcon} title="Editable">
+              <PencilIcon />
+            </span>
+          </div>
           <p className={styles.cardDescription}>Brand-specific constraints</p>
         </div>
       </div>
@@ -389,36 +422,38 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   return (
     <div className={styles.dashboard}>
-      <Header projectName={projectName} onAddScene={onAddScene} />
-      <div className={styles.contentRow}>
-        <div className={styles.leftColumn}>
-          <ReferenceCard
-            references={references}
-            onUpload={onUpload}
-            onOpenLibrary={onOpenLibrary}
-          />
-          <SceneCard
-            promptList={promptList}
-            activeSceneIndex={activeSceneIndex}
-            onSceneSelect={onSceneSelect}
-            onAddScene={onAddScene}
-            onSavePrompt={onSavePrompt}
-            previewImageUrl={previewImageUrl}
-            isGenerating={isGenerating}
-            disableGenerate={disableGenerate}
-            onGenerateAll={onGenerateAll}
-            onRegenerateActive={onRegenerateActive}
-          />
-          <ResultsCard
-            results={results}
-            isGenerating={isGenerating}
-            onRegenerateResult={onRegenerateResult}
-          />
-        </div>
-        <div className={styles.rightColumn}>
-          <RulesCard rules={rules} />
-          <GuidelinesCard guidelines={guidelines} />
-          <CaptionsCard captions={captions} />
+      <div className={styles.scrollArea}>
+        <Header projectName={projectName} onAddScene={onAddScene} />
+        <div className={styles.contentRow}>
+          <div className={styles.leftColumn}>
+            <ReferenceCard
+              references={references}
+              onUpload={onUpload}
+              onOpenLibrary={onOpenLibrary}
+            />
+            <SceneCard
+              promptList={promptList}
+              activeSceneIndex={activeSceneIndex}
+              onSceneSelect={onSceneSelect}
+              onAddScene={onAddScene}
+              onSavePrompt={onSavePrompt}
+              previewImageUrl={previewImageUrl}
+              isGenerating={isGenerating}
+              disableGenerate={disableGenerate}
+              onGenerateAll={onGenerateAll}
+              onRegenerateActive={onRegenerateActive}
+            />
+            <ResultsCard
+              results={results}
+              isGenerating={isGenerating}
+              onRegenerateResult={onRegenerateResult}
+            />
+          </div>
+          <div className={styles.rightColumn}>
+            <RulesCard rules={rules} />
+            <GuidelinesCard guidelines={guidelines} />
+            <CaptionsCard captions={captions} />
+          </div>
         </div>
       </div>
       <FooterBar

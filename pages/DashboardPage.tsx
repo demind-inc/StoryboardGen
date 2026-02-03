@@ -48,7 +48,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="app">
-      <main className="app__body">
+      <main className={`app__body ${styles.body}`}>
         <div className="app__content">
           <Sidebar
             mode={mode}

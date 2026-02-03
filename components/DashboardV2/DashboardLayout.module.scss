@@ -19,6 +19,16 @@
   padding: 8px 0;
 }
 
+.scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-right: 4px;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -46,6 +56,29 @@
   font-weight: 600;
   margin: 0;
   font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #2e2e2e;
+  color: var(--muted);
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .headerActions {
@@ -337,11 +370,14 @@
 }
 
 .footerBar {
+  position: sticky;
+  bottom: 0;
   border-top: none;
-  padding-top: 16px;
+  padding: 16px 0 4px;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  background: var(--dashboard-bg);
 }
 
 .footerMeta {
