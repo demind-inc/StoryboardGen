@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
@@ -22,6 +22,8 @@ const TikTokRulesPage: React.FC = () => {
   const router = useRouter();
   const mode: AppMode = "manual";
   const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
+  const lastInputRef = useRef<HTMLInputElement>(null);
+  const shouldFocusLastRef = useRef(false);
 
   useEffect(() => {
     if (authStatus === "signed_out") {
@@ -29,16 +31,24 @@ const TikTokRulesPage: React.FC = () => {
     }
   }, [authStatus, router]);
 
+  useEffect(() => {
+    if (shouldFocusLastRef.current && rules.length > 0) {
+      lastInputRef.current?.focus();
+      shouldFocusLastRef.current = false;
+    }
+  }, [rules]);
+
   const handleRuleChange = (index: number, value: string) => {
     setRules((prev) => prev.map((rule, idx) => (idx === index ? value : rule)));
   };
 
-  const handleAddRule = () => {
-    setRules((prev) => [...prev, "New rule"]);
+  const handleDeleteRule = (index: number) => {
+    setRules((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleReset = () => {
-    setRules(DEFAULT_RULES);
+  const handleAddRule = () => {
+    setRules((prev) => [...prev, "New rule"]);
+    shouldFocusLastRef.current = true;
   };
 
   if (authStatus === "checking") {
@@ -98,13 +108,25 @@ const TikTokRulesPage: React.FC = () => {
                 {rules.map((rule, index) => (
                   <div key={`${rule}-${index}`} className={styles.ruleRow}>
                     <input
+                      ref={
+                        index === rules.length - 1 ? lastInputRef : undefined
+                      }
                       value={rule}
                       onChange={(event) =>
                         handleRuleChange(index, event.target.value)
                       }
                       readOnly={false}
                       className={styles.ruleInput}
+                      aria-label={`Rule ${index + 1}`}
                     />
+                    <button
+                      type="button"
+                      className={styles.deleteRule}
+                      onClick={() => handleDeleteRule(index)}
+                      aria-label={`Delete rule ${index + 1}`}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))}
               </div>
@@ -114,19 +136,6 @@ const TikTokRulesPage: React.FC = () => {
                 onClick={handleAddRule}
               >
                 Add Rule
-              </button>
-            </section>
-
-            <section className={styles.saveBar}>
-              <button
-                type="button"
-                className={styles.resetButton}
-                onClick={handleReset}
-              >
-                Reset
-              </button>
-              <button type="button" className={styles.saveButton}>
-                Save
               </button>
             </section>
           </div>

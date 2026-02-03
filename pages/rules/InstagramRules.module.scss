@@ -100,6 +100,7 @@
   display: grid;
   gap: 14px;
   min-height: 420px;
+  align-content: start;
 
   h2 {
     margin: 0;
@@ -112,21 +113,43 @@
 .rulesList {
   display: grid;
   gap: 12px;
+  min-height: 320px;
+  align-content: start;
 }
 
 .ruleRow {
   background: #202022;
   border-radius: 10px;
   padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .ruleInput {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   color: #d5d5da;
   font-size: var(--fs-14);
   outline: none;
+}
+
+.deleteRule {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: var(--fs-13);
+  border-radius: 8px;
+  border: 1px solid #2a2a2c;
+  background: #2a2a2c;
+  color: #9a9aa0;
+  cursor: pointer;
+}
+
+.deleteRule:hover {
+  color: #e0e0e3;
+  border-color: #3a3a3c;
 }
 
 .addRule {
@@ -143,37 +166,6 @@
 .addRule:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.saveBar {
-  background: #1a1a1b;
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.resetButton {
-  width: 120px;
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-size: var(--fs-14);
-  border: 1px solid #2a2a2c;
-  background: #202022;
-  color: #e0e0e3;
-  cursor: pointer;
-}
-
-.saveButton {
-  width: 120px;
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-size: var(--fs-14);
-  border: none;
-  background: #f0a84b;
-  color: #1a1204;
-  cursor: pointer;
 }
 
 @media (max-width: 900px) {
