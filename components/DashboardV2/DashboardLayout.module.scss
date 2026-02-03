@@ -203,8 +203,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.15s ease, color 0.15s ease,
-    transform 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .iconButtonSecondary:hover {
@@ -343,7 +342,8 @@
   border: none;
   background: #2e2e2e;
   color: var(--text);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 

@@ -246,37 +246,6 @@ const SceneCard: React.FC<{
             Transparent background (title slide)
           </label>
         </div>
-
-        <div className={styles.previewRow}>
-          <div className={styles.previewFrame}>
-            <span className={styles.previewLabel}>Generated Preview</span>
-            {previewImageUrl ? (
-              <img
-                src={previewImageUrl}
-                alt="Generated preview"
-                className={styles.previewImage}
-              />
-            ) : (
-              <div className={styles.previewImage} />
-            )}
-          </div>
-          <div className={styles.previewActions}>
-            <button
-              className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-              onClick={onGenerateAll}
-              disabled={disableGenerate}
-            >
-              {isGenerating ? "Generating..." : "Generate Image"}
-            </button>
-            <button
-              className={styles.actionButton}
-              onClick={onRegenerateActive}
-              disabled={disableGenerate}
-            >
-              Regenerate
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );
@@ -401,7 +370,6 @@ const ResultsCard: React.FC<{
   captions,
   projectName,
 }) => {
-  if (results.length === 0) return null;
   return (
     <Results
       mode="manual"
@@ -455,7 +423,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   results,
   onRegenerateResult,
 }) => {
-  const showResults = results.length > 0;
+  if (results.length) {
+    return (
+      <div className={styles.dashboard}>
+        <ResultsCard
+          results={results}
+          isGenerating={isGenerating}
+          onRegenerateResult={onRegenerateResult}
+          onRegenerateAll={onGenerateAll}
+          captions={captions}
+          projectName={projectName}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.scrollArea}>
@@ -479,19 +461,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onGenerateAll={onGenerateAll}
               onRegenerateActive={onRegenerateActive}
             />
-            <ResultsCard
-              results={results}
-              isGenerating={isGenerating}
-              onRegenerateResult={onRegenerateResult}
-              onRegenerateAll={onGenerateAll}
-              captions={captions}
-              projectName={projectName}
-            />
           </div>
           <div className={styles.rightColumn}>
             <RulesCard rules={rules} />
             <GuidelinesCard guidelines={guidelines} />
-            {!showResults && <CaptionsCard captions={captions} />}
           </div>
         </div>
       </div>
