@@ -1233,22 +1233,9 @@
           "children": [
             {
               "type": "text",
-              "id": "eJmoa",
-              "x": 32,
-              "y": 22,
-              "name": "resTitle",
-              "fill": "#F0A84B",
-              "content": "GENERATED RESULTS",
-              "fontFamily": "Inter",
-              "fontSize": 14,
-              "fontWeight": "normal",
-              "letterSpacing": 2
-            },
-            {
-              "type": "text",
               "id": "aDHDp",
               "x": 32,
-              "y": 46,
+              "y": 64,
               "name": "resSub",
               "fill": "#9A9AA0",
               "content": "Project: Coffee Brand Campaign",
@@ -1260,7 +1247,7 @@
               "type": "frame",
               "id": "eXkyC",
               "x": 32,
-              "y": 220,
+              "y": 260,
               "name": "result_card_1",
               "width": 520,
               "height": 210,
@@ -1387,7 +1374,7 @@
               "type": "frame",
               "id": "r0pPW",
               "x": 580,
-              "y": 220,
+              "y": 620,
               "name": "result_card_2",
               "width": 520,
               "height": 210,
@@ -1514,7 +1501,7 @@
               "type": "frame",
               "id": "eb2Xn",
               "x": 32,
-              "y": 450,
+              "y": 490,
               "name": "result_card_3",
               "width": 520,
               "height": 210,
@@ -1641,7 +1628,7 @@
               "type": "frame",
               "id": "uzgA0",
               "x": 32,
-              "y": 90,
+              "y": 130,
               "name": "captions_card",
               "width": 1040,
               "height": 110,
@@ -1717,6 +1704,131 @@
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "b1Ojx",
+              "x": 32,
+              "y": 0,
+              "name": "result_header",
+              "width": 1076,
+              "height": 56,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "A5LbK",
+                  "name": "headerLeft",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "YhrMi",
+                      "name": "backBtn",
+                      "height": 36,
+                      "fill": "#202022",
+                      "cornerRadius": 10,
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "PIZ60",
+                          "name": "backIcon",
+                          "width": 18,
+                          "height": 18,
+                          "iconFontName": "chevron-left",
+                          "iconFontFamily": "lucide",
+                          "fill": "#E0E0E3"
+                        },
+                        {
+                          "type": "text",
+                          "id": "J5aiJ",
+                          "name": "backLabel",
+                          "fill": "#E0E0E3",
+                          "content": "Back",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "d5C9D",
+                      "name": "headerTitle",
+                      "fill": "#F0A84B",
+                      "content": "Generated results",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal",
+                      "letterSpacing": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "F5lgs",
+                  "name": "headerRight",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "fnD3y",
+                      "name": "downloadAllBtn",
+                      "height": 36,
+                      "fill": "#202022",
+                      "cornerRadius": 10,
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "1F8oc",
+                          "name": "downloadAllLabel",
+                          "fill": "#E0E0E3",
+                          "content": "Download all",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ynVti",
+                      "name": "regenerateBtn",
+                      "height": 36,
+                      "fill": "#F0A84B",
+                      "cornerRadius": 10,
+                      "padding": [
+                        10,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "AzwhJ",
+                          "name": "regenerateLabel",
+                          "fill": "#141415",
+                          "content": "Regenerate",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
