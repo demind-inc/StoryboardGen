@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Rule } from "./dashboardLayout.types";
 import { PencilIcon } from "./DashboardIcons";
 import styles from "./RulesCard.module.scss";
@@ -11,6 +11,20 @@ export interface RulesCardProps {
 const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
   const [isEditingTikTok, setIsEditingTikTok] = useState(false);
   const [isEditingInstagram, setIsEditingInstagram] = useState(false);
+  const tiktokTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const instagramTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isEditingTikTok) {
+      tiktokTextareaRef.current?.focus();
+    }
+  }, [isEditingTikTok]);
+
+  useEffect(() => {
+    if (isEditingInstagram) {
+      instagramTextareaRef.current?.focus();
+    }
+  }, [isEditingInstagram]);
 
   const updateRules = (platform: "tiktok" | "instagram", value: string) => {
     if (!onRulesChange) return;
@@ -60,6 +74,7 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
             )}
           </div>
           <textarea
+            ref={tiktokTextareaRef}
             className={styles.ruleTextarea}
             value={isEditingTikTok ? tiktokText : tiktokDisplay}
             readOnly={!isEditingTikTok}
@@ -85,6 +100,7 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
             )}
           </div>
           <textarea
+            ref={instagramTextareaRef}
             className={styles.ruleTextarea}
             value={isEditingInstagram ? instagramText : instagramDisplay}
             readOnly={!isEditingInstagram}

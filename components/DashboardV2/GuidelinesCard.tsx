@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { PencilIcon } from "./DashboardIcons";
 import styles from "./GuidelinesCard.module.scss";
 
@@ -12,6 +12,13 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({
   onGuidelinesChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      textareaRef.current?.focus();
+    }
+  }, [isEditing]);
 
   const updateGuidelines = (value: string) => {
     if (!onGuidelinesChange) return;
@@ -52,6 +59,7 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({
       <div className={styles.cardBody}>
         <div className={styles.guidelineList}>
           <textarea
+            ref={textareaRef}
             className={styles.ruleTextarea}
             value={isEditing ? guidelineText : guidelineDisplay}
             readOnly={!isEditing}

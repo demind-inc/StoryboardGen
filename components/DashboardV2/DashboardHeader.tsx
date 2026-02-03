@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { PencilIcon } from "./DashboardIcons";
 import styles from "./DashboardHeader.module.scss";
 
@@ -10,29 +10,52 @@ export interface DashboardHeaderProps {
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   projectName,
   onProjectNameChange,
-}) => (
-  <header className={styles.header}>
-    <div className={styles.titleArea}>
-      <span className={styles.projectLabel}>Project</span>
-      <div className={styles.projectRow}>
-        {onProjectNameChange ? (
-          <input
-            className={styles.projectTitleInput}
-            value={projectName}
-            onChange={(event) => onProjectNameChange(event.target.value)}
-            aria-label="Project name"
-          />
-        ) : (
-          <h1 className={styles.projectTitle}>{projectName}</h1>
-        )}
-        {onProjectNameChange && (
-          <span className={styles.editIcon} title="Editable">
-            <PencilIcon />
-          </span>
-        )}
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.titleArea}>
+        <span className={styles.projectLabel}>Project</span>
+        <div className={styles.projectRow}>
+          {onProjectNameChange ? (
+            isEditing ? (
+              <input
+                ref={inputRef}
+                className={styles.projectTitleInput}
+                value={projectName}
+                onChange={(event) => onProjectNameChange(event.target.value)}
+                onBlur={() => setIsEditing(false)}
+                aria-label="Project name"
+              />
+            ) : (
+              <h1 className={styles.projectTitle}>{projectName}</h1>
+            )
+          ) : (
+            <h1 className={styles.projectTitle}>{projectName}</h1>
+          )}
+          {onProjectNameChange && !isEditing && (
+            <button
+              type="button"
+              className={styles.editIcon}
+              title="Edit project name"
+              onClick={() => setIsEditing(true)}
+              aria-label="Edit project name"
+            >
+              <PencilIcon />
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 export default DashboardHeader;

@@ -15,7 +15,6 @@ const FooterBar: React.FC<FooterBarProps> = ({
   projectName,
 }) => (
   <div className={styles.footerBar}>
-    <span className={styles.footerMeta}>Project: {projectName}</span>
     <button
       className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
       onClick={onGenerateAll}
