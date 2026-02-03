@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
@@ -22,7 +22,6 @@ const InstagramRulesPage: React.FC = () => {
   const { authStatus, displayEmail, signOut } = useAuth();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [isLocked, setIsLocked] = useState(false);
   const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
 
   useEffect(() => {
@@ -30,11 +29,6 @@ const InstagramRulesPage: React.FC = () => {
       router.replace("/auth");
     }
   }, [authStatus, router]);
-
-  const lockLabel = useMemo(
-    () => (isLocked ? "Rules are currently locked" : "Rules are currently unlocked"),
-    [isLocked]
-  );
 
   const handleRuleChange = (index: number, value: string) => {
     setRules((prev) => prev.map((rule, idx) => (idx === index ? value : rule)));
@@ -46,7 +40,6 @@ const InstagramRulesPage: React.FC = () => {
 
   const handleReset = () => {
     setRules(DEFAULT_RULES);
-    setIsLocked(false);
   };
 
   if (authStatus === "checking") {
@@ -100,20 +93,6 @@ const InstagramRulesPage: React.FC = () => {
               </p>
             </header>
 
-            <section className={styles.lockBar}>
-              <span className={styles.lockText}>{lockLabel}</span>
-              <button
-                type="button"
-                className={`${styles.lockToggle} ${
-                  isLocked ? styles.lockOff : styles.lockOn
-                }`}
-                onClick={() => setIsLocked((prev) => !prev)}
-                aria-pressed={!isLocked}
-              >
-                <span className={styles.lockKnob} />
-              </button>
-            </section>
-
             <section className={styles.rulesCard}>
               <h2>Caption Rules</h2>
               <div className={styles.rulesList}>
@@ -124,7 +103,7 @@ const InstagramRulesPage: React.FC = () => {
                       onChange={(event) =>
                         handleRuleChange(index, event.target.value)
                       }
-                      readOnly={isLocked}
+                      readOnly={false}
                       className={styles.ruleInput}
                     />
                   </div>
@@ -134,7 +113,6 @@ const InstagramRulesPage: React.FC = () => {
                 type="button"
                 className={styles.addRule}
                 onClick={handleAddRule}
-                disabled={isLocked}
               >
                 Add Rule
               </button>
