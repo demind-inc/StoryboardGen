@@ -387,25 +387,31 @@ const ResultsCard: React.FC<{
   results: SceneResult[];
   isGenerating: boolean;
   onRegenerateResult: (index: number) => void;
-}> = ({ results, isGenerating, onRegenerateResult }) => {
+  onRegenerateAll: () => void;
+  captions: {
+    tiktok: string;
+    instagram: string;
+  };
+  projectName: string;
+}> = ({
+  results,
+  isGenerating,
+  onRegenerateResult,
+  onRegenerateAll,
+  captions,
+  projectName,
+}) => {
   if (results.length === 0) return null;
   return (
-    <section className={styles.card}>
-      <div className={styles.cardHeader}>
-        <div>
-          <h2 className={styles.cardTitle}>Generated Results</h2>
-          <p className={styles.cardDescription}>All scene outputs</p>
-        </div>
-      </div>
-      <div className={styles.cardBody}>
-        <Results
-          mode="manual"
-          results={results}
-          isGenerating={isGenerating}
-          onRegenerate={onRegenerateResult}
-        />
-      </div>
-    </section>
+    <Results
+      mode="manual"
+      results={results}
+      isGenerating={isGenerating}
+      onRegenerate={onRegenerateResult}
+      onRegenerateAll={onRegenerateAll}
+      captions={captions}
+      projectName={projectName}
+    />
   );
 };
 
@@ -449,6 +455,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   results,
   onRegenerateResult,
 }) => {
+  const showResults = results.length > 0;
   return (
     <div className={styles.dashboard}>
       <div className={styles.scrollArea}>
@@ -476,12 +483,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               results={results}
               isGenerating={isGenerating}
               onRegenerateResult={onRegenerateResult}
+              onRegenerateAll={onGenerateAll}
+              captions={captions}
+              projectName={projectName}
             />
           </div>
           <div className={styles.rightColumn}>
             <RulesCard rules={rules} />
             <GuidelinesCard guidelines={guidelines} />
-            <CaptionsCard captions={captions} />
+            {!showResults && <CaptionsCard captions={captions} />}
           </div>
         </div>
       </div>
