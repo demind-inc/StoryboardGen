@@ -4,7 +4,8 @@ import { AppMode, SubscriptionPlan } from "../types";
 import { useAuth } from "../providers/AuthProvider";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
 import SavedImagesPanel from "./saved/SavedImagesPanel";
-import ManualPanel from "./Dashboard/panel/ManualPanel";
+import DashboardMain from "../components/DashboardV2/DashboardMain";
+import styles from "./DashboardPage.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -69,7 +70,9 @@ const DashboardPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <div className="app__main">
+          <div
+            className={activePanel === "manual" ? styles.main : "app__main"}
+          >
             {activePanel === "saved" && (
               <SavedImagesPanel
                 sortDirection={librarySort}
@@ -78,7 +81,7 @@ const DashboardPage: React.FC = () => {
               />
             )}
 
-            {activePanel === "manual" && <ManualPanel />}
+            {activePanel === "manual" && <DashboardMain />}
           </div>
         </div>
       </main>

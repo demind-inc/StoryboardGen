@@ -1,0 +1,14 @@
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #0f0f10;
+  border: 1px solid #1c1f24;
+  padding: 32px;
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 24px;
+  }
+}

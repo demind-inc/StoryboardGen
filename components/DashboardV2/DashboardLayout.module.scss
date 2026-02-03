@@ -1,0 +1,361 @@
+.dashboard {
+  --dashboard-bg: #0f0f10;
+  --card-bg: #17181a;
+  --card-border: #2a2c2f;
+  --muted: #9aa0a6;
+  --text: #f2f3f4;
+  --accent: #ff8a00;
+  --accent-soft: rgba(255, 138, 0, 0.12);
+  --chip-bg: #212327;
+  --chip-border: #34373c;
+
+  background: var(--dashboard-bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  height: 100%;
+  min-height: 0;
+  padding: 8px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.projectLabel {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectTitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.buttonPrimary,
+.buttonGhost {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.buttonPrimary {
+  background: var(--accent);
+  color: #111111;
+}
+
+.buttonPrimary:disabled {
+  background: #3a3b3e;
+  color: #8a8d93;
+  cursor: not-allowed;
+}
+
+.buttonGhost {
+  background: transparent;
+  border-color: #31343a;
+  color: var(--text);
+}
+
+.buttonGhost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.contentRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 32px;
+  flex: 1;
+  min-height: 0;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-height: 0;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  gap: 12px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardDescription {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardBody {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.iconButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  color: #111111;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.referenceGrid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.uploadTile {
+  width: 150px;
+  height: 150px;
+  border: 1px dashed var(--card-border);
+  background: #1f2124;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.referenceThumb {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 0;
+  border: 1px solid var(--card-border);
+}
+
+.sceneTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sceneTab {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sceneTabActive {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.promptLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.promptBox {
+  border: 1px solid var(--card-border);
+  background: #101114;
+  padding: 16px;
+}
+
+.promptTextarea {
+  width: 100%;
+  min-height: 110px;
+  background: transparent;
+  border: none;
+  resize: vertical;
+  color: var(--text);
+  font-size: 13px;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.promptHint {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.optionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.optionRow input {
+  accent-color: var(--accent);
+}
+
+.previewRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.previewFrame {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewLabel {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.previewImage {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border: 1px solid var(--card-border);
+}
+
+.previewActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionButton {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.actionButtonPrimary {
+  background: var(--accent);
+  color: #111111;
+  border-color: var(--accent);
+}
+
+.ruleList,
+.guidelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ruleItem {
+  display: flex;
+  gap: 8px;
+}
+
+.checkDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 6px;
+}
+
+.captionBox {
+  background: #202226;
+  border: 1px solid var(--card-border);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.captionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footerBar {
+  border-top: 1px solid var(--card-border);
+  padding-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.footerMeta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-right: auto;
+}
+
+@media (max-width: 1100px) {
+  .contentRow {
+    grid-template-columns: 1fr;
+  }
+
+  .rightColumn {
+    width: 100%;
+  }
+}
