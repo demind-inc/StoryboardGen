@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MonthlyUsage, SubscriptionPlan } from "../types";
 import { getMonthlyUsage } from "../services/usageService";
 import { getSubscription } from "../services/subscriptionService";
@@ -51,21 +51,24 @@ export const useUsage = (
   const [subscription, setSubscription] =
     useState<Awaited<ReturnType<typeof getSubscription>>>(null);
 
-  const refreshUsage = async (userId: string) => {
-    setIsUsageLoading(true);
-    try {
-      const stats = await getMonthlyUsage(userId, planType);
-      setUsage(stats);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage fetch error:", error);
-      setUsageError("Unable to load credits.");
-    } finally {
-      setIsUsageLoading(false);
-    }
-  };
+  const refreshUsage = useCallback(
+    async (userId: string) => {
+      setIsUsageLoading(true);
+      try {
+        const stats = await getMonthlyUsage(userId, planType);
+        setUsage(stats);
+        setUsageError(null);
+      } catch (error) {
+        console.error("Usage fetch error:", error);
+        setUsageError("Unable to load credits.");
+      } finally {
+        setIsUsageLoading(false);
+      }
+    },
+    [planType]
+  );
 
-  const refreshSubscription = async (userId: string) => {
+  const refreshSubscription = useCallback(async (userId: string) => {
     setIsSubscriptionLoading(true);
     try {
       const subscription = await getSubscription(userId);
@@ -90,9 +93,9 @@ export const useUsage = (
     } finally {
       setIsSubscriptionLoading(false);
     }
-  };
+  }, []);
 
-  const refreshHasGeneratedFreeImage = async (userId: string) => {
+  const refreshHasGeneratedFreeImage = useCallback(async (userId: string) => {
     setIsFreeImageLoading(true);
     try {
       const hasGenerated = await getHasGeneratedFreeImage(userId);
@@ -103,7 +106,7 @@ export const useUsage = (
     } finally {
       setIsFreeImageLoading(false);
     }
-  };
+  }, []);
 
   const openPaymentModal = () => {
     trackButtonClick("open_payment_modal");

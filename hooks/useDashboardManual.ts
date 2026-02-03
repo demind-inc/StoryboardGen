@@ -6,7 +6,10 @@ import { usePrompts } from "./usePrompts";
 import { useImageGeneration } from "./useImageGeneration";
 import { useModals } from "./useModals";
 import { fetchReferenceLibrary } from "../services/libraryService";
-import { DEFAULT_MONTHLY_CREDITS, PLAN_CREDITS } from "../services/usageService";
+import {
+  DEFAULT_MONTHLY_CREDITS,
+  PLAN_CREDITS,
+} from "../services/usageService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -53,12 +56,9 @@ export const useDashboardManual = ({
     refreshHasGeneratedFreeImage,
   } = usageHook;
 
-  const refreshReferenceLibrary = useCallback(
-    async (currentUserId: string) => {
-      await fetchReferenceLibrary(currentUserId);
-    },
-    []
-  );
+  const refreshReferenceLibrary = useCallback(async (currentUserId: string) => {
+    await fetchReferenceLibrary(currentUserId);
+  }, []);
 
   const referencesHook = useReferences(userId, refreshReferenceLibrary);
   const {
@@ -93,9 +93,7 @@ export const useDashboardManual = ({
   } = modalsHook;
 
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
-  const [rulesTab, setRulesTab] = useState<"tiktok" | "instagram">(
-    "tiktok"
-  );
+  const [rulesTab, setRulesTab] = useState<"tiktok" | "instagram">("tiktok");
   const [captionTab, setCaptionTab] = useState<"tiktok" | "instagram">(
     "tiktok"
   );
@@ -148,13 +146,9 @@ export const useDashboardManual = ({
       refreshSubscription(userId);
       refreshHasGeneratedFreeImage(userId);
     }
-  }, [
-    authStatus,
-    userId,
-    refreshUsage,
-    refreshSubscription,
-    refreshHasGeneratedFreeImage,
-  ]);
+    // Only re-run when auth or user identity changes; refresh fns are stable via useCallback in useUsage
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus, userId]);
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);
