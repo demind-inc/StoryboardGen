@@ -4,6 +4,24 @@
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --fs-9: 11px;
+  --fs-10: 12px;
+  --fs-11: 13px;
+  --fs-12: 14px;
+  --fs-13: 15px;
+  --fs-14: 16px;
+  --fs-15: 17px;
+  --fs-16: 18px;
+  --fs-17: 19px;
+  --fs-18: 20px;
+  --fs-19: 21px;
+  --fs-20: 22px;
+  --fs-22: 24px;
+  --fs-24: 26px;
+  --fs-26: 28px;
+  --fs-30: 32px;
+  --fs-34: 36px;
+  --fs-42: 44px;
   --gradient-start: #0f172a;
   --gradient-end: #0a0f1c;
   --card-glow: 0 30px 60px rgba(0, 0, 0, 0.32);
@@ -176,7 +194,6 @@ body {
   h3 {
     margin: 0 0 12px;
     color: #e2e8f0;
-    font-size: 18px;
   }
 
   &__grid {
@@ -200,12 +217,12 @@ body {
     color: #fb923c;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: var(--fs-14);
   }
 
   &__price {
     margin: 0;
-    font-size: 20px;
+    font-size: var(--fs-22);
     font-weight: 900;
     color: #f8fafc;
   }
@@ -251,21 +268,21 @@ body {
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    font-size: 10px;
+    font-size: var(--fs-12);
     font-weight: 900;
     color: #a855f7;
   }
 
   &__title {
     margin: 0;
-    font-size: 20px;
+    font-size: var(--fs-22);
     font-weight: 800;
     letter-spacing: -0.02em;
   }
 
   &__subtitle {
     margin: 0;
-    font-size: 12px;
+    font-size: var(--fs-14);
     color: #eeeeee;
     font-weight: 600;
     display: flex;
@@ -275,7 +292,7 @@ body {
   }
 
   &__subtitle-text {
-    font-size: 12px;
+    font-size: var(--fs-14);
     color: #eeeeee;
     font-weight: 600;
   }
@@ -289,7 +306,7 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 20px;
-  font-size: 15px;
+  font-size: var(--fs-17);
   font-weight: 800;
   color: #ffffff;
   background: linear-gradient(135deg, #6366f1, #7c3aed);
@@ -349,7 +366,7 @@ body {
   gap: 8px;
   padding: 6px 12px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: var(--fs-14);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: capitalize;
@@ -400,7 +417,7 @@ body {
 
   &__title {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--fs-16);
     font-weight: 600;
     color: #ffffff;
   }
@@ -408,7 +425,7 @@ body {
   &__action {
     border: none;
     background: transparent;
-    font-size: 10px;
+    font-size: var(--fs-12);
     font-weight: 800;
     color: #60a5fa;
     text-transform: uppercase;
@@ -438,7 +455,7 @@ body {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   padding: 12px 14px;
-  font-size: 14px;
+  font-size: var(--fs-16);
   color: #ffffff;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
@@ -457,7 +474,7 @@ body {
 
 .label {
   display: block;
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-weight: 800;
   text-transform: uppercase;
   color: #94a3b8;
@@ -468,7 +485,7 @@ body {
 .text {
   &--helper {
     margin-top: 12px;
-    font-size: 10px;
+    font-size: var(--fs-12);
     font-weight: 700;
     text-transform: uppercase;
     color: #94a3b8;
@@ -484,7 +501,7 @@ body {
     border: none;
     background: #2563eb;
     color: #ffffff;
-    font-size: 12px;
+    font-size: var(--fs-14);
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
@@ -507,7 +524,7 @@ body {
     background: #f8fafc;
     color: #0f172a;
     font-weight: 800;
-    font-size: 11px;
+    font-size: var(--fs-13);
     text-transform: uppercase;
     padding: 8px 12px;
     border-radius: 999px;
@@ -566,7 +583,7 @@ body {
   gap: 8px;
 
   &__label {
-    font-size: 10px;
+    font-size: var(--fs-12);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -580,10 +597,10 @@ body {
     border-radius: 8px;
     padding: 6px 8px;
     font-weight: 700;
-    font-size: 11px;
+    font-size: var(--fs-13);
 
     option {
-      font-size: 11px;
+      font-size: var(--fs-13);
     }
   }
 }
@@ -622,7 +639,7 @@ body {
   }
 
   &__label {
-    font-size: 12px;
+    font-size: var(--fs-14);
     color: #cbd5e1;
   }
 }

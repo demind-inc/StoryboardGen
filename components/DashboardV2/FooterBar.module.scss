@@ -10,7 +10,7 @@
 }
 
 .footerMeta {
-  font-size: 12px;
+  font-size: var(--fs-14);
   color: var(--muted);
   margin-right: auto;
 }
@@ -21,7 +21,7 @@
   border: none;
   background: #2e2e2e;
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--fs-16);
   font-weight: 600;
   cursor: pointer;
 }

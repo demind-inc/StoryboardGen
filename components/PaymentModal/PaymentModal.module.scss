@@ -25,7 +25,7 @@
     right: 12px;
     border: none;
     background: transparent;
-    font-size: 20px;
+    font-size: var(--fs-22);
     color: #475569;
     cursor: pointer;
   }
@@ -39,7 +39,7 @@
     background: linear-gradient(135deg, #6366f1, #7c3aed);
     color: #ffffff;
     font-weight: 800;
-    font-size: 12px;
+    font-size: var(--fs-14);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     box-shadow: 0 12px 24px rgba(99, 102, 241, 0.28);
@@ -72,13 +72,13 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
 
     span {
-      font-size: 18px;
+      font-size: var(--fs-20);
     }
 
     p {
       margin: 4px 0 0 0;
       color: #cbd5e1;
-      font-size: 13px;
+      font-size: var(--fs-15);
     }
   }
 
@@ -108,7 +108,7 @@
     color: #fecdd3;
     border: 1px solid rgba(248, 113, 113, 0.28);
     margin-bottom: 10px;
-    font-size: 13px;
+    font-size: var(--fs-15);
   }
 
   &__plans {
@@ -148,7 +148,7 @@
     margin: 0;
     color: #f8fafc;
     font-weight: 800;
-    font-size: 14px;
+    font-size: var(--fs-16);
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
@@ -157,14 +157,14 @@
     margin: 0;
     color: #e2e8f0;
     font-weight: 800;
-    font-size: 20px;
+    font-size: var(--fs-22);
     letter-spacing: -0.02em;
   }
 
   &__plan-credits {
     margin: 0 0 8px;
     color: #94a3b8;
-    font-size: 12px;
+    font-size: var(--fs-14);
     font-weight: 600;
   }
 
@@ -182,7 +182,7 @@
     background: rgba(248, 113, 113, 0.12);
     color: #fecdd3;
     border: 1px solid rgba(248, 113, 113, 0.28);
-    font-size: 11px;
+    font-size: var(--fs-13);
     text-align: center;
     margin-top: auto;
   }

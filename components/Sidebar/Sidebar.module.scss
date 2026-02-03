@@ -8,7 +8,7 @@
   top: 24px;
   background: #18181b;
   border: none;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: #f2f3f4;
 
   &__header {
@@ -49,7 +49,7 @@
   }
 
   &__brandEyebrow {
-    font-size: 10px;
+    font-size: var(--fs-10);
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: #ff8a00;
@@ -58,7 +58,7 @@
   }
 
   &__brandTitle {
-    font-size: 16px;
+    font-size: var(--fs-16);
     font-weight: 700;
     letter-spacing: 0.05em;
     white-space: nowrap;
@@ -100,7 +100,7 @@
   }
 
   &__eyebrow {
-    font-size: 11px;
+    font-size: var(--fs-11);
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: #ff8a00;
@@ -122,7 +122,7 @@
     border: 1px solid transparent;
     background: transparent;
     color: #cfd3d7;
-    font-size: 13px;
+    font-size: var(--fs-13);
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease;
 
@@ -171,7 +171,7 @@
   }
 
   &__planLabel {
-    font-size: 11px;
+    font-size: var(--fs-11);
     text-transform: uppercase;
     letter-spacing: 0.14em;
     color: #ff8a00;
@@ -179,17 +179,17 @@
   }
 
   &__planName {
-    font-size: 14px;
+    font-size: var(--fs-14);
     font-weight: 700;
   }
 
   &__planDesc {
-    font-size: 11px;
+    font-size: var(--fs-11);
     color: #9aa0a6;
   }
 
   &__planCredits {
-    font-size: 12px;
+    font-size: var(--fs-12);
     color: #ff8a00;
     font-weight: 600;
   }
@@ -197,7 +197,7 @@
   &__upgradeBtn {
     border-radius: 999px;
     padding: 10px 14px;
-    font-size: 12px;
+    font-size: var(--fs-12);
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: transparent;
@@ -219,7 +219,7 @@
         max-width: 100%;
         margin: 0;
         justify-content: center;
-        font-size: 9px;
+        font-size: var(--fs-9);
         padding: 0 8px;
       }
     }
@@ -240,7 +240,7 @@
   }
 
   &__profileEmail {
-    font-size: 12px;
+    font-size: var(--fs-12);
     font-weight: 600;
   }
 
@@ -251,7 +251,7 @@
   }
 
   &__profileLabel {
-    font-size: 11px;
+    font-size: var(--fs-11);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #ff8a00;
@@ -260,7 +260,7 @@
   }
 
   &__profileMeta {
-    font-size: 11px;
+    font-size: var(--fs-11);
     color: #9aa0a6;
     margin: 0;
   }
@@ -273,7 +273,7 @@
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.14);
       color: #f2f3f4;
-      font-size: 11px;
+      font-size: var(--fs-11);
       padding: 6px 10px;
       cursor: pointer;
     }
@@ -283,7 +283,7 @@
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #f2f3f4;
-    font-size: 11px;
+    font-size: var(--fs-11);
     padding: 8px 10px;
     cursor: pointer;
   }
@@ -307,7 +307,7 @@
     background: rgba(255, 255, 255, 0.04);
     color: #f8fafc;
     font-weight: 700;
-    font-size: 12px;
+    font-size: var(--fs-12);
     margin-bottom: 8px;
     word-break: break-all;
   }
@@ -321,13 +321,13 @@
     margin: 0 0 4px;
     color: #e2e8f0;
     font-weight: 800;
-    font-size: 12px;
+    font-size: var(--fs-12);
   }
 
   &__profile-meta {
     margin: 0 0 8px;
     color: #94a3b8;
-    font-size: 11px;
+    font-size: var(--fs-11);
   }
 
   &__profile-actions {
@@ -339,7 +339,7 @@
       background: rgba(255, 255, 255, 0.06);
       color: #e2e8f0;
       font-weight: 700;
-      font-size: 12px;
+      font-size: var(--fs-12);
       cursor: pointer;
       transition: background 0.2s ease;
 
@@ -356,7 +356,7 @@
     background: transparent;
     color: #fca5a5;
     font-weight: 800;
-    font-size: 12px;
+    font-size: var(--fs-12);
     cursor: pointer;
     text-align: left;
     margin-top: 8px;
@@ -367,7 +367,7 @@
     color: #cbd5e1;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    font-size: 9px;
+    font-size: var(--fs-9);
     font-weight: 800;
     opacity: 0.85;
   }
@@ -375,7 +375,7 @@
   &__title {
     margin: 0;
     color: #f8fafc;
-    font-size: 16px;
+    font-size: var(--fs-16);
     letter-spacing: -0.01em;
   }
 
@@ -398,7 +398,7 @@
   }
 
   &__filter-label {
-    font-size: 10px;
+    font-size: var(--fs-10);
     font-weight: 800;
     color: #94a3b8;
     text-transform: uppercase;
@@ -430,7 +430,7 @@
     border-radius: 10px;
     cursor: pointer;
     font-weight: 800;
-    font-size: 13px;
+    font-size: var(--fs-13);
     letter-spacing: -0.01em;
     transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
     display: flex;
@@ -482,7 +482,7 @@
     justify-content: space-between;
     color: #cbd5e1;
     font-weight: 700;
-    font-size: 12px;
+    font-size: var(--fs-12);
   }
 
   &__saved-list {
@@ -520,23 +520,23 @@
 
   &__saved-title {
     font-weight: 800;
-    font-size: 12px;
+    font-size: var(--fs-12);
   }
 
   &__saved-meta {
     color: #94a3b8;
-    font-size: 11px;
+    font-size: var(--fs-11);
   }
 
   &__chevron {
-    font-size: 12px;
+    font-size: var(--fs-12);
     color: #cbd5e1;
   }
 
   &__empty {
     margin: 0;
     color: #94a3b8;
-    font-size: 11px;
+    font-size: var(--fs-11);
   }
 
   &__panel {
@@ -570,7 +570,7 @@
     );
     color: #f8fafc;
     font-weight: 800;
-    font-size: 13px;
+    font-size: var(--fs-13);
     cursor: pointer;
     transition: all 0.2s ease;
     letter-spacing: -0.01em;
@@ -630,7 +630,7 @@
   }
 
   &__image-label {
-    font-size: 12px;
+    font-size: var(--fs-12);
     color: #cbd5e1;
     text-align: left;
   }
@@ -664,7 +664,7 @@
   }
 
   &__prompt-meta {
-    font-size: 12px;
+    font-size: var(--fs-12);
     color: #94a3b8;
   }
 }

@@ -20,7 +20,7 @@
   &__subtitle {
     margin: 0;
     color: #cbd5e1;
-    font-size: 16px;
+    font-size: var(--fs-18);
     line-height: 1.7;
   }
 
@@ -46,7 +46,7 @@
 
   &__label {
     margin: 0;
-    font-size: 12px;
+    font-size: var(--fs-14);
     font-weight: 700;
     color: #cbd5e1;
     text-transform: uppercase;
@@ -55,14 +55,14 @@
 
   &__value {
     margin: 4px 0 2px;
-    font-size: 28px;
+    font-size: var(--fs-30);
     font-weight: 800;
   }
 
   &__hint {
     margin: 0;
     color: #94a3b8;
-    font-size: 13px;
+    font-size: var(--fs-15);
   }
 }
 
@@ -81,7 +81,7 @@
 
   &__value {
     margin: 0;
-    font-size: 22px;
+    font-size: var(--fs-24);
     font-weight: 800;
   }
 

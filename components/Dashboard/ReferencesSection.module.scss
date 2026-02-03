@@ -20,7 +20,7 @@
     place-items: center;
     grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    font-size: 20px;
+    font-size: var(--fs-22);
     color: #2563eb;
   }
 
@@ -30,7 +30,7 @@
 
     h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: var(--fs-18);
       color: #0f172a;
       letter-spacing: -0.01em;
     }
@@ -38,14 +38,14 @@
     p {
       margin: 0;
       color: #475569;
-      font-size: 13px;
+      font-size: var(--fs-15);
       line-height: 1.5;
     }
   }
 
   &__meta {
     color: #64748b !important;
-    font-size: 12px !important;
+    font-size: var(--fs-14) !important;
   }
 
   &__actions {

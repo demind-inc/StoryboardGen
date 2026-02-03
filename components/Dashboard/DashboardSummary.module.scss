@@ -13,7 +13,7 @@
 .metricCard {
   &__value {
     margin: 0 0 4px;
-    font-size: 20px;
+    font-size: var(--fs-22);
     font-weight: 900;
     color: #0f172a;
   }
@@ -21,7 +21,7 @@
   &__label {
     margin: 0;
     color: #64748b;
-    font-size: 11px;
+    font-size: var(--fs-13);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;

@@ -12,7 +12,7 @@
 }
 
 .projectLabel {
-  font-size: 11px;
+  font-size: var(--fs-13);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
@@ -21,14 +21,14 @@
 }
 
 .projectTitle {
-  font-size: 28px;
+  font-size: var(--fs-30);
   font-weight: 600;
   margin: 0;
   font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
 }
 
 .projectTitleInput {
-  font-size: 28px;
+  font-size: var(--fs-30);
   font-weight: 600;
   margin: 0;
   color: var(--text);

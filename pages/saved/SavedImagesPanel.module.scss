@@ -24,7 +24,7 @@
 
 .eyebrow {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fs-16);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #f0a84b;
@@ -32,7 +32,7 @@
 
 .subtitle {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-14);
   color: #9a9aa0;
 }
 
@@ -46,7 +46,7 @@
 .manageButton {
   border-radius: 999px;
   padding: 8px 14px;
-  font-size: 12px;
+  font-size: var(--fs-14);
   border: 1px solid #2a2a2c;
   background: #1b1b1d;
   color: #c7c7cc;
@@ -62,7 +62,7 @@
 .addButton {
   border-radius: 999px;
   padding: 8px 16px;
-  font-size: 12px;
+  font-size: var(--fs-14);
   border: none;
   background: #f0a84b;
   color: #1a1204;
@@ -94,7 +94,7 @@
   background: #202022;
   border-radius: 999px;
   color: #c9c9cf;
-  font-size: 11px;
+  font-size: var(--fs-13);
 }
 
 .sortControl {
@@ -102,7 +102,7 @@
   align-items: center;
   gap: 8px;
   color: #c9c9cf;
-  font-size: 11px;
+  font-size: var(--fs-13);
 }
 
 .sortSelect {
@@ -111,7 +111,7 @@
   color: #c9c9cf;
   border-radius: 999px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
 }
 
 .managePanel {
@@ -146,14 +146,14 @@
   background: transparent;
   border: none;
   color: #f1f1f1;
-  font-size: 13px;
+  font-size: var(--fs-15);
   cursor: pointer;
   padding: 0;
   text-align: left;
 }
 
 .manageDate {
-  font-size: 11px;
+  font-size: var(--fs-13);
   color: #9a9aa0;
 }
 
@@ -163,7 +163,7 @@
   border-radius: 8px;
   padding: 6px 10px;
   color: #f1f1f1;
-  font-size: 12px;
+  font-size: var(--fs-14);
   min-width: 180px;
 }
 
@@ -176,7 +176,7 @@
 .manageActionPrimary {
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
   border: none;
   background: #f0a84b;
   color: #1a1204;
@@ -186,7 +186,7 @@
 .manageActionGhost {
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
   border: 1px solid #2a2a2c;
   background: transparent;
   color: #c9c9cf;
@@ -196,7 +196,7 @@
 .manageActionDanger {
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
   border: 1px solid rgba(248, 113, 113, 0.4);
   background: rgba(248, 113, 113, 0.12);
   color: #fca5a5;
@@ -243,7 +243,7 @@
   border-radius: 8px;
   padding: 8px 12px;
   color: #f1f1f1;
-  font-size: 12px;
+  font-size: var(--fs-14);
   flex: 1;
   min-width: 200px;
 }
@@ -256,7 +256,7 @@
 .newSetActionPrimary {
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
   border: none;
   background: #f0a84b;
   color: #1a1204;
@@ -266,7 +266,7 @@
 .newSetActionGhost {
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--fs-13);
   border: 1px solid #2a2a2c;
   background: transparent;
   color: #c9c9cf;
@@ -324,7 +324,7 @@
   min-height: 120px;
 
   span {
-    font-size: 11px;
+    font-size: var(--fs-13);
     font-weight: 600;
   }
 }
@@ -394,14 +394,14 @@
 
 .caption {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--fs-13);
   color: #c7c7cc;
 }
 
 .empty {
   margin: 0;
   color: #9a9aa0;
-  font-size: 11px;
+  font-size: var(--fs-13);
 }
 
 .imageExpandModal {
@@ -447,7 +447,7 @@
     justify-content: center;
     transition: all 0.2s ease;
     z-index: 1001;
-    font-size: 18px;
+    font-size: var(--fs-20);
     line-height: 1;
 
     &:hover {
