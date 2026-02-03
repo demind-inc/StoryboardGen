@@ -58,6 +58,24 @@
   font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
 }
 
+.projectTitleInput {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectTitleInput:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
 .projectRow {
   display: flex;
   align-items: center;
@@ -358,13 +376,14 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
 .ruleItem {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .checkDot {
@@ -372,7 +391,22 @@
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
-  margin-top: 6px;
+}
+
+.ruleInput {
+  flex: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.ruleInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .captionBox {

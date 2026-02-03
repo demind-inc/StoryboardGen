@@ -5,6 +5,7 @@ import styles from "./DashboardLayout.module.scss";
 
 interface DashboardLayoutProps {
   projectName: string;
+  onProjectNameChange?: (value: string) => void;
   references: ReferenceImage[];
   onUpload: () => void;
   onOpenLibrary: () => void;
@@ -22,7 +23,9 @@ interface DashboardLayoutProps {
     tiktok: string[];
     instagram: string[];
   };
+  onRulesChange?: (rules: { tiktok: string[]; instagram: string[] }) => void;
   guidelines: string[];
+  onGuidelinesChange?: (guidelines: string[]) => void;
   captions: {
     tiktok: string;
     instagram: string;
@@ -71,16 +74,28 @@ const LibraryIcon: React.FC = () => (
 const Header: React.FC<{
   projectName: string;
   onAddScene: () => void;
-}> = ({ projectName, onAddScene }) => {
+  onProjectNameChange?: (value: string) => void;
+}> = ({ projectName, onAddScene, onProjectNameChange }) => {
   return (
     <header className={styles.header}>
       <div className={styles.titleArea}>
         <span className={styles.projectLabel}>Project</span>
         <div className={styles.projectRow}>
-          <h1 className={styles.projectTitle}>{projectName}</h1>
-          <span className={styles.editIcon} title="Editable">
-            <PencilIcon />
-          </span>
+          {onProjectNameChange ? (
+            <input
+              className={styles.projectTitleInput}
+              value={projectName}
+              onChange={(event) => onProjectNameChange(event.target.value)}
+              aria-label="Project name"
+            />
+          ) : (
+            <h1 className={styles.projectTitle}>{projectName}</h1>
+          )}
+          {onProjectNameChange && (
+            <span className={styles.editIcon} title="Editable">
+              <PencilIcon />
+            </span>
+          )}
         </div>
       </div>
     </header>
@@ -253,7 +268,23 @@ const SceneCard: React.FC<{
 
 const RulesCard: React.FC<{
   rules: { tiktok: string[]; instagram: string[] };
-}> = ({ rules }) => {
+  onRulesChange?: (rules: { tiktok: string[]; instagram: string[] }) => void;
+}> = ({ rules, onRulesChange }) => {
+  const updateRule = (
+    platform: "tiktok" | "instagram",
+    index: number,
+    value: string
+  ) => {
+    if (!onRulesChange) return;
+    const next = {
+      ...rules,
+      [platform]: rules[platform].map((rule, idx) =>
+        idx === index ? value : rule
+      ),
+    };
+    onRulesChange(next);
+  };
+
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
@@ -272,28 +303,66 @@ const RulesCard: React.FC<{
       <div className={styles.cardBody}>
         <div className={styles.ruleList}>
           <strong>TikTok Caption Rules</strong>
-          {rules.tiktok.map((rule) => (
-            <div key={rule} className={styles.ruleItem}>
-              <span className={styles.checkDot} />
-              <span>{rule}</span>
-            </div>
-          ))}
+          {rules.tiktok.map((rule, idx) => {
+            const key = `${rule}-${idx}`;
+            return (
+              <div key={key} className={styles.ruleItem}>
+                <span className={styles.checkDot} />
+                {onRulesChange ? (
+                  <input
+                    className={styles.ruleInput}
+                    value={rule}
+                    onChange={(event) =>
+                      updateRule("tiktok", idx, event.target.value)
+                    }
+                    aria-label={`TikTok rule ${idx + 1}`}
+                  />
+                ) : (
+                  <span>{rule}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
         <div className={styles.ruleList}>
           <strong>Instagram Caption Rules</strong>
-          {rules.instagram.map((rule) => (
-            <div key={rule} className={styles.ruleItem}>
-              <span className={styles.checkDot} />
-              <span>{rule}</span>
-            </div>
-          ))}
+          {rules.instagram.map((rule, idx) => {
+            const key = `${rule}-${idx}`;
+            return (
+              <div key={key} className={styles.ruleItem}>
+                <span className={styles.checkDot} />
+                {onRulesChange ? (
+                  <input
+                    className={styles.ruleInput}
+                    value={rule}
+                    onChange={(event) =>
+                      updateRule("instagram", idx, event.target.value)
+                    }
+                    aria-label={`Instagram rule ${idx + 1}`}
+                  />
+                ) : (
+                  <span>{rule}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 };
 
-const GuidelinesCard: React.FC<{ guidelines: string[] }> = ({ guidelines }) => {
+const GuidelinesCard: React.FC<{
+  guidelines: string[];
+  onGuidelinesChange?: (guidelines: string[]) => void;
+}> = ({ guidelines, onGuidelinesChange }) => {
+  const updateGuideline = (index: number, value: string) => {
+    if (!onGuidelinesChange) return;
+    onGuidelinesChange(
+      guidelines.map((item, idx) => (idx === index ? value : item))
+    );
+  };
+
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
@@ -309,12 +378,26 @@ const GuidelinesCard: React.FC<{ guidelines: string[] }> = ({ guidelines }) => {
       </div>
       <div className={styles.cardBody}>
         <div className={styles.guidelineList}>
-          {guidelines.map((item) => (
-            <div key={item} className={styles.ruleItem}>
-              <span className={styles.checkDot} />
-              <span>{item}</span>
-            </div>
-          ))}
+          {guidelines.map((item, idx) => {
+            const key = `${item}-${idx}`;
+            return (
+              <div key={key} className={styles.ruleItem}>
+                <span className={styles.checkDot} />
+                {onGuidelinesChange ? (
+                  <input
+                    className={styles.ruleInput}
+                    value={item}
+                    onChange={(event) =>
+                      updateGuideline(idx, event.target.value)
+                    }
+                    aria-label={`Guideline ${idx + 1}`}
+                  />
+                ) : (
+                  <span>{item}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -387,10 +470,11 @@ const FooterBar: React.FC<{
   disableGenerate: boolean;
   isGenerating: boolean;
   onGenerateAll: () => void;
-}> = ({ disableGenerate, isGenerating, onGenerateAll }) => {
+  projectName: string;
+}> = ({ disableGenerate, isGenerating, onGenerateAll, projectName }) => {
   return (
     <div className={styles.footerBar}>
-      <span className={styles.footerMeta}>Project: Coffee Brand Campaign</span>
+      <span className={styles.footerMeta}>Project: {projectName}</span>
       <button
         className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
         onClick={onGenerateAll}
@@ -418,10 +502,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onGenerateAll,
   onRegenerateActive,
   rules,
+  onRulesChange,
   guidelines,
+  onGuidelinesChange,
   captions,
   results,
   onRegenerateResult,
+  onProjectNameChange,
 }) => {
   if (results.length) {
     return (
@@ -441,7 +528,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className={styles.dashboard}>
       <div className={styles.scrollArea}>
-        <Header projectName={projectName} onAddScene={onAddScene} />
+        <Header
+          projectName={projectName}
+          onAddScene={onAddScene}
+          onProjectNameChange={onProjectNameChange}
+        />
         <div className={styles.contentRow}>
           <div className={styles.leftColumn}>
             <ReferenceCard
@@ -463,8 +554,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
           </div>
           <div className={styles.rightColumn}>
-            <RulesCard rules={rules} />
-            <GuidelinesCard guidelines={guidelines} />
+            <RulesCard rules={rules} onRulesChange={onRulesChange} />
+            <GuidelinesCard
+              guidelines={guidelines}
+              onGuidelinesChange={onGuidelinesChange}
+            />
           </div>
         </div>
       </div>
@@ -472,6 +566,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         disableGenerate={disableGenerate}
         isGenerating={isGenerating}
         onGenerateAll={onGenerateAll}
+        projectName={projectName}
       />
     </div>
   );

@@ -36,6 +36,11 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     authStatus,
   });
 
+  const [projectName, setProjectName] = React.useState(
+    "Coffee Brand Campaign"
+  );
+  const [rules, setRules] = React.useState(DEFAULT_RULES);
+
   const {
     fileInputRef,
     references,
@@ -64,6 +69,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     setPlanType,
     stripePlanLinks,
     guidelines,
+    setGuidelines,
     defaultCaptions,
   } = dashboard;
 
@@ -97,7 +103,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
       />
 
       <DashboardLayout
-        projectName="Coffee Brand Design"
+        projectName={projectName}
+        onProjectNameChange={setProjectName}
         references={references}
         onUpload={triggerUpload}
         onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
@@ -111,8 +118,10 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
         disableGenerate={disableGenerate}
         onGenerateAll={startGeneration}
         onRegenerateActive={() => handleRegenerate(activeSceneIndex)}
-        rules={DEFAULT_RULES}
+        rules={rules}
+        onRulesChange={setRules}
         guidelines={guidelines}
+        onGuidelinesChange={setGuidelines}
         captions={defaultCaptions}
         results={manualResults}
         onRegenerateResult={handleRegenerate}
