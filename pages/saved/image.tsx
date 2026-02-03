@@ -57,7 +57,7 @@ const SavedImagesPage: React.FC = () => {
                 router.push("/saved/image");
               }
             }}
-            onOpenSettings={() => {}}
+            onOpenSettings={() => router.push("/settings")}
             displayEmail={displayEmail}
             isSubscribed={false}
             subscriptionLabel={"Free"}
@@ -73,13 +73,11 @@ const SavedImagesPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <div className="app__main">
-            <SavedImagesPanel
-              sortDirection={librarySort}
-              onSortChange={setLibrarySort}
-              onSelectReferenceSet={() => {}}
-            />
-          </div>
+          <SavedImagesPanel
+            sortDirection={librarySort}
+            onSortChange={setLibrarySort}
+            onSelectReferenceSet={() => {}}
+          />
         </div>
       </main>
     </div>

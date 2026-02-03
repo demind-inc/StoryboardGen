@@ -4,7 +4,7 @@ import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
 import styles from "./Sidebar.module.scss";
 
-export type PanelKey = "saved" | "manual";
+export type PanelKey = "saved" | "manual" | "settings" | "tiktok" | "instagram";
 
 interface SidebarProps {
   mode: AppMode;
@@ -77,6 +77,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const isManualActive = activePanel === "manual";
   const isSavedActive = activePanel === "saved";
+  const isSettingsActive = activePanel === "settings";
+  const isTikTokActive = activePanel === "tiktok";
+  const isInstagramActive = activePanel === "instagram";
   const creditText = useMemo(() => {
     if (isSubscribed) {
       if (
@@ -149,11 +152,21 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       <div className={styles.sidebar__section}>
         <p className={styles.sidebar__eyebrow}>Platforms</p>
         <nav className={styles.sidebar__nav}>
-          <button className={styles.sidebar__navItem} disabled>
+          <button
+            className={`${styles.sidebar__navItem} ${
+              isTikTokActive ? styles.isActive : ""
+            }`}
+            onClick={() => router.push("/rules/tiktok")}
+          >
             <SidebarIcon name="play" />
             TikTok Rules
           </button>
-          <button className={styles.sidebar__navItem} disabled>
+          <button
+            className={`${styles.sidebar__navItem} ${
+              isInstagramActive ? styles.isActive : ""
+            }`}
+            onClick={() => router.push("/rules/instagram")}
+          >
             <SidebarIcon name="camera" />
             Instagram Rules
           </button>
@@ -165,7 +178,12 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       <div className={styles.sidebar__section}>
         <p className={styles.sidebar__eyebrow}>Settings</p>
         <nav className={styles.sidebar__nav}>
-          <button className={styles.sidebar__navItem} onClick={onOpenSettings}>
+          <button
+            className={`${styles.sidebar__navItem} ${
+              isSettingsActive ? styles.isActive : ""
+            }`}
+            onClick={onOpenSettings}
+          >
             <SidebarIcon name="settings" />
             Settings
           </button>

@@ -55,7 +55,7 @@ const DashboardPage: React.FC = () => {
             onModeChange={() => {}}
             activePanel={activePanel}
             onPanelChange={(panel) => setActivePanel(panel)}
-            onOpenSettings={() => {}}
+            onOpenSettings={() => router.push("/settings")}
             displayEmail={displayEmail}
             isSubscribed={false}
             subscriptionLabel={"Free"}
@@ -71,24 +71,13 @@ const DashboardPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <div
-            className={activePanel === "manual" ? styles.main : "app__main"}
-          >
-            {activePanel === "saved" && (
-              <SavedImagesPanel
-                sortDirection={librarySort}
-                onSortChange={setLibrarySort}
-                onSelectReferenceSet={() => {}}
-              />
-            )}
-
-            {activePanel === "manual" && (
-              <DashboardMain
-                openBilling={isBillingOpen}
-                onBillingHandled={() => setIsBillingOpen(false)}
-              />
-            )}
-          </div>
+          {activePanel === "saved" && (
+            <SavedImagesPanel
+              sortDirection={librarySort}
+              onSortChange={setLibrarySort}
+              onSelectReferenceSet={() => {}}
+            />
+          )}
         </div>
       </main>
     </div>

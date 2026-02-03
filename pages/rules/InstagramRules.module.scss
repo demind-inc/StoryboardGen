@@ -1,0 +1,187 @@
+.body {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #e2e2e5;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #0f0f10;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f0a84b;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #9a9aa0;
+}
+
+.lockBar {
+  background: #1a1a1b;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lockText {
+  font-size: 12px;
+  color: #c7c7cc;
+}
+
+.lockToggle {
+  width: 60px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: #2a2a2c;
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.lockOff {
+  background: #2a2a2c;
+}
+
+.lockOn {
+  background: #f0a84b;
+  justify-content: flex-end;
+}
+
+.lockKnob {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #8c8c90;
+  margin: 0 3px;
+}
+
+.lockOn .lockKnob {
+  background: #1a1204;
+}
+
+.rulesCard {
+  background: #1a1a1b;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: grid;
+  gap: 14px;
+  min-height: 420px;
+
+  h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ededed;
+  }
+}
+
+.rulesList {
+  display: grid;
+  gap: 12px;
+}
+
+.ruleRow {
+  background: #202022;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.ruleInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #d5d5da;
+  font-size: 12px;
+  outline: none;
+}
+
+.addRule {
+  width: 140px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  border: 1px solid #2a2a2c;
+  background: #202022;
+  color: #e0e0e3;
+  cursor: pointer;
+}
+
+.addRule:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.saveBar {
+  background: #1a1a1b;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.resetButton {
+  width: 120px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  border: 1px solid #2a2a2c;
+  background: #202022;
+  color: #e0e0e3;
+  cursor: pointer;
+}
+
+.saveButton {
+  width: 120px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  border: none;
+  background: #f0a84b;
+  color: #1a1204;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 18px;
+  }
+
+  .rulesCard {
+    padding: 16px;
+  }
+}
