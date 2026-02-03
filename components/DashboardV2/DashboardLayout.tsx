@@ -49,6 +49,25 @@ const PencilIcon: React.FC = () => (
   </svg>
 );
 
+const LibraryIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M4 7h16" />
+    <path d="M4 12h16" />
+    <path d="M4 17h16" />
+  </svg>
+);
+
 const Header: React.FC<{
   projectName: string;
   onAddScene: () => void;
@@ -83,10 +102,20 @@ const ReferenceCard: React.FC<{
           </p>
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.buttonGhost} onClick={onOpenLibrary}>
-            Library
+          <button
+            className={styles.iconButtonSecondary}
+            onClick={onOpenLibrary}
+            aria-label="Pick from saved images"
+            title="Pick from saved images"
+          >
+            <LibraryIcon />
           </button>
-          <button className={styles.iconButton} onClick={onUpload}>
+          <button
+            className={styles.iconButton}
+            onClick={onUpload}
+            aria-label="Upload reference images"
+            title="Upload reference images"
+          >
             +
           </button>
         </div>

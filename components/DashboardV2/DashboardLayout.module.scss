@@ -187,6 +187,29 @@
   color: #111111;
   font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButtonSecondary {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #31343a;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.iconButtonSecondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .referenceGrid {
