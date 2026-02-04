@@ -9,10 +9,6 @@ export interface SceneCardProps {
   onRemoveScene?: (index: number) => void;
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
-  isGenerating: boolean;
-  disableGenerate: boolean;
-  onGenerateAll: () => void;
-  onRegenerateActive: () => void;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
@@ -22,12 +18,8 @@ const SceneCard: React.FC<SceneCardProps> = ({
   onAddScene,
   onRemoveScene,
   onSavePrompt,
-  isGenerating,
-  disableGenerate,
-  onGenerateAll,
-  onRegenerateActive,
 }) => {
-  const canRemove = (onRemoveScene != null) && promptList.length > 1;
+  const canRemove = onRemoveScene != null && promptList.length > 1;
   const [draftPrompt, setDraftPrompt] = useState(
     promptList[activeSceneIndex] || ""
   );
@@ -84,7 +76,11 @@ const SceneCard: React.FC<SceneCardProps> = ({
               )}
             </span>
           ))}
-          <button type="button" className={styles.sceneTab} onClick={onAddScene}>
+          <button
+            type="button"
+            className={styles.sceneTab}
+            onClick={onAddScene}
+          >
             +
           </button>
         </div>

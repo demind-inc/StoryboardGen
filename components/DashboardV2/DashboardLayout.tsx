@@ -72,10 +72,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onRemoveScene={onRemoveScene}
               onSavePrompt={onSavePrompt}
               previewImageUrl={previewImageUrl}
-              isGenerating={isGenerating}
-              disableGenerate={disableGenerate}
-              onGenerateAll={onGenerateAll}
-              onRegenerateActive={onRegenerateActive}
             />
           </div>
           <div className={styles.rightColumn}>
