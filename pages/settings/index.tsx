@@ -58,12 +58,6 @@ const SettingsPage: React.FC = () => {
   } = useSubscription();
 
   useEffect(() => {
-    if (authStatus === "signed_out") {
-      router.replace("/auth");
-    }
-  }, [authStatus, router]);
-
-  useEffect(() => {
     if (authStatus === "signed_in" && userId) {
       refreshSubscription(userId);
       refreshUsage(userId);
@@ -180,11 +174,19 @@ const SettingsPage: React.FC = () => {
               </div>
               <div className={styles.cardActions}>
                 <button
+                  type="button"
                   className={styles.actionButton}
                   onClick={() => requestPasswordResetForEmail(displayEmail)}
                   disabled={isResettingPassword}
                 >
                   {isResettingPassword ? "Sending link..." : "Change Password"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={() => signOut()}
+                >
+                  Log out
                 </button>
                 {authMessage ? (
                   <span className={styles.statusMessage}>{authMessage}</span>

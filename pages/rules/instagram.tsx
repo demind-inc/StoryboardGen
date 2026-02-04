@@ -36,12 +36,6 @@ const InstagramRulesPage: React.FC = () => {
   const shouldFocusLastRef = useRef(false);
 
   useEffect(() => {
-    if (authStatus === "signed_out") {
-      router.replace("/auth");
-    }
-  }, [authStatus, router]);
-
-  useEffect(() => {
     if (authStatus !== "signed_in" || !session?.user?.id) return;
     let isMounted = true;
     getCaptionSettings(session.user.id)

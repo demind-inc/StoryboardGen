@@ -17,14 +17,13 @@ const SubscriptionRedirectPage: React.FC = () => {
   const [planType, setPlanType] = useState<SubscriptionPlan | null>(null);
 
   useEffect(() => {
-    // Redirect to auth if not signed in
-    if (authStatus === "signed_out") {
-      router.replace("/auth");
-      return;
-    }
-
-    // Wait for auth check or router to be ready
-    if (authStatus === "checking" || !session?.user?.id || !router.isReady) {
+    // Wait for auth check or router to be ready (signed_out redirect is handled by AuthProvider)
+    if (
+      authStatus === "checking" ||
+      authStatus === "signed_out" ||
+      !session?.user?.id ||
+      !router.isReady
+    ) {
       return;
     }
 

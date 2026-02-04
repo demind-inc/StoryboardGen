@@ -229,7 +229,11 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
     }
     setIsUpdatingSet(true);
     try {
-      await updateReferenceSetLabel(userId, editingSetId, editingSetLabel.trim());
+      await updateReferenceSetLabel(
+        userId,
+        editingSetId,
+        editingSetLabel.trim()
+      );
       setEditingSetId(null);
       setEditingSetLabel("");
       await loadReferenceLibrary(userId);
@@ -275,7 +279,6 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       <div className={styles.header}>
         <div className={styles.headerText}>
           <p className={styles.eyebrow}>Saved Reference Images</p>
-          <p className={styles.subtitle}>Project: Coffee Brand Campaign</p>
         </div>
         <div className={styles.headerActions}>
           <input

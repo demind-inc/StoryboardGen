@@ -25,12 +25,6 @@ const DashboardPage: React.FC = () => {
 
   const openBillingFromQuery = router.query.openBilling === "1";
 
-  useEffect(() => {
-    if (authStatus === "signed_out") {
-      router.replace("/auth");
-    }
-  }, [authStatus, router]);
-
   const handleBillingHandled = () => {
     if (openBillingFromQuery) {
       router.replace("/dashboard", undefined, { shallow: true });

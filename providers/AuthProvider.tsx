@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useRouter } from "next/router";
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
 import { signOut, upsertProfile } from "../services/authService";
@@ -41,6 +42,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
@@ -53,6 +55,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isSignUpMode, setIsSignUpMode] = useState(true); // Default to signup
 
   const displayEmail = profile?.email || session?.user?.email || "";
+
+  // Redirect to /auth when signed out, except on auth and landing pages
+  useEffect(() => {
+    if (authStatus !== "signed_out" || !router.isReady) return;
+    const path = router.pathname;
+    if (path === "/" || path.startsWith("/auth")) return;
+    router.replace("/auth");
+  }, [authStatus, router]);
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;

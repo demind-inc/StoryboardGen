@@ -19,12 +19,6 @@ const SavedImagesPage: React.FC = () => {
   const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const mode: AppMode = "manual";
 
-  useEffect(() => {
-    if (authStatus === "signed_out") {
-      router.replace("/auth");
-    }
-  }, [authStatus, router]);
-
   if (authStatus === "checking") {
     return (
       <div
