@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
+import { useUsage } from "../../hooks/useUsage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import styles from "./SettingsPage.module.scss";
 
@@ -11,19 +12,60 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
+function formatRenewalDate(isoDate: string | null | undefined): string {
+  if (!isoDate) return "—";
+  try {
+    const d = new Date(isoDate);
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
 const SettingsPage: React.FC = () => {
-  const { authStatus, displayEmail, signOut, session } = useAuth();
+  const {
+    authStatus,
+    displayEmail,
+    signOut,
+    session,
+    requestPasswordResetForEmail,
+    authMessage,
+    authError,
+    isResettingPassword,
+  } = useAuth();
   const router = useRouter();
   const mode: AppMode = "manual";
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [productUpdates, setProductUpdates] = useState(false);
   const [weeklyTips, setWeeklyTips] = useState(false);
 
+  const userId = session?.user?.id;
+  const {
+    usage,
+    subscription,
+    planType,
+    isSubscriptionLoading,
+    isUsageLoading,
+    refreshUsage,
+    refreshSubscription,
+  } = useUsage(userId, authStatus);
+
   useEffect(() => {
     if (authStatus === "signed_out") {
       router.replace("/auth");
     }
   }, [authStatus, router]);
+
+  useEffect(() => {
+    if (authStatus === "signed_in" && userId) {
+      refreshSubscription(userId);
+      refreshUsage(userId);
+    }
+  }, [authStatus, userId, refreshSubscription, refreshUsage]);
 
   const displayName = useMemo(() => {
     const metadata = session?.user?.user_metadata ?? {};
@@ -53,16 +95,25 @@ const SettingsPage: React.FC = () => {
             onPanelChange={() => {}}
             onOpenSettings={() => router.push("/settings")}
             displayEmail={displayEmail}
-            isSubscribed={false}
-            subscriptionLabel={"Free"}
-            subscriptionPrice={PLAN_PRICE_LABEL.basic}
-            planType={undefined}
-            remainingCredits={undefined}
-            totalCredits={undefined}
-            expiredAt={null}
-            unsubscribedAt={null}
-            subscriptionStatus={null}
-            onOpenBilling={() => {}}
+            isSubscribed={subscription?.isActive ?? false}
+            subscriptionLabel={
+              subscription?.planType
+                ? subscription.planType.charAt(0).toUpperCase() +
+                  subscription.planType.slice(1)
+                : "Free"
+            }
+            subscriptionPrice={
+              subscription?.planType
+                ? PLAN_PRICE_LABEL[subscription.planType]
+                : "—"
+            }
+            planType={planType}
+            remainingCredits={usage?.remaining}
+            totalCredits={usage?.monthlyLimit}
+            expiredAt={subscription?.expiredAt ?? null}
+            unsubscribedAt={subscription?.unsubscribedAt ?? null}
+            subscriptionStatus={subscription?.status ?? null}
+            onOpenBilling={() => router.push("/dashboard?openBilling=1")}
             onCancelSubscription={() => {}}
             onSignOut={signOut}
           />
@@ -89,9 +140,21 @@ const SettingsPage: React.FC = () => {
                   <span className={styles.value}>{displayName}</span>
                 </div>
                 <div className={styles.cardActions}>
-                  <button className={styles.actionButton}>
-                    Change Password
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => requestPasswordResetForEmail(displayEmail)}
+                    disabled={isResettingPassword}
+                  >
+                    {isResettingPassword
+                      ? "Sending link..."
+                      : "Change Password"}
                   </button>
+                  {authMessage ? (
+                    <span className={styles.statusMessage}>{authMessage}</span>
+                  ) : null}
+                  {authError ? (
+                    <span className={styles.statusError}>{authError}</span>
+                  ) : null}
                 </div>
               </div>
             </section>
@@ -103,23 +166,44 @@ const SettingsPage: React.FC = () => {
               <div className={styles.subscriptionGrid}>
                 <div>
                   <span className={styles.label}>Current Plan</span>
-                  <span className={styles.value}>Free Plan</span>
+                  <span className={styles.value}>
+                    {isSubscriptionLoading
+                      ? "Loading..."
+                      : subscription?.planType
+                      ? `${subscription.planType
+                          .charAt(0)
+                          .toUpperCase()}${subscription.planType.slice(1)} Plan`
+                      : "Free Plan"}
+                  </span>
                 </div>
                 <div>
                   <span className={styles.label}>Renewal</span>
                   <span className={styles.value}>
-                    Monthly · Renews Mar 01, 2026
+                    {isSubscriptionLoading
+                      ? "Loading..."
+                      : subscription?.currentPeriodEnd
+                      ? `Monthly · Renews ${formatRenewalDate(
+                          subscription.currentPeriodEnd
+                        )}`
+                      : "—"}
                   </span>
                 </div>
                 <div className={styles.cardActions}>
-                  <button className={styles.actionButtonPrimary}>
+                  <button
+                    className={styles.actionButtonPrimary}
+                    onClick={() => router.push("/dashboard?openBilling=1")}
+                  >
                     Manage Plan
                   </button>
                 </div>
                 <div>
                   <span className={styles.label}>Usage</span>
                   <span className={styles.value}>
-                    0 / 3 images used this month
+                    {isUsageLoading
+                      ? "Loading..."
+                      : usage != null
+                      ? `${usage.used} / ${usage.monthlyLimit} credits used this month`
+                      : "—"}
                   </span>
                 </div>
               </div>
@@ -174,7 +258,7 @@ const SettingsPage: React.FC = () => {
               </div>
             </section> */}
 
-            <section className={styles.card}>
+            {/* <section className={styles.card}>
               <div className={styles.cardHeader}>
                 <h2>Billing &amp; invoices</h2>
               </div>
@@ -188,7 +272,7 @@ const SettingsPage: React.FC = () => {
                   <button className={styles.actionButton}>View Billing</button>
                 </div>
               </div>
-            </section>
+            </section> */}
           </div>
         </div>
       </main>

@@ -26,6 +26,7 @@ interface AuthContextType {
   setAuthPassword: (password: string) => void;
   toggleAuthMode: () => void;
   requestPasswordReset: () => Promise<void>;
+  requestPasswordResetForEmail: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
   signIn: (e: React.FormEvent) => Promise<void>;
   signUp: (e: React.FormEvent) => Promise<void>;
@@ -288,11 +289,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthError(null);
   };
 
-  const requestPasswordReset = async () => {
+  const requestPasswordResetForEmail = async (email: string) => {
     setAuthMessage(null);
     setAuthError(null);
 
-    if (!authEmail.trim()) {
+    if (!email.trim()) {
       setAuthError("Enter your email address to reset your password.");
       return;
     }
@@ -301,7 +302,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const supabase = getSupabaseClient();
       const { error } = await supabase.auth.resetPasswordForEmail(
-        authEmail.trim(),
+        email.trim(),
         {
           redirectTo: `${window.location.origin}/auth/reset-password`,
         }
@@ -322,6 +323,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsResettingPassword(false);
     }
+  };
+
+  const requestPasswordReset = async () => {
+    await requestPasswordResetForEmail(authEmail);
   };
 
   const handleUpdatePassword = async (newPassword: string) => {
@@ -367,6 +372,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthPassword,
     toggleAuthMode,
     requestPasswordReset,
+    requestPasswordResetForEmail,
     updatePassword: handleUpdatePassword,
     signIn: handleSignIn,
     signUp: handleSignUp,

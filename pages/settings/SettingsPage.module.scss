@@ -90,6 +90,9 @@
 .cardActions {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .actionButton {
@@ -110,6 +113,16 @@
   background: #f0a84b;
   color: #1a1204;
   cursor: pointer;
+}
+
+.statusMessage {
+  font-size: var(--fs-12);
+  color: #9bdc9b;
+}
+
+.statusError {
+  font-size: var(--fs-12);
+  color: #f29a9a;
 }
 
 .preferences {
