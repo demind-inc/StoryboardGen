@@ -152,6 +152,26 @@
   border-color: #3a3a3c;
 }
 
+.saveRule {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: var(--fs-13);
+  border-radius: 8px;
+  border: 1px solid rgba(140, 220, 255, 0.25);
+  background: rgba(96, 190, 255, 0.18);
+  color: #dff3ff;
+  cursor: pointer;
+}
+
+.saveRule:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.saveRule:hover:not(:disabled) {
+  border-color: rgba(140, 220, 255, 0.45);
+}
+
 .addRule {
   width: 140px;
   border-radius: 999px;
