@@ -4,6 +4,17 @@ import DashboardLayout from "../../components/DashboardV2/DashboardLayout";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import styles from "./SavedProjectsPanel.module.scss";
 
+const formatShortDate = (value?: string | null) => {
+  if (!value) return "Unknown";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "Unknown";
+  return parsed.toLocaleDateString(undefined, {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+};
+
 const formatCaptionList = (items: string[]) =>
   items
     .map((caption, idx) =>
@@ -64,7 +75,23 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         )}
         {!projectListLoading && projects.length > 0 && (
           <div className={styles.savedProjects__list}>
-            <h2 className={styles.savedProjects__listTitle}>Saved Projects</h2>
+            <div className={styles.savedProjects__headerRow}>
+              <div>
+                <div className={styles.savedProjects__eyebrow}>
+                  SAVED PROJECTS
+                </div>
+                <div className={styles.savedProjects__subtitle}>
+                  All projects in your workspace
+                </div>
+              </div>
+              <button
+                type="button"
+                className={styles.savedProjects__newButton}
+                aria-label="Create new project"
+              >
+                New Project
+              </button>
+            </div>
             <ul className={styles.savedProjects__listItems}>
               {projects.map((project) => (
                 <li key={project.id}>
@@ -73,8 +100,16 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
                     className={styles.savedProjects__listItem}
                     onClick={() => handleSelectProject(project.id)}
                   >
-                    <span className={styles.savedProjects__listItemName}>
-                      {project.name}
+                    <span className={styles.savedProjects__listItemContent}>
+                      <span className={styles.savedProjects__listItemTitle}>
+                        {project.name}
+                      </span>
+                      <span className={styles.savedProjects__listItemMeta}>
+                        {project.prompts.length} prompts
+                      </span>
+                    </span>
+                    <span className={styles.savedProjects__listItemUpdated}>
+                      Updated {formatShortDate(project.updatedAt)}
                     </span>
                   </button>
                 </li>
