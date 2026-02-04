@@ -13,6 +13,7 @@ import {
 import {
   DEFAULT_CAPTION_RULES,
   DEFAULT_CAPTIONS,
+  DEFAULT_CUSTOM_GUIDELINES,
   getCaptionSettings,
 } from "../services/captionSettingsService";
 import type { CaptionRules } from "../types";
@@ -22,12 +23,6 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   pro: "$29/mo",
   business: "$79/mo",
 };
-
-const DEFAULT_GUIDELINES = [
-  "Always show product in natural use context",
-  "Maintain warm, approachable lighting",
-  "Include diverse representation in scenes",
-];
 
 interface UseDashboardManualProps {
   userId: string | undefined;
@@ -97,7 +92,7 @@ export const useDashboardManual = ({
   const [captionTab, setCaptionTab] = useState<"tiktok" | "instagram">(
     "tiktok"
   );
-  const [guidelines, setGuidelines] = useState(DEFAULT_GUIDELINES);
+  const [guidelines, setGuidelines] = useState(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
 
@@ -105,11 +100,12 @@ export const useDashboardManual = ({
     try {
       const settings = await getCaptionSettings(currentUserId);
       setRules(settings.rules);
-      setCaptions(settings.captions);
+      setGuidelines(settings.guidelines);
     } catch (error) {
       console.error("Failed to load caption settings:", error);
       setRules(DEFAULT_CAPTION_RULES);
       setCaptions(DEFAULT_CAPTIONS);
+      setGuidelines(DEFAULT_CUSTOM_GUIDELINES);
     }
   }, []);
 

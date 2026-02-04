@@ -2,8 +2,7 @@ create table if not exists public.caption_settings (
   user_id uuid primary key references auth.users (id) on delete cascade,
   tiktok_rules text[] not null default '{}',
   instagram_rules text[] not null default '{}',
-  tiktok_caption text not null,
-  instagram_caption text not null,
+  custom_guidelines text[] not null default '{}',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

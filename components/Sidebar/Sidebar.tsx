@@ -212,9 +212,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             {isSubscribed && planType ? planType.toUpperCase() : "Free Plan"}
           </div>
           <div className={styles.sidebar__planDesc}>
-            {isSubscribed
-              ? "500 images/month • Unlimited prompts"
-              : "3 images/month • Limited prompts"}
+            {isSubscribed ? "500 credits/month " : "3 credits/month"}
           </div>
           <div className={styles.sidebar__planCredits}>{creditText}</div>
         </div>

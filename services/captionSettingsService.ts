@@ -22,6 +22,13 @@ export const DEFAULT_CAPTIONS = {
     "There's a reason why your morning routine matters (coffee)\n\nResearch shows that taking just 5 minutes to enjoy your morning coffee mindfully can set a positive tone for your entire day...\n\n#MorningRoutine #CoffeeTime #WellnessJourney #MindfulMornings #CoffeeCulture #SelfCare #DailyRituals",
 };
 
+export const DEFAULT_CUSTOM_GUIDELINES = [
+  "Always show product in natural use context",
+  "Maintain warm, approachable lighting",
+  "Include diverse representation in scenes",
+  "Avoid cluttered backgrounds",
+];
+
 export async function ensureCaptionSettings(userId: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase.from("caption_settings").upsert(
@@ -29,8 +36,7 @@ export async function ensureCaptionSettings(userId: string): Promise<void> {
       user_id: userId,
       tiktok_rules: DEFAULT_CAPTION_RULES.tiktok,
       instagram_rules: DEFAULT_CAPTION_RULES.instagram,
-      tiktok_caption: DEFAULT_CAPTIONS.tiktok,
-      instagram_caption: DEFAULT_CAPTIONS.instagram,
+      custom_guidelines: DEFAULT_CUSTOM_GUIDELINES,
     },
     { onConflict: "user_id", ignoreDuplicates: true }
   );
@@ -43,12 +49,14 @@ export async function ensureCaptionSettings(userId: string): Promise<void> {
 
 export async function getCaptionSettings(userId: string): Promise<{
   rules: CaptionRules;
-  captions: { tiktok: string; instagram: string };
+  guidelines: string[];
 }> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("caption_settings")
-    .select("tiktok_rules, instagram_rules, tiktok_caption, instagram_caption")
+    .select(
+      "tiktok_rules, instagram_rules, custom_guidelines"
+    )
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -59,7 +67,10 @@ export async function getCaptionSettings(userId: string): Promise<{
 
   if (!data) {
     await ensureCaptionSettings(userId);
-    return { rules: DEFAULT_CAPTION_RULES, captions: DEFAULT_CAPTIONS };
+    return {
+      rules: DEFAULT_CAPTION_RULES,
+      guidelines: DEFAULT_CUSTOM_GUIDELINES,
+    };
   }
 
   return {
@@ -71,10 +82,9 @@ export async function getCaptionSettings(userId: string): Promise<{
         ? data.instagram_rules
         : DEFAULT_CAPTION_RULES.instagram,
     },
-    captions: {
-      tiktok: data.tiktok_caption || DEFAULT_CAPTIONS.tiktok,
-      instagram: data.instagram_caption || DEFAULT_CAPTIONS.instagram,
-    },
+    guidelines: data.custom_guidelines?.length
+      ? data.custom_guidelines
+      : DEFAULT_CUSTOM_GUIDELINES,
   };
 }
 
@@ -115,6 +125,25 @@ export async function updateCaptionRulesForPlatform(
 
   if (error) {
     console.error("Failed to update caption rules:", error);
+    throw error;
+  }
+}
+
+export async function updateCustomGuidelines(
+  userId: string,
+  guidelines: string[]
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  await ensureCaptionSettings(userId);
+  const { error } = await supabase
+    .from("caption_settings")
+    .update({ custom_guidelines: guidelines })
+    .eq("user_id", userId)
+    .select("user_id")
+    .single();
+
+  if (error) {
+    console.error("Failed to update custom guidelines:", error);
     throw error;
   }
 }
