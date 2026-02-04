@@ -75,7 +75,11 @@ const AuthShell: React.FC<AuthShellProps> = ({
       <div className={styles["auth-card"]}>
         <div className={styles["brand"]}>
           <div className={styles["brand__mark"]}>
-            <span>SG</span>
+            <img
+              src="/assets/images/logo.png"
+              alt="StoryboardGen Logo"
+              className={styles["brand__logo"]}
+            />
           </div>
           <span className={styles["brand__text"]}>StoryboardGen</span>
         </div>
@@ -157,12 +161,18 @@ const AuthShell: React.FC<AuthShellProps> = ({
                 disabled={isResettingPassword}
                 className={styles["auth-link"]}
               >
-                {isResettingPassword ? "Sending reset email..." : "Forgot password?"}
+                {isResettingPassword
+                  ? "Sending reset email..."
+                  : "Forgot password?"}
               </button>
             </div>
           )}
 
-          <button type="submit" className={styles["auth-submit"]} disabled={isLoading}>
+          <button
+            type="submit"
+            className={styles["auth-submit"]}
+            disabled={isLoading}
+          >
             {isLoading
               ? isSignUpMode
                 ? "Creating account..."
@@ -209,17 +219,23 @@ const AuthShell: React.FC<AuthShellProps> = ({
         </div>
 
         {authMessage && (
-          <div className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}>
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}
+          >
             {authMessage}
           </div>
         )}
         {authError && (
-          <div className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}>
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
+          >
             {authError}
           </div>
         )}
         {localError && (
-          <div className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}>
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
+          >
             {localError}
           </div>
         )}
