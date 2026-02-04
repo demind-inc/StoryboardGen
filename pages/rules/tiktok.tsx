@@ -206,15 +206,6 @@ const TikTokRulesPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-              {isListDirty && !isSaving && (
-                <button
-                  type="button"
-                  className={styles.saveRule}
-                  onClick={handleSaveRules}
-                >
-                  Save Changes
-                </button>
-              )}
               <button
                 type="button"
                 className={styles.addRule}

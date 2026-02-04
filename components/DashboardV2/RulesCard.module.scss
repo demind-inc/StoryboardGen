@@ -77,7 +77,6 @@
   cursor: pointer;
 }
 
-
 .ruleTextarea {
   width: 100%;
   min-height: 110px;
@@ -104,11 +103,6 @@
   opacity: 0.9;
 }
 
-.ruleTextareaInstagram {
-  min-height: 160px;
-  max-height: 220px;
-}
-
 .ruleText {
   background: #2e2e2e;
   border: 1px solid transparent;
@@ -119,6 +113,6 @@
   line-height: 1.6;
   font-family: "Geist", "Inter", system-ui, sans-serif;
   white-space: pre-wrap;
-  max-height: 160px;
+  max-height: 140px;
   overflow-y: auto;
 }
