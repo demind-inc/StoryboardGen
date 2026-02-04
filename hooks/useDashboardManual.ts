@@ -24,6 +24,16 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
+function getDefaultProjectName(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${day} ${h}:${min}`;
+}
+
 interface UseDashboardManualProps {
   userId: string | undefined;
   authStatus: "checking" | "signed_out" | "signed_in";
@@ -92,6 +102,7 @@ export const useDashboardManual = ({
   const [captionTab, setCaptionTab] = useState<"tiktok" | "instagram">(
     "tiktok"
   );
+  const [projectName, setProjectName] = useState(getDefaultProjectName);
   const [guidelines, setGuidelines] = useState(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
@@ -131,6 +142,7 @@ export const useDashboardManual = ({
     userId,
     references,
     manualPrompts,
+    projectName,
     size: "1K",
     planType,
     captionRules: rules,
@@ -152,6 +164,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    projectId,
   } = imageGenerationHook;
 
   useEffect(() => {
@@ -263,6 +276,8 @@ export const useDashboardManual = ({
     setRulesTab,
     captionTab,
     setCaptionTab,
+    projectName,
+    setProjectName,
     guidelines,
     setGuidelines,
     rules,
@@ -272,6 +287,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    projectId,
     disableGenerate,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,

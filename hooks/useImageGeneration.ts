@@ -12,6 +12,7 @@ import {
   generateSceneCaptions,
 } from "../services/geminiService";
 import { getMonthlyUsage, recordGeneration } from "../services/usageService";
+import { saveProjectWithOutputs } from "../services/projectService";
 import {
   getHasGeneratedFreeImage,
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
@@ -23,6 +24,7 @@ interface UseImageGenerationProps {
   userId: string | undefined;
   references: ReferenceImage[];
   manualPrompts: string;
+  projectName: string;
   size: ImageSize;
   planType: string;
   captionRules: CaptionRules;
@@ -46,6 +48,7 @@ interface UseImageGenerationReturn {
   setManualResults: React.Dispatch<React.SetStateAction<SceneResult[]>>;
   startGeneration: () => Promise<void>;
   handleRegenerate: (index: number) => Promise<void>;
+  projectId: string | null;
 }
 
 const FREE_CREDIT_CAP = 3;
@@ -71,6 +74,7 @@ export const useImageGeneration = ({
 }: UseImageGenerationProps): UseImageGenerationReturn => {
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [captionResults, setCaptionResults] = useState<{
     tiktok: string[];
     instagram: string[];
@@ -317,7 +321,12 @@ export const useImageGeneration = ({
       (p) => ({ prompt: p, isLoading: true } as SceneResult)
     );
     setManualResults(initialManualResults);
+    const generatedResults = [...initialManualResults];
 
+    let latestCaptions: { tiktok: string[]; instagram: string[] } = {
+      tiktok: [],
+      instagram: [],
+    };
     const captionPromise = (async () => {
       try {
         const generatedCaptions = await generateSceneCaptions(
@@ -326,11 +335,13 @@ export const useImageGeneration = ({
           captionRules,
           guidelines
         );
+        latestCaptions = generatedCaptions;
         setCaptionResults(generatedCaptions);
         updateCaptionDisplay(generatedCaptions);
       } catch (captionError) {
         console.error("Caption generation error:", captionError);
       }
+      return latestCaptions;
     })();
 
     for (let i = 0; i < initialManualResults.length; i++) {
@@ -344,11 +355,12 @@ export const useImageGeneration = ({
         const updatedUsage = await recordGeneration(userId, 1, planType as any);
         setUsage(updatedUsage);
         markFirstGenerationComplete();
-        setManualResults((prev) =>
-          prev.map((res, idx) =>
-            idx === i ? { ...res, imageUrl, isLoading: false } : res
-          )
-        );
+        generatedResults[i] = {
+          ...generatedResults[i],
+          imageUrl,
+          isLoading: false,
+        };
+        setManualResults([...generatedResults]);
       } catch (error: any) {
         console.error("Manual generation error:", error);
         if (error?.message === "MONTHLY_LIMIT_REACHED") {
@@ -356,15 +368,35 @@ export const useImageGeneration = ({
           alert("Monthly credit limit reached. Please upgrade for more.");
           break;
         }
-        setManualResults((prev) =>
-          prev.map((res, idx) =>
-            idx === i ? { ...res, error: error.message, isLoading: false } : res
-          )
-        );
+        generatedResults[i] = {
+          ...generatedResults[i],
+          error: error.message,
+          isLoading: false,
+        };
+        setManualResults([...generatedResults]);
       }
     }
 
-    await captionPromise;
+    const finalCaptions = await captionPromise;
+
+    const isComplete = generatedResults.every(
+      (result) => Boolean(result.imageUrl) && !result.isLoading
+    );
+    if (isComplete) {
+      try {
+        const savedProjectId = await saveProjectWithOutputs({
+          userId,
+          projectId,
+          projectName,
+          prompts: promptList,
+          captions: finalCaptions,
+          results: generatedResults,
+        });
+        setProjectId(savedProjectId);
+      } catch (error) {
+        console.error("Failed to save project outputs:", error);
+      }
+    }
     setIsGenerating(false);
   };
 
@@ -374,5 +406,6 @@ export const useImageGeneration = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    projectId,
   };
 };

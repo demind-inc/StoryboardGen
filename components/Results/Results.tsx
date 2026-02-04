@@ -30,6 +30,16 @@ const Results: React.FC<ResultsProps> = ({
   projectName,
 }) => {
   const handleBack = onBack ?? (() => undefined);
+  const handleDownloadAll = onDownloadAll ?? (() => undefined);
+  const [expandedImage, setExpandedImage] = React.useState<string | null>(null);
+  const closeExpandedImage = () => setExpandedImage(null);
+  const handleBackdropClick = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (event.target === event.currentTarget) {
+      closeExpandedImage();
+    }
+  };
   return (
     <div className={styles.resultsPage} data-mode={mode}>
       <div className={styles.resultsHeader}>
@@ -62,8 +72,7 @@ const Results: React.FC<ResultsProps> = ({
         <div className={styles.headerRight}>
           <button
             className={styles.secondaryButton}
-            onClick={onDownloadAll}
-            disabled={!onDownloadAll}
+            onClick={handleDownloadAll}
           >
             Download all
           </button>
@@ -125,11 +134,18 @@ const Results: React.FC<ResultsProps> = ({
                       </button>
                     </div>
                   ) : hasImage ? (
-                    <img
-                      src={result.imageUrl}
-                      alt={`Scene ${idx + 1}`}
-                      loading="lazy"
-                    />
+                    <button
+                      className={styles.imageButton}
+                      onClick={() => setExpandedImage(result.imageUrl!)}
+                      aria-label={`Expand scene ${idx + 1}`}
+                    >
+                      <img
+                        src={result.imageUrl}
+                        alt={`Scene ${idx + 1}`}
+                        loading="lazy"
+                      />
+                      <span className={styles.imageHint}>Click to expand</span>
+                    </button>
                   ) : (
                     <div className={styles.resultOverlay}>Awaiting...</div>
                   )}
@@ -139,7 +155,6 @@ const Results: React.FC<ResultsProps> = ({
                   <div className={styles.promptLabel}>Prompt</div>
                   <div className={styles.promptText}>{result.prompt}</div>
                   <div className={styles.downloadRow}>
-                    <span className={styles.downloadLabel}>Download</span>
                     <a
                       className={`${styles.downloadButton} ${
                         !hasImage ? styles.downloadButtonDisabled : ""
@@ -154,6 +169,43 @@ const Results: React.FC<ResultsProps> = ({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {expandedImage && (
+        <div
+          className={styles.imageExpandModal__backdrop}
+          role="dialog"
+          aria-modal="true"
+          onClick={handleBackdropClick}
+        >
+          <div className={styles.imageExpandModal}>
+            <button
+              className={styles.imageExpandModal__close}
+              onClick={closeExpandedImage}
+              aria-label="Close"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={expandedImage}
+              alt="Expanded scene"
+              className={styles.imageExpandModal__image}
+            />
+          </div>
         </div>
       )}
     </div>

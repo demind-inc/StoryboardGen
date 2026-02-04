@@ -14,6 +14,7 @@ import styles from "./Sidebar.module.scss";
 
 export type PanelKey =
   | "saved"
+  | "projects"
   | "manual"
   | "settings"
   | "tiktok"
@@ -95,6 +96,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const isManualActive = activePanel === "manual";
   const isSavedActive = activePanel === "saved";
+  const isProjectsActive = activePanel === "projects";
   const isSettingsActive = activePanel === "settings";
   const isTikTokActive = activePanel === "tiktok";
   const isInstagramActive = activePanel === "instagram";
@@ -139,143 +141,152 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   }, [session?.user?.id]);
 
   return (
-    <div className={`${styles.sidebar} custom-scrollbar`}>
-      <div className={styles.sidebar__header}>
-        <div className={styles.sidebar__brand}>
-          <div className={styles.sidebar__brandIcon}>
-            <img
-              src="/assets/images/logo.png"
-              alt="StoryboardGen Logo"
-              className={styles.sidebar__brandImage}
-            />
-          </div>
-          <div className={styles.sidebar__brandText}>
-            <span className={styles.sidebar__brandTitle}>StoryboardGen</span>
+    <>
+      <div className={`${styles.sidebar} custom-scrollbar`}>
+        <div className={styles.sidebar__header}>
+          <div className={styles.sidebar__brand}>
+            <div className={styles.sidebar__brandIcon}>
+              <img
+                src="/assets/images/logo.png"
+                alt="StoryboardGen Logo"
+                className={styles.sidebar__brandImage}
+              />
+            </div>
+            <div className={styles.sidebar__brandText}>
+              <span className={styles.sidebar__brandTitle}>StoryboardGen</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Workspace</p>
-        <nav className={styles.sidebar__nav}>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isManualActive ? styles.isActive : ""
-            }`}
-            onClick={() => {
-              onPanelChange("manual");
-              router.push("/dashboard");
-            }}
-          >
-            <SidebarIcon name="star" />
-            Generate
-          </button>
-          <button className={styles.sidebar__navItem} disabled>
-            <SidebarIcon name="folder" />
-            Saved Projects
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isSavedActive ? styles.isActive : ""
-            }`}
-            onClick={() => {
-              onPanelChange("saved");
-              router.push("/saved/image");
-            }}
-          >
-            <SidebarIcon name="history" />
-            Saved Images
-          </button>
-        </nav>
-      </div>
-
-      <div className={styles.sidebar__divider} />
-
-      <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Settings</p>
-        <nav className={styles.sidebar__nav}>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isTikTokActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/tiktok")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <TikTokIcon />
-            </span>
-            TikTok Rules
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isInstagramActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/instagram")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <InstagramIcon />
-            </span>
-            Instagram Rules
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isCustomGuidelinesActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/custom-guidelines")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <CustomGuidelinesIcon />
-            </span>
-            Custom Guidelines
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isSettingsActive ? styles.isActive : ""
-            }`}
-            onClick={onOpenSettings}
-          >
-            <SidebarIcon name="settings" />
-            Account
-          </button>
-        </nav>
-      </div>
-
-      <div className={styles.sidebar__footer}>
-        <div className={styles.sidebar__planCard}>
-          <div className={styles.sidebar__planLabel}>Current Plan</div>
-          <div className={styles.sidebar__planName}>
-            {isSubscribed && planType ? planType.toUpperCase() : "Free Plan"}
-          </div>
-          <div className={styles.sidebar__planDesc}>
-            {totalCredits != null
-              ? `${totalCredits} credits/month`
-              : isSubscribed
-              ? "500 credits/month"
-              : "3 credits/month"}
-          </div>
-          <div className={styles.sidebar__planCredits}>{creditText}</div>
+        <div className={styles.sidebar__section}>
+          <p className={styles.sidebar__eyebrow}>Workspace</p>
+          <nav className={styles.sidebar__nav}>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isManualActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("manual");
+                router.push("/dashboard");
+              }}
+            >
+              <SidebarIcon name="star" />
+              Generate
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isProjectsActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("projects");
+                router.push("/saved/project");
+              }}
+            >
+              <SidebarIcon name="folder" />
+              Saved Projects
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isSavedActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("saved");
+                router.push("/saved/image");
+              }}
+            >
+              <SidebarIcon name="history" />
+              Saved Images
+            </button>
+          </nav>
         </div>
-        {!isSubscribed && onOpenBilling && (
-          <button
-            className={styles.sidebar__upgradeBtn}
-            onClick={onOpenBilling}
-          >
-            Upgrade
-          </button>
-        )}
-        {!isSubscribed && !onOpenBilling && (
-          <button
-            className={styles.sidebar__upgradeBtn}
-            onClick={subscription.openPaymentModal}
-          >
-            Upgrade
-          </button>
-        )}
-      </div>
 
-      <div className={styles.sidebar__footerSection}>
-        <Footer />
-      </div>
+        <div className={styles.sidebar__divider} />
 
+        <div className={styles.sidebar__section}>
+          <p className={styles.sidebar__eyebrow}>Settings</p>
+          <nav className={styles.sidebar__nav}>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isTikTokActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/tiktok")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <TikTokIcon />
+              </span>
+              TikTok Rules
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isInstagramActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/instagram")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <InstagramIcon />
+              </span>
+              Instagram Rules
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isCustomGuidelinesActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/custom-guidelines")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <CustomGuidelinesIcon />
+              </span>
+              Custom Guidelines
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isSettingsActive ? styles.isActive : ""
+              }`}
+              onClick={onOpenSettings}
+            >
+              <SidebarIcon name="settings" />
+              Account
+            </button>
+          </nav>
+        </div>
+
+        <div className={styles.sidebar__footer}>
+          <div className={styles.sidebar__planCard}>
+            <div className={styles.sidebar__planLabel}>Current Plan</div>
+            <div className={styles.sidebar__planName}>
+              {isSubscribed && planType ? planType.toUpperCase() : "Free Plan"}
+            </div>
+            <div className={styles.sidebar__planDesc}>
+              {totalCredits != null
+                ? `${totalCredits} credits/month`
+                : isSubscribed
+                ? "500 credits/month"
+                : "3 credits/month"}
+            </div>
+            <div className={styles.sidebar__planCredits}>{creditText}</div>
+          </div>
+          {!isSubscribed && onOpenBilling && (
+            <button
+              className={styles.sidebar__upgradeBtn}
+              onClick={onOpenBilling}
+            >
+              Upgrade
+            </button>
+          )}
+          {!isSubscribed && !onOpenBilling && (
+            <button
+              className={styles.sidebar__upgradeBtn}
+              onClick={subscription.openPaymentModal}
+            >
+              Upgrade
+            </button>
+          )}
+        </div>
+
+        <div className={styles.sidebar__footerSection}>
+          <Footer />
+        </div>
+      </div>
       <PaymentModal
         isOpen={subscription.isPaymentModalOpen}
         onClose={() => subscription.setIsPaymentModalOpen(false)}
@@ -284,8 +295,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         onPlanSelect={(plan) => subscription.setPlanType(plan)}
         userId={session?.user?.id}
       />
-
-    </div>
+    </>
   );
 };
 

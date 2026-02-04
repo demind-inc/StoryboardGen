@@ -61,3 +61,33 @@ export interface CaptionRules {
   tiktok: string[];
   instagram: string[];
 }
+
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  prompts: string[];
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ProjectOutput {
+  id: string;
+  sceneIndex: number;
+  prompt: string;
+  imageUrl: string;
+  mimeType: string;
+  createdAt?: string | null;
+}
+
+export interface ProjectDetail {
+  id: string;
+  name: string;
+  prompts: string[];
+  captions: {
+    tiktok: string[];
+    instagram: string[];
+  };
+  outputs: ProjectOutput[];
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}

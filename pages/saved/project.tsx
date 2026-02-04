@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
-import Sidebar, { PanelKey } from "../../components/Sidebar/Sidebar";
-import SavedImagesPanel from "./SavedImagesPanel";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import SavedProjectsPanel from "./SavedProjectsPanel";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -12,11 +12,10 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const SavedImagesPage: React.FC = () => {
+const SavedProjectsPage: React.FC = () => {
   const { authStatus, displayEmail, signOut } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
-  const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const mode: AppMode = "manual";
 
   if (authStatus === "checking") {
@@ -45,7 +44,7 @@ const SavedImagesPage: React.FC = () => {
           <Sidebar
             mode={mode}
             onModeChange={() => {}}
-            activePanel="saved"
+            activePanel="projects"
             onPanelChange={(panel) => {
               if (panel === "manual") {
                 router.push("/dashboard");
@@ -80,15 +79,11 @@ const SavedImagesPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <SavedImagesPanel
-            sortDirection={librarySort}
-            onSortChange={setLibrarySort}
-            onSelectReferenceSet={() => {}}
-          />
+          <SavedProjectsPanel />
         </div>
       </main>
     </div>
   );
 };
 
-export default SavedImagesPage;
+export default SavedProjectsPage;
