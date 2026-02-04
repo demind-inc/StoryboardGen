@@ -31,7 +31,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
   const visibleReferences = references.slice(0, 3);
 
   return (
-    <section className="card sidebar__panel">
+    <section className={`card sidebar__panel ${styles.promptsSection}`}>
       <div className="card__header">
         <h3 className="card__title">2. Scene Prompts</h3>
       </div>
@@ -46,7 +46,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
               </div>
               <textarea
                 className={styles.promptsSection__itemInput}
-                placeholder="Describe what happens in this scene..."
+                placeholder="e.g. Boy studying at a cafe"
                 autoFocus
                 onBlur={(e) => {
                   if (e.target.value.trim()) {
@@ -92,6 +92,7 @@ const PromptsSection: React.FC<PromptsSectionProps> = ({
               {editingPromptIndex === idx ? (
                 <textarea
                   className={styles.promptsSection__itemInput}
+                  placeholder="e.g. Boy studying at a cafe"
                   defaultValue={prompt.trim()}
                   autoFocus
                   onBlur={(e) => {

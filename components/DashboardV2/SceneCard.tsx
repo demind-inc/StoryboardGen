@@ -79,6 +79,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
           <div className={styles.promptBox}>
             <textarea
               className={styles.promptTextarea}
+              placeholder="e.g. Boy studying at a cafe"
               value={draftPrompt}
               onChange={(event) => setDraftPrompt(event.target.value)}
               onBlur={handleBlur}

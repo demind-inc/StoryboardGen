@@ -1,8 +1,15 @@
 .promptsSection {
+  padding: 12px 16px;
+  gap: 8px;
+
+  .card__header {
+    margin-bottom: 8px;
+  }
+
   &__container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
 
   &__list {
@@ -11,7 +18,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     max-height: 380px;
     overflow-y: auto;
   }
@@ -19,8 +26,8 @@
   &__item {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px;
+    gap: 6px;
+    padding: 10px 12px;
     background: #ffffff;
     border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 12px;
@@ -69,7 +76,7 @@
     background: #f8fafc;
     border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     outline: none;
     transition: border-color 0.2s ease, background 0.2s ease;
     resize: vertical;
@@ -88,7 +95,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     opacity: 1;
   }
@@ -103,7 +110,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+    transition: background 0.2s ease, transform 0.15s ease,
+      border-color 0.2s ease;
     font-weight: 700;
 
     &:hover:not(:disabled) {
@@ -119,7 +127,7 @@
   }
 
   &__empty {
-    padding: 24px 16px;
+    padding: 16px 12px;
     text-align: center;
     color: #64748b;
     border: 1px dashed #cbd5e1;
@@ -131,8 +139,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: 6px;
+    padding: 8px 12px;
     border: 1px solid rgba(37, 99, 235, 0.35);
     background: linear-gradient(120deg, #2563eb, #22d3ee);
     border-radius: 12px;
@@ -168,11 +176,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 6px;
   }
 
   &__sceneTag {
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 999px;
     background: #eef2ff;
     color: #1d4ed8;
@@ -229,7 +237,8 @@
       cursor: pointer;
       font-weight: 800;
       color: #0f172a;
-      transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.1s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease;
 
       &:hover:not(:disabled) {
         transform: translateY(-1px);
@@ -246,7 +255,7 @@
 
   &__ctaGroup {
     display: inline-flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
   }
 }

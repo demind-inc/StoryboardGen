@@ -5,15 +5,15 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
-  gap: 12px;
+  padding: 16px 20px;
+  gap: 8px;
 }
 
 .cardTitle {
@@ -33,16 +33,16 @@
 }
 
 .cardBody {
-  padding: 0 24px 24px;
+  padding: 0 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .iconButton {
@@ -80,7 +80,7 @@
 
 .referenceGrid {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -88,12 +88,13 @@
   width: 150px;
   height: 150px;
   border: 2px solid transparent;
+  border-radius: 8px;
   background: #2e2e2e;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 4px;
   color: var(--muted);
   cursor: pointer;
   font-size: var(--fs-14);

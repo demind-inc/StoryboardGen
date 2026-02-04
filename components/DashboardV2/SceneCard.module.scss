@@ -5,15 +5,15 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
-  gap: 12px;
+  padding: 16px 20px;
+  gap: 8px;
 }
 
 .cardTitle {
@@ -33,15 +33,15 @@
 }
 
 .cardBody {
-  padding: 0 24px 24px;
+  padding: 0 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .buttonGhost {
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 8px 12px;
   font-size: var(--fs-14);
   font-weight: 600;
   border: 1px solid transparent;
@@ -61,12 +61,12 @@
 
 .sceneTabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .sceneTab {
-  padding: 6px 16px;
+  padding: 4px 12px;
   border-radius: 999px;
   border: 1px solid var(--chip-border);
   background: var(--chip-bg);
@@ -90,8 +90,9 @@
 
 .promptBox {
   border: none;
+  border-radius: 8px;
   background: #2e2e2e;
-  padding: 16px;
+  padding: 10px 12px;
 }
 
 .promptTextarea {
@@ -105,6 +106,10 @@
   font-family: "Geist", "Inter", system-ui, sans-serif;
 }
 
+.promptTextarea::placeholder {
+  color: var(--muted);
+}
+
 .promptHint {
   font-size: var(--fs-13);
   color: var(--muted);
@@ -113,7 +118,7 @@
 .optionRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 10px;
   color: var(--muted);
   font-size: var(--fs-14);
 }
