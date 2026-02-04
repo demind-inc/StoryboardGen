@@ -295,7 +295,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 router.push("/saved/image");
               }}
             >
-              <SidebarIcon name="history" />
+              <SidebarIcon name="camera" />
               Saved Images
             </button>
           </nav>
