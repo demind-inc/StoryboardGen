@@ -69,7 +69,7 @@ const SettingsPage: React.FC = () => {
 
           <div className={styles.main}>
             <header className={styles.header}>
-              <p className={styles.eyebrow}>Settings</p>
+              <p className={styles.eyebrow}>Account</p>
               <p className={styles.subtitle}>
                 Manage your account, plan, and preferences
               </p>

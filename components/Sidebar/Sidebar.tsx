@@ -4,7 +4,13 @@ import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
 import styles from "./Sidebar.module.scss";
 
-export type PanelKey = "saved" | "manual" | "settings" | "tiktok" | "instagram";
+export type PanelKey =
+  | "saved"
+  | "manual"
+  | "settings"
+  | "tiktok"
+  | "instagram"
+  | "customGuidelines";
 
 interface SidebarProps {
   mode: AppMode;
@@ -42,6 +48,8 @@ const SidebarIcon: React.FC<{ name: string }> = ({ name }) => {
         return "M7 7l2-2h6l2 2h3a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2h3zm5 4a4 4 0 100 8 4 4 0 000-8z";
       case "settings":
         return "M19.14 12.94a7.97 7.97 0 000-1.88l2.03-1.58-2-3.46-2.39.96a7.72 7.72 0 00-1.62-.94l-.36-2.54h-4l-.36 2.54a7.72 7.72 0 00-1.62.94l-2.39-.96-2 3.46 2.03 1.58a7.97 7.97 0 000 1.88l-2.03 1.58 2 3.46 2.39-.96c.5.38 1.05.7 1.62.94l.36 2.54h4l.36-2.54c.57-.24 1.12-.56 1.62-.94l2.39.96 2-3.46-2.03-1.58zM12 15a3 3 0 110-6 3 3 0 010 6z";
+      case "dot":
+        return "M12 7a5 5 0 100 10 5 5 0 000-10z";
       default:
         return "M12 2a10 10 0 100 20 10 10 0 000-20z";
     }
@@ -80,6 +88,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   const isSettingsActive = activePanel === "settings";
   const isTikTokActive = activePanel === "tiktok";
   const isInstagramActive = activePanel === "instagram";
+  const isCustomGuidelinesActive = activePanel === "customGuidelines";
   const creditText = useMemo(() => {
     if (isSubscribed) {
       if (
@@ -150,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       <div className={styles.sidebar__divider} />
 
       <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Platforms</p>
+        <p className={styles.sidebar__eyebrow}>Settings</p>
         <nav className={styles.sidebar__nav}>
           <button
             className={`${styles.sidebar__navItem} ${
@@ -170,14 +179,15 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             <SidebarIcon name="camera" />
             Instagram Rules
           </button>
-        </nav>
-      </div>
-
-      <div className={styles.sidebar__divider} />
-
-      <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Settings</p>
-        <nav className={styles.sidebar__nav}>
+          <button
+            className={`${styles.sidebar__navItem} ${
+              isCustomGuidelinesActive ? styles.isActive : ""
+            }`}
+            onClick={() => router.push("/rules/custom-guidelines")}
+          >
+            <SidebarIcon name="dot" />
+            Custom Guidelines
+          </button>
           <button
             className={`${styles.sidebar__navItem} ${
               isSettingsActive ? styles.isActive : ""
@@ -185,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             onClick={onOpenSettings}
           >
             <SidebarIcon name="settings" />
-            Settings
+            Account
           </button>
         </nav>
       </div>
