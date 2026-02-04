@@ -1,0 +1,67 @@
+.card {
+  background: var(--card-bg);
+  border: none;
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  gap: 12px;
+}
+
+.cardTitle {
+  font-size: var(--fs-15);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardDescription {
+  margin: 4px 0 0;
+  font-size: var(--fs-14);
+  color: var(--muted);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardBody {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.captionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-14);
+  color: var(--muted);
+}
+
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.captionBox {
+  background: #2e2e2e;
+  border: none;
+  padding: 12px;
+  font-size: var(--fs-14);
+  color: var(--text);
+  white-space: pre-wrap;
+}

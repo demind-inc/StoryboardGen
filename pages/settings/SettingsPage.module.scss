@@ -1,0 +1,264 @@
+.body {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #e2e2e5;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #0f0f10;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--fs-16);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f0a84b;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--fs-14);
+  color: #9a9aa0;
+}
+
+.card {
+  background: #1a1a1b;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.cardHeader {
+  h2 {
+    margin: 0;
+    font-size: var(--fs-15);
+    font-weight: 500;
+    color: #ededed;
+  }
+}
+
+.label {
+  display: block;
+  font-size: var(--fs-13);
+  color: #9a9aa0;
+  margin-bottom: 6px;
+}
+
+.value {
+  display: block;
+  font-size: var(--fs-14);
+  color: #d5d5da;
+}
+
+.accountGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  align-items: center;
+}
+
+.subscriptionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  align-items: center;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: var(--fs-13);
+  border: 1px solid #2a2a2c;
+  background: #202022;
+  color: #e0e0e3;
+  cursor: pointer;
+}
+
+.actionButtonPrimary {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: var(--fs-13);
+  border: none;
+  background: #f0a84b;
+  color: #1a1204;
+  cursor: pointer;
+}
+
+.statusMessage {
+  font-size: var(--fs-12);
+  color: #9bdc9b;
+}
+
+.statusError {
+  font-size: var(--fs-12);
+  color: #f29a9a;
+}
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  cursor: default;
+}
+
+.confirmModal {
+  background: #1a1a1b;
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid #2a2a2c;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.confirmTitle {
+  margin: 0 0 12px;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  color: #ededed;
+}
+
+.confirmMessage {
+  margin: 0 0 20px;
+  font-size: var(--fs-14);
+  color: #9a9aa0;
+  line-height: 1.5;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.actionButtonDanger {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: var(--fs-13);
+  border: 1px solid rgba(200, 80, 80, 0.5);
+  background: rgba(200, 80, 80, 0.2);
+  color: #f29a9a;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(200, 80, 80, 0.35);
+    border-color: rgba(200, 80, 80, 0.7);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.preferences {
+  display: grid;
+  gap: 16px;
+}
+
+.prefRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prefLabel {
+  font-size: var(--fs-13);
+  color: #c7c7cc;
+}
+
+.toggle {
+  width: 44px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.toggleOn {
+  background: #f0a84b;
+}
+
+.toggleOff {
+  background: #2a2a2c;
+}
+
+.toggleKnob {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #1a1204;
+  margin-left: 3px;
+  transition: transform 0.2s ease;
+}
+
+.toggleOff .toggleKnob {
+  background: #8c8c90;
+  transform: translateX(0);
+}
+
+.toggleOn .toggleKnob {
+  transform: translateX(22px);
+}
+
+.billingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 18px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}

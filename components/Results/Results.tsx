@@ -1,12 +1,22 @@
 import React from "react";
 import { AppMode, SceneResult } from "../../types";
+import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
 import styles from "./Results.module.scss";
 
 interface ResultsProps {
   mode: AppMode;
   results: SceneResult[];
   isGenerating: boolean;
-  onRegenerate: (index: number) => void;
+  onRegenerate?: (index: number) => void;
+  captions?: {
+    tiktok: string;
+    instagram: string;
+  };
+  onRegenerateAll?: () => void;
+  onDownloadAll?: () => void;
+  onBack?: () => void;
+  projectName?: string;
+  allowRegenerate?: boolean;
 }
 
 const Results: React.FC<ResultsProps> = ({
@@ -14,214 +24,277 @@ const Results: React.FC<ResultsProps> = ({
   results,
   isGenerating,
   onRegenerate,
+  captions,
+  onRegenerateAll,
+  onDownloadAll,
+  onBack,
+  projectName,
+  allowRegenerate = true,
 }) => {
+  const handleBack = onBack ?? (() => undefined);
+  const handleDownloadAll = onDownloadAll ?? (() => undefined);
+  const [expandedImage, setExpandedImage] = React.useState<string | null>(null);
+  const [copiedTarget, setCopiedTarget] = React.useState<
+    "tiktok" | "instagram" | null
+  >(null);
+  const closeExpandedImage = () => setExpandedImage(null);
+  const handleCopy = async (platform: "tiktok" | "instagram") => {
+    if (!captions) return;
+    const text = captions[platform];
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedTarget(platform);
+      window.setTimeout(() => setCopiedTarget(null), 1200);
+    } catch (error) {
+      console.error("Failed to copy caption:", error);
+    }
+  };
+  const handleBackdropClick = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (event.target === event.currentTarget) {
+      closeExpandedImage();
+    }
+  };
   return (
-    <div className={styles["app__results"]}>
-      <div className={styles["results-card"]}>
-        <div className={styles["results-card__header"]}>
-          <span>Generated Scenes</span>
-          {isGenerating && (
-            <span className={styles.badge}>Rendering set...</span>
-          )}
-        </div>
-
-        <div className={styles["results-card__body"]}>
-          {results.length === 0 ? (
-            <div className={styles["empty-state"]}>
-              <div className={styles["empty-state__icon"]}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <p
-                className="brand__title"
-                style={{ fontSize: "18px", color: "#475569" }}
+    <div className={styles.resultsPage} data-mode={mode}>
+      <div className={styles.resultsHeader}>
+        <div className={styles.headerLeft}>
+          {onBack && (
+            <button
+              className={styles.secondaryButton}
+              onClick={handleBack}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
               >
-                No Content Ready
-              </p>
-              <p className="text text--helper" style={{ margin: 0 }}>
-                Upload references and input prompts
-              </p>
-            </div>
-          ) : (
-            <div className={`${styles["results-scroll"]} custom-scrollbar`}>
-              <div className={styles["results-list"]}>
-                {results.map((result, idx) => {
-                  return (
-                    <div key={idx} className={styles["slide-card"]}>
-                      <div className={styles["slide-card__media"]}>
-                        {result.isLoading ? (
-                          <div
-                            className={`${styles["slide-card__overlay"]} ${styles["slide-card__overlay--loading"]}`}
-                          >
-                            <div className="spinner" />
-                            <p
-                              className="text text--helper"
-                              style={{ margin: 0, color: "#2563eb" }}
-                            >
-                              Illustrating...
-                            </p>
-                          </div>
-                        ) : result.imageUrl ? (
-                          <>
-                            <img
-                              src={result.imageUrl}
-                              alt={`Result ${idx + 1}`}
-                              className={styles["slide-card__image"]}
-                            />
-                            <div className={styles["slide-card__actions"]}>
-                              <button
-                                onClick={() => onRegenerate(idx)}
-                                className={styles["icon-button"]}
-                                title="Regenerate this scene"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                  />
-                                </svg>
-                              </button>
-                              <a
-                                href={result.imageUrl}
-                                download={`scene-${idx + 1}.png`}
-                                className={styles["icon-button"]}
-                                title="Download PNG"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4-4 4m0 0-4-4m4 4V4"
-                                  />
-                                </svg>
-                              </a>
-                            </div>
-                          </>
-                        ) : result.error ? (
-                          <div
-                            className={`${styles["slide-card__overlay"]} ${styles["slide-card__overlay--error"]}`}
-                          >
-                            <p
-                              className="text text--helper"
-                              style={{ margin: 0, color: "#b91c1c" }}
-                            >
-                              Error
-                            </p>
-                            <p
-                              className={styles["slide-card__prompt"]}
-                              style={{
-                                color: "#ef4444",
-                                fontStyle: "italic",
-                              }}
-                            >
-                              "{result.error}"
-                            </p>
-                            <button
-                              onClick={() => onRegenerate(idx)}
-                              className="button button--storyboard"
-                              style={{
-                                background: "#ef4444",
-                                boxShadow:
-                                  "0 12px 22px rgba(239, 68, 68, 0.26)",
-                              }}
-                            >
-                              Retry
-                            </button>
-                          </div>
-                        ) : (
-                          <div
-                            className={`${styles["slide-card__overlay"]} ${styles["slide-card__overlay--placeholder"]}`}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="32"
-                              height="32"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="1"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <div
-                              className="text text--helper"
-                              style={{ margin: 0, color: "#cbd5e1" }}
-                            >
-                              Awaiting Generation
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={styles["slide-card__meta"]}>
-                        <span className={styles["slide-card__index"]}>
-                          {idx + 1}
-                        </span>
-                        <h3 className={styles["slide-card__title"]}>
-                          {result.title || `Scene ${idx + 1}`}
-                        </h3>
-                      </div>
-
-                      {result.description && (
-                        <p className={styles["slide-card__description"]}>
-                          {result.description}
-                        </p>
-                      )}
-
-                      <p className={styles["slide-card__description"]}>
-                        {result.prompt}
-                      </p>
-
-                      <div className={styles["slide-card__foot"]}>
-                        <div className={styles["slide-card__foot-label"]}>
-                          Character Guidance
-                        </div>
-                        <p className={styles["slide-card__foot-text"]}>
-                          "{result.prompt}"
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 18l-6-6 6-6"
+                />
+              </svg>
+              Back
+            </button>
+          )}
+          <span className={styles.headerTitle}>Generated results</span>
+        </div>
+        <div className={styles.headerRight}>
+          <button
+            className={styles.secondaryButton}
+            onClick={handleDownloadAll}
+            disabled={!onDownloadAll || isGenerating}
+          >
+            Download all
+          </button>
+          {allowRegenerate && (
+            <button
+              className={styles.primaryButton}
+              onClick={onRegenerateAll}
+              disabled={!onRegenerateAll || isGenerating}
+            >
+              {isGenerating ? "Regenerating..." : "Regenerate"}
+            </button>
           )}
         </div>
       </div>
+
+      {projectName && (
+        <div className={styles.projectMeta}>Project: {projectName}</div>
+      )}
+
+      {captions && (
+        <div className={styles.captionsCard}>
+          <div className={styles.captionBox}>
+            <div className={styles.captionTitleRow}>
+              <div className={styles.captionTitle}>
+                <TikTokIcon />
+                <span>TikTok Caption</span>
+              </div>
+              <button
+                className={styles.copyButton}
+                onClick={() => handleCopy("tiktok")}
+                aria-label="Copy TikTok caption"
+                disabled={!captions.tiktok}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                {copiedTarget === "tiktok" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div className={styles.captionText}>
+              {isGenerating && !captions.tiktok
+                ? "Generating captions..."
+                : captions.tiktok}
+            </div>
+          </div>
+          <div className={styles.captionBox}>
+            <div className={styles.captionTitleRow}>
+              <div className={styles.captionTitle}>
+                <InstagramIcon />
+                <span>Instagram Caption</span>
+              </div>
+              <button
+                className={styles.copyButton}
+                onClick={() => handleCopy("instagram")}
+                aria-label="Copy Instagram caption"
+                disabled={!captions.instagram}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                {copiedTarget === "instagram" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div className={styles.captionText}>
+              {isGenerating && !captions.instagram
+                ? "Generating captions..."
+                : captions.instagram}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {results.length === 0 ? (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>+</div>
+          <div>No results yet</div>
+        </div>
+      ) : (
+        <div className={styles.resultsGrid}>
+          {results.map((result, idx) => {
+            const hasImage = Boolean(result.imageUrl);
+            return (
+              <div key={idx} className={styles.resultCard}>
+                <div className={styles.resultImage}>
+                  {result.isLoading ? (
+                    <div className={styles.resultOverlay}>Rendering...</div>
+                  ) : result.error ? (
+                    <div className={styles.resultOverlayError}>
+                      <div>Error</div>
+                      {allowRegenerate && onRegenerate && (
+                        <button
+                          className={styles.retryButton}
+                          onClick={() => onRegenerate(idx)}
+                        >
+                          Retry
+                        </button>
+                      )}
+                    </div>
+                  ) : hasImage ? (
+                    <button
+                      className={styles.imageButton}
+                      onClick={() => setExpandedImage(result.imageUrl!)}
+                      aria-label={`Expand scene ${idx + 1}`}
+                    >
+                      <img
+                        src={result.imageUrl}
+                        alt={`Scene ${idx + 1}`}
+                        loading="lazy"
+                      />
+                      <span className={styles.imageHint}>Click to expand</span>
+                    </button>
+                  ) : (
+                    <div className={styles.resultOverlay}>Awaiting...</div>
+                  )}
+                </div>
+                <div className={styles.resultMeta}>
+                  <div className={styles.sceneTitle}>Scene {idx + 1}</div>
+                  <div className={styles.promptLabel}>Prompt</div>
+                  <div className={styles.promptText}>{result.prompt}</div>
+                  <div className={styles.downloadRow}>
+                    <a
+                      className={`${styles.downloadButton} ${
+                        !hasImage || isGenerating
+                          ? styles.downloadButtonDisabled
+                          : ""
+                      }`}
+                      href={result.imageUrl || "#"}
+                      download={`scene-${idx + 1}.png`}
+                      aria-disabled={!hasImage || isGenerating}
+                      onClick={(event) => {
+                        if (!hasImage || isGenerating) {
+                          event.preventDefault();
+                        }
+                      }}
+                    >
+                      Download
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {expandedImage && (
+        <div
+          className={styles.imageExpandModal__backdrop}
+          role="dialog"
+          aria-modal="true"
+          onClick={handleBackdropClick}
+        >
+          <div className={styles.imageExpandModal}>
+            <button
+              className={styles.imageExpandModal__close}
+              onClick={closeExpandedImage}
+              aria-label="Close"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={expandedImage}
+              alt="Expanded scene"
+              className={styles.imageExpandModal__image}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

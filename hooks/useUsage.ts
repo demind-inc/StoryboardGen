@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MonthlyUsage, SubscriptionPlan } from "../types";
 import { getMonthlyUsage } from "../services/usageService";
 import { getSubscription } from "../services/subscriptionService";
@@ -6,15 +6,14 @@ import {
   getHasGeneratedFreeImage,
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
 } from "../services/authService";
-import { trackButtonClick } from "../lib/analytics";
-
-interface UseUsageReturn {
+export interface UseUsageReturn {
   usage: MonthlyUsage | null;
   isUsageLoading: boolean;
   usageError: string | null;
   hasGeneratedFreeImage: boolean;
   isFreeImageLoading: boolean;
   isPaymentUnlocked: boolean;
+  isPaymentModalOpen: boolean;
   planType: SubscriptionPlan;
   planLockedFromSubscription: boolean;
   stripeSubscriptionId: string | null | undefined;
@@ -23,6 +22,7 @@ interface UseUsageReturn {
   setUsage: React.Dispatch<React.SetStateAction<MonthlyUsage | null>>;
   setUsageError: React.Dispatch<React.SetStateAction<string | null>>;
   setHasGeneratedFreeImage: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsPaymentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setPlanType: React.Dispatch<React.SetStateAction<SubscriptionPlan>>;
   refreshUsage: (userId: string) => Promise<void>;
   refreshSubscription: (userId: string) => Promise<void>;
@@ -51,21 +51,24 @@ export const useUsage = (
   const [subscription, setSubscription] =
     useState<Awaited<ReturnType<typeof getSubscription>>>(null);
 
-  const refreshUsage = async (userId: string) => {
-    setIsUsageLoading(true);
-    try {
-      const stats = await getMonthlyUsage(userId, planType);
-      setUsage(stats);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage fetch error:", error);
-      setUsageError("Unable to load credits.");
-    } finally {
-      setIsUsageLoading(false);
-    }
-  };
+  const refreshUsage = useCallback(
+    async (userId: string) => {
+      setIsUsageLoading(true);
+      try {
+        const stats = await getMonthlyUsage(userId, planType);
+        setUsage(stats);
+        setUsageError(null);
+      } catch (error) {
+        console.error("Usage fetch error:", error);
+        setUsageError("Unable to load credits.");
+      } finally {
+        setIsUsageLoading(false);
+      }
+    },
+    [planType]
+  );
 
-  const refreshSubscription = async (userId: string) => {
+  const refreshSubscription = useCallback(async (userId: string) => {
     setIsSubscriptionLoading(true);
     try {
       const subscription = await getSubscription(userId);
@@ -90,9 +93,9 @@ export const useUsage = (
     } finally {
       setIsSubscriptionLoading(false);
     }
-  };
+  }, []);
 
-  const refreshHasGeneratedFreeImage = async (userId: string) => {
+  const refreshHasGeneratedFreeImage = useCallback(async (userId: string) => {
     setIsFreeImageLoading(true);
     try {
       const hasGenerated = await getHasGeneratedFreeImage(userId);
@@ -103,12 +106,7 @@ export const useUsage = (
     } finally {
       setIsFreeImageLoading(false);
     }
-  };
-
-  const openPaymentModal = () => {
-    trackButtonClick("open_payment_modal");
-    // This will be handled by the parent component
-  };
+  }, []);
 
   // Load plan type from URL or localStorage
   useEffect(() => {
@@ -155,6 +153,9 @@ export const useUsage = (
     refreshUsage,
     refreshSubscription,
     refreshHasGeneratedFreeImage,
-    openPaymentModal,
+    // Payment modal state and openPaymentModal are provided by SubscriptionProvider
+    isPaymentModalOpen: false,
+    setIsPaymentModalOpen: () => {},
+    openPaymentModal: () => {},
   };
 };

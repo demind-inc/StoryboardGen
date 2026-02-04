@@ -7,6 +7,7 @@ alter table public.usage_limits enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.reference_library enable row level security;
 alter table public.prompt_library enable row level security;
+alter table public.caption_settings enable row level security;
 
 -- Profiles policies: users can read/update their own profile
 create policy "Users can view own profile"
@@ -79,4 +80,17 @@ create policy "Users can update own prompts"
 
 create policy "Users can delete own prompts"
   on public.prompt_library for delete
+  using (auth.uid() = user_id);
+
+-- Caption settings policies: users can read/insert/update their own settings
+create policy "Users can view own caption settings"
+  on public.caption_settings for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own caption settings"
+  on public.caption_settings for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own caption settings"
+  on public.caption_settings for update
   using (auth.uid() = user_id);

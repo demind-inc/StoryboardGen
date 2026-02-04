@@ -1,0 +1,118 @@
+.card {
+  background: var(--card-bg-secondary, #151518);
+  border: 1px solid var(--card-border-secondary, rgba(255, 255, 255, 0.06));
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+  gap: 12px;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.cardTitle {
+  font-size: var(--fs-15);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardDescription {
+  margin: 4px 0 0;
+  font-size: var(--fs-14);
+  color: var(--muted);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardBody {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ruleList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+.editIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #2e2e2e;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ruleTextarea {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  background: #2e2e2e;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: var(--fs-11);
+  line-height: 1.6;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  white-space: pre-wrap;
+}
+
+.ruleTextarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ruleTextarea[readonly] {
+  cursor: default;
+  opacity: 0.9;
+}
+
+.ruleText {
+  background: #2e2e2e;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: var(--fs-11);
+  line-height: 1.6;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  white-space: pre-wrap;
+  max-height: 140px;
+  overflow-y: auto;
+}

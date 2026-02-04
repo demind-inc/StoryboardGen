@@ -32,9 +32,7 @@ export const usePrompts = (
   userId: string | undefined,
   setPromptLibrary: React.Dispatch<React.SetStateAction<PromptPreset[]>>
 ): UsePromptsReturn => {
-  const [manualPrompts, setManualPrompts] = useState<string>(
-    "Boy looking confused with question marks around him\nBoy feeling lonely at a cafe table\nBoy looking angry while listening to something"
-  );
+  const [manualPrompts, setManualPrompts] = useState<string>("");
   const [isAddingNewPrompt, setIsAddingNewPrompt] = useState(false);
   const [editingPromptIndex, setEditingPromptIndex] = useState<number | null>(
     null

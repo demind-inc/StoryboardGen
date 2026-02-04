@@ -1,0 +1,66 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.projectLabel {
+  font-size: var(--fs-13);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectTitle {
+  font-size: var(--fs-30);
+  font-weight: 600;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectTitleInput {
+  font-size: var(--fs-30);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.projectTitleInput:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.projectRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #2e2e2e;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}

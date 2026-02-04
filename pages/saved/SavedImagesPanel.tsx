@@ -117,6 +117,31 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
     });
   }, [referenceLibrary, sortDirection]);
 
+  const flatImages = useMemo(() => {
+    return sortedSets.flatMap((set) =>
+      set.images.map((image, index) => ({
+        image,
+        index,
+        set,
+      }))
+    );
+  }, [sortedSets]);
+
+  const formatSetDate = (set: ReferenceSet) =>
+    set.createdAt ? new Date(set.createdAt).toLocaleDateString() : "";
+
+  const formatSetTitle = (set: ReferenceSet) => {
+    if (set.label) return set.label;
+    const dateLabel = formatSetDate(set);
+    return dateLabel ? `Reference set (${dateLabel})` : "Reference set";
+  };
+
+  const formatImageCaption = (set: ReferenceSet) => {
+    if (set.label) return set.label;
+    const dateLabel = formatSetDate(set);
+    return dateLabel ? `Reference set • ${dateLabel}` : "Reference set";
+  };
+
   const handleUploadClick = () => {
     if (!isAddingNewSet) {
       setIsAddingNewSet(true);
@@ -204,7 +229,11 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
     }
     setIsUpdatingSet(true);
     try {
-      await updateReferenceSetLabel(userId, editingSetId, editingSetLabel.trim());
+      await updateReferenceSetLabel(
+        userId,
+        editingSetId,
+        editingSetLabel.trim()
+      );
       setEditingSetId(null);
       setEditingSetLabel("");
       await loadReferenceLibrary(userId);
@@ -246,151 +275,205 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
   };
 
   return (
-    <section className="card">
-      <div className="card__header">
-        <h3 className="card__title">Saved images</h3>
-        <div className="card__actions">
-          <div className="libraryFilter">
-            <label htmlFor="library-sort" className="libraryFilter__label">
-              Sort
-            </label>
-            <select
-              id="library-sort"
-              className="libraryFilter__select"
-              value={sortDirection}
-              onChange={(e) =>
-                onSortChange(e.target.value as "newest" | "oldest")
-              }
-            >
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-          </div>
+    <section className={styles.panel}>
+      <div className={styles.header}>
+        <div className={styles.headerText}>
+          <p className={styles.eyebrow}>Saved Reference Images</p>
+        </div>
+        <div className={styles.headerActions}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            multiple
+            className="hidden-input"
+            accept="image/*"
+            onChange={handleFileUpload}
+          />
+          <button
+            onClick={handleUploadClick}
+            className={styles.addButton}
+            disabled={isSaving}
+          >
+            Add Image
+          </button>
         </div>
       </div>
-      {isLoading ? (
-        <p className={styles.empty}>Loading saved images...</p>
-      ) : (
-        <>
-          <div className={`${styles.librarySet__list} custom-scrollbar`}>
-            {isAddingNewSet && (
-              <div
-                className={`${styles.librarySet__item} ${styles["librarySet__item--new"]}`}
-              >
-                <div className={styles.librarySet__header}>
-                  <input
-                    type="text"
-                    className={styles.librarySet__titleInput}
-                    placeholder="Set name (required)"
-                    value={newSetLabel}
-                    onChange={(e) => setNewSetLabel(e.target.value)}
-                    required
-                  />
-                  <div className={styles.librarySet__actions}>
+      <div className={styles.toolbar}>
+        <div className={styles.filterPill}>All • Style • Subject • Product</div>
+        <label className={styles.sortControl} htmlFor="library-sort">
+          Sort
+          <select
+            id="library-sort"
+            className={styles.sortSelect}
+            value={sortDirection}
+            onChange={(e) =>
+              onSortChange(e.target.value as "newest" | "oldest")
+            }
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </label>
+      </div>
+      <div className={`${styles.gridShell} custom-scrollbar`}>
+        {isLoading ? (
+          <p className={styles.empty}>Loading saved images...</p>
+        ) : (
+          <>
+            <div className={styles.grid}>
+              {isAddingNewSet && (
+                <div className={styles.newSetCard}>
+                  <div className={styles.newSetHeader}>
+                    <input
+                      type="text"
+                      className={styles.newSetInput}
+                      placeholder="Set name (required)"
+                      value={newSetLabel}
+                      onChange={(e) => setNewSetLabel(e.target.value)}
+                      required
+                    />
+                    <div className={styles.newSetActions}>
+                      <button
+                        onClick={handleSaveNewSet}
+                        disabled={
+                          isSaving ||
+                          newSetImages.length === 0 ||
+                          !newSetLabel.trim()
+                        }
+                        className={styles.newSetActionPrimary}
+                      >
+                        {isSaving ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={handleCancelNewSet}
+                        disabled={isSaving}
+                        className={styles.newSetActionGhost}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.newSetGrid}>
+                    {newSetImages.map((img) => (
+                      <div key={img.id} className={styles.newSetThumb}>
+                        <img src={img.data} alt="New reference" />
+                        <button
+                          onClick={() => removeNewSetImage(img.id)}
+                          className={styles.newSetRemove}
+                          aria-label="Remove image"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
                     <button
-                      onClick={handleSaveNewSet}
-                      disabled={
-                        isSaving ||
-                        newSetImages.length === 0 ||
-                        !newSetLabel.trim()
-                      }
-                      className={`${styles.librarySet__actionBtn} ${styles["librarySet__actionBtn--save"]}`}
+                      onClick={handleUploadClick}
+                      className={styles.newSetUpload}
                     >
-                      {isSaving ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      onClick={handleCancelNewSet}
-                      disabled={isSaving}
-                      className={`${styles.librarySet__actionBtn} ${styles["librarySet__actionBtn--cancel"]}`}
-                    >
-                      Cancel
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      <span>Add images</span>
                     </button>
                   </div>
                 </div>
-                <div className={styles.librarySet__images}>
-                  {newSetImages.map((img) => (
-                    <div
-                      key={img.id}
-                      className={`${styles.librarySetImage__thumb} ${styles["librarySetImage__thumb--new"]}`}
+              )}
+              {flatImages.length === 0 && !isAddingNewSet ? (
+                <p className={styles.empty}>No saved reference images.</p>
+              ) : (
+                flatImages.map(({ image, set, index }) => (
+                  <div key={image.id} className={styles.tile}>
+                    <button
+                      className={styles.tileButton}
+                      onClick={() => {
+                        if (editingSetId === set.setId) return;
+                        onSelectReferenceSet([set]);
+                      }}
+                      title={set.label || "Reference set"}
                     >
-                      <img src={img.data} alt="New reference" />
-                      <button
-                        onClick={() => removeNewSetImage(img.id)}
-                        className={styles.librarySetImage__remove}
-                        aria-label="Remove image"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={handleUploadClick}
-                    className={styles.librarySetImage__uploadPlaceholder}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                      <img
+                        src={image.url}
+                        alt={set.label || "Reference"}
+                        className={styles.tileImage}
+                      />
+                      <span className={styles.tileOverlay} />
+                    </button>
+                    <button
+                      className={styles.expandButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedImage(image.url);
+                      }}
+                      title="Expand image"
+                      aria-label="Expand image"
                     >
-                      <path
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
                         stroke="currentColor"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    <span>Add images</span>
-                  </button>
-                </div>
-              </div>
-            )}
-            {sortedSets.length === 0 && !isAddingNewSet ? (
-              <p className={styles.empty}>No saved reference images.</p>
-            ) : (
-              sortedSets.map((set) => {
-                const isEditing = editingSetId === set.setId;
-                return (
-                  <div key={set.setId} className={styles.librarySet__item}>
-                    <div className={styles.librarySet__header}>
-                      {isEditing ? (
+                      >
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                      </svg>
+                    </button>
+                    <div className={styles.captionRow}>
+                      {editingSetId === set.setId ? (
                         <>
                           <input
                             type="text"
-                            className={styles.librarySet__titleInput}
+                            className={styles.captionInput}
                             placeholder="Set name"
                             value={editingSetLabel}
-                            onChange={(e) => setEditingSetLabel(e.target.value)}
+                            onChange={(event) =>
+                              setEditingSetLabel(event.target.value)
+                            }
                             disabled={isUpdatingSet}
                           />
-                          <div className={styles.librarySet__actions}>
+                          <div className={styles.captionActions}>
                             <button
+                              type="button"
+                              className={styles.captionActionPrimary}
                               onClick={handleSaveEditedSet}
                               disabled={
                                 isUpdatingSet || !editingSetLabel.trim()
                               }
-                              className={`${styles.librarySet__actionBtn} ${styles["librarySet__actionBtn--save"]}`}
                             >
                               {isUpdatingSet ? "Saving..." : "Save"}
                             </button>
                             <button
+                              type="button"
+                              className={styles.captionAction}
                               onClick={handleCancelEditSet}
                               disabled={isUpdatingSet}
-                              className={`${styles.librarySet__actionBtn} ${styles["librarySet__actionBtn--cancel"]}`}
                             >
                               Cancel
                             </button>
@@ -398,21 +481,14 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                         </>
                       ) : (
                         <>
-                          <h4 className={styles.librarySet__title}>
-                            {set.label ||
-                              `Reference set (${new Date(
-                                set.createdAt || Date.now()
-                              ).toLocaleDateString()})`}
-                          </h4>
-                          <div className={styles.librarySet__actions}>
-                            {set.createdAt && (
-                              <span className={styles.librarySet__date}>
-                                {new Date(set.createdAt).toLocaleDateString()}
-                              </span>
-                            )}
+                          <p className={styles.caption}>
+                            {formatImageCaption(set)}
+                          </p>
+                          <div className={styles.captionActions}>
                             <button
+                              type="button"
+                              className={styles.captionAction}
                               onClick={() => startEditingSet(set)}
-                              className={styles.librarySet__actionBtn}
                               disabled={
                                 isSaving || isUpdatingSet || isAddingNewSet
                               }
@@ -420,112 +496,26 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                               Edit
                             </button>
                             <button
+                              type="button"
+                              className={`${styles.captionAction} ${styles.captionActionDelete}`}
                               onClick={() => handleDeleteSet(set.setId)}
-                              className={`${styles.librarySet__actionBtn} ${styles["librarySet__actionBtn--delete"]}`}
                               disabled={
                                 isSaving || isUpdatingSet || isAddingNewSet
                               }
-                              title="Delete set"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              </svg>
+                              Delete
                             </button>
                           </div>
                         </>
                       )}
                     </div>
-                    <div className={styles.librarySet__images}>
-                      {set.images.map((img) => (
-                        <div
-                          key={img.id}
-                          className={styles.librarySetImage__thumbWrapper}
-                        >
-                          <button
-                            className={styles.librarySetImage__thumb}
-                            onClick={() => {
-                              if (isEditing) return;
-                              onSelectReferenceSet([set]);
-                            }}
-                            title={set.label || "Reference set"}
-                          >
-                            <img src={img.url} alt={set.label || "Reference"} />
-                          </button>
-                          <button
-                            className={styles.librarySetImage__expand}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedImage(img.url);
-                            }}
-                            title="Expand image"
-                            aria-label="Expand image"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
                   </div>
-                );
-              })
-            )}
-          </div>
-          <div className={styles.librarySet__actions}>
-            <input
-              type="file"
-              ref={fileInputRef}
-              multiple
-              className="hidden-input"
-              accept="image/*"
-              onChange={handleFileUpload}
-            />
-            <button
-              onClick={handleUploadClick}
-              className="primary-button primary-button--full"
-              disabled={isSaving}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              {isAddingNewSet ? "Add more images" : "Upload new set"}
-            </button>
-          </div>
-        </>
-      )}
+                ))
+              )}
+            </div>
+          </>
+        )}
+      </div>
       <ImageExpandModal
         isOpen={expandedImage !== null}
         imageUrl={expandedImage || ""}
