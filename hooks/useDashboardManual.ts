@@ -77,6 +77,7 @@ export const useDashboardManual = ({
     manualPrompts,
     editingPromptIndex,
     handleSavePrompt,
+    handleRemovePrompt,
     setManualPrompts,
   } = promptsHook;
 
@@ -204,6 +205,19 @@ export const useDashboardManual = ({
     setActiveSceneIndex(promptList.length);
   }, [promptList.length, setManualPrompts]);
 
+  const removeScene = useCallback(
+    (index: number) => {
+      if (promptList.length <= 1) return;
+      handleRemovePrompt(index);
+      setActiveSceneIndex((prev) => {
+        if (prev === index) return Math.max(0, index - 1);
+        if (prev > index) return prev - 1;
+        return prev;
+      });
+    },
+    [promptList.length, handleRemovePrompt]
+  );
+
   return {
     usage,
     isUsageLoading,
@@ -229,6 +243,7 @@ export const useDashboardManual = ({
     editingPromptIndex,
     handleSavePrompt,
     addScene,
+    removeScene,
     activeSceneIndex,
     setActiveSceneIndex,
     rulesTab,

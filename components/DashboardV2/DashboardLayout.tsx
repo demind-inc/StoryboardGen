@@ -14,10 +14,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   references,
   onUpload,
   onOpenLibrary,
+  onRemoveReference,
   promptList,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
+  onRemoveScene,
   onSavePrompt,
   previewImageUrl,
   isGenerating,
@@ -61,12 +63,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               references={references}
               onUpload={onUpload}
               onOpenLibrary={onOpenLibrary}
+              onRemoveReference={onRemoveReference}
             />
             <SceneCard
               promptList={promptList}
               activeSceneIndex={activeSceneIndex}
               onSceneSelect={onSceneSelect}
               onAddScene={onAddScene}
+              onRemoveScene={onRemoveScene}
               onSavePrompt={onSavePrompt}
               previewImageUrl={previewImageUrl}
               isGenerating={isGenerating}

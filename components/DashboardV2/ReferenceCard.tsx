@@ -7,12 +7,14 @@ export interface ReferenceCardProps {
   references: ReferenceImage[];
   onUpload: () => void;
   onOpenLibrary: () => void;
+  onRemoveReference?: (id: string) => void;
 }
 
 const ReferenceCard: React.FC<ReferenceCardProps> = ({
   references,
   onUpload,
   onOpenLibrary,
+  onRemoveReference,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -63,20 +65,35 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
             <span>Add Image</span>
           </button>
           {references.map((ref) => (
-            <button
-              key={ref.id}
-              type="button"
-              className={styles.referenceThumbWrap}
-              onClick={() => setExpandedId(ref.id)}
-              aria-label="Expand reference image"
-              title="Click to expand"
-            >
-              <img
-                src={ref.data}
-                alt="Reference"
-                className={styles.referenceThumb}
-              />
-            </button>
+            <div key={ref.id} className={styles.referenceThumbContainer}>
+              <button
+                type="button"
+                className={styles.referenceThumbWrap}
+                onClick={() => setExpandedId(ref.id)}
+                aria-label="Expand reference image"
+                title="Click to expand"
+              >
+                <img
+                  src={ref.data}
+                  alt="Reference"
+                  className={styles.referenceThumb}
+                />
+              </button>
+              {onRemoveReference && (
+                <button
+                  type="button"
+                  className={styles.referenceThumbRemove}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveReference(ref.id);
+                  }}
+                  title="Remove image"
+                  aria-label="Remove reference image"
+                >
+                  ×
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>

@@ -6,6 +6,7 @@ export interface SceneCardProps {
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
+  onRemoveScene?: (index: number) => void;
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;
@@ -19,12 +20,14 @@ const SceneCard: React.FC<SceneCardProps> = ({
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
+  onRemoveScene,
   onSavePrompt,
   isGenerating,
   disableGenerate,
   onGenerateAll,
   onRegenerateActive,
 }) => {
+  const canRemove = (onRemoveScene != null) && promptList.length > 1;
   const [draftPrompt, setDraftPrompt] = useState(
     promptList[activeSceneIndex] || ""
   );
@@ -55,17 +58,33 @@ const SceneCard: React.FC<SceneCardProps> = ({
       <div className={styles.cardBody}>
         <div className={styles.sceneTabs}>
           {promptList.map((_, idx) => (
-            <button
-              key={`scene-${idx}`}
-              className={`${styles.sceneTab} ${
-                idx === activeSceneIndex ? styles.sceneTabActive : ""
-              }`}
-              onClick={() => onSceneSelect(idx)}
-            >
-              Scene {idx + 1}
-            </button>
+            <span key={`scene-${idx}`} className={styles.sceneTabWrap}>
+              <button
+                type="button"
+                className={`${styles.sceneTab} ${
+                  idx === activeSceneIndex ? styles.sceneTabActive : ""
+                }`}
+                onClick={() => onSceneSelect(idx)}
+              >
+                Scene {idx + 1}
+              </button>
+              {canRemove && (
+                <button
+                  type="button"
+                  className={styles.sceneTabRemove}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveScene?.(idx);
+                  }}
+                  title="Remove scene"
+                  aria-label={`Remove scene ${idx + 1}`}
+                >
+                  ×
+                </button>
+              )}
+            </span>
           ))}
-          <button className={styles.sceneTab} onClick={onAddScene}>
+          <button type="button" className={styles.sceneTab} onClick={onAddScene}>
             +
           </button>
         </div>

@@ -11,10 +11,12 @@ export interface DashboardLayoutProps {
   references: ReferenceImage[];
   onUpload: () => void;
   onOpenLibrary: () => void;
+  onRemoveReference?: (id: string) => void;
   promptList: string[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
+  onRemoveScene?: (index: number) => void;
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;

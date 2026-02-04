@@ -55,12 +55,14 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     references,
     triggerUpload,
     handleFileUpload,
+    removeReference,
     manualResults,
     promptList,
     displayPromptList,
     activeSceneIndex,
     setActiveSceneIndex,
     addScene,
+    removeScene,
     handleSavePrompt,
     isGenerating,
     disableGenerate,
@@ -118,10 +120,12 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
         references={references}
         onUpload={triggerUpload}
         onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
+        onRemoveReference={removeReference}
         promptList={displayPromptList}
         activeSceneIndex={activeSceneIndex}
         onSceneSelect={setActiveSceneIndex}
         onAddScene={addScene}
+        onRemoveScene={removeScene}
         onSavePrompt={handleSavePrompt}
         previewImageUrl={activePreviewUrl}
         isGenerating={isGenerating}
