@@ -45,7 +45,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>Scene Prompts</h2>
+          <h2 className={styles.cardTitle}>2. Scene Prompts</h2>
           <p className={styles.cardDescription}>
             One moment per slide - Medium detail
           </p>

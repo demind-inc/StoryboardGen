@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: 20px;
   color: #edeef1;
+  border-radius: var(--card-radius, 0);
 }
 
 .resultsHeader {
@@ -40,8 +41,7 @@
   border: 1px solid transparent;
   background: #202022;
   color: #e0e0e3;
-  transition: transform 0.15s ease, border-color 0.15s ease,
-    color 0.15s ease;
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .secondaryButton:disabled,

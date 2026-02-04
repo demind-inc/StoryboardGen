@@ -8,6 +8,16 @@ import { useDashboardManual } from "../../hooks/useDashboardManual";
 import { ReferenceSet } from "../../types";
 import type { Rule } from "./dashboardLayout.types";
 
+function getDefaultProjectName(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${day} ${h}:${min}`;
+}
+
 const DEFAULT_RULES: Rule = {
   tiktok: [
     "・Slightly long captions with line breaks",
@@ -37,7 +47,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     authStatus,
   });
 
-  const [projectName, setProjectName] = React.useState("(Untitled)");
+  const [projectName, setProjectName] = React.useState(getDefaultProjectName);
   const [rules, setRules] = React.useState<Rule>(DEFAULT_RULES);
 
   const {

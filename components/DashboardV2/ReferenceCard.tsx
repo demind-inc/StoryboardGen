@@ -17,7 +17,7 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
   <section className={styles.card}>
     <div className={styles.cardHeader}>
       <div>
-        <h2 className={styles.cardTitle}>Reference Images</h2>
+        <h2 className={styles.cardTitle}>1. Reference Images</h2>
         <p className={styles.cardDescription}>
           Subject + style anchors for consistency
         </p>
