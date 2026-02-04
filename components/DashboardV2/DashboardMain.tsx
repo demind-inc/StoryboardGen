@@ -51,6 +51,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     setGuidelines,
     rules,
     captions,
+    setManualResults,
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
@@ -99,6 +100,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         captions={captions}
         results={manualResults}
         onRegenerateResult={handleRegenerate}
+        onBackToEditor={() => setManualResults([])}
       />
 
       <ReferenceLibraryModal

@@ -27,4 +27,5 @@ export interface DashboardLayoutProps {
   };
   results: SceneResult[];
   onRegenerateResult: (index: number) => void;
+  onBackToEditor?: () => void;
 }

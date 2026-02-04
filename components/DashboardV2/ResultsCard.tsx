@@ -9,6 +9,7 @@ export interface ResultsCardProps {
   onRegenerateAll: () => void;
   captions: { tiktok: string; instagram: string };
   projectName: string;
+  onBack?: () => void;
 }
 
 const ResultsCard: React.FC<ResultsCardProps> = ({
@@ -18,6 +19,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   onRegenerateAll,
   captions,
   projectName,
+  onBack,
 }) => (
   <Results
     mode="manual"
@@ -27,6 +29,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
     onRegenerateAll={onRegenerateAll}
     captions={captions}
     projectName={projectName}
+    onBack={onBack}
   />
 );
 
