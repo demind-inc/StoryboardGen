@@ -10,8 +10,11 @@ export interface RulesCardProps {
 
 const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
   const router = useRouter();
-  const formatBullet = (rule: string) =>
-    rule.trim().startsWith("•") ? rule.trim() : `${rule}`;
+  const formatBullet = (rule: string) => {
+    const trimmed = rule.trim();
+    if (!trimmed) return "";
+    return trimmed.startsWith("・") ? trimmed : `・${trimmed}`;
+  };
   const tiktokDisplay = rules.tiktok.map(formatBullet).join("\n");
   const instagramDisplay = rules.instagram.map(formatBullet).join("\n");
 

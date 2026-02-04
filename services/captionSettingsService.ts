@@ -3,15 +3,15 @@ import type { CaptionRules } from "../types";
 
 export const DEFAULT_CAPTION_RULES: CaptionRules = {
   tiktok: [
-    "・Slightly long captions with line breaks",
-    "・Natural brand mention integration",
-    "・Exactly 5 approved hashtags",
+    "Slightly long captions with line breaks",
+    "Natural brand mention integration",
+    "Exactly 5 approved hashtags",
   ],
   instagram: [
-    "・Longer, educational captions",
-    "・Natural brand mention integration",
-    "・More hashtags allowed (no #apps/#iphoneapps)",
-    "・Hashtags at bottom of caption",
+    "Longer, educational captions",
+    "Natural brand mention integration",
+    "More hashtags allowed (no #apps/#iphoneapps)",
+    "Hashtags at bottom of caption",
   ],
 };
 
@@ -87,16 +87,14 @@ export async function updateCaptionRules(
   rules: CaptionRules
 ): Promise<void> {
   const supabase = getSupabaseClient();
+  await ensureCaptionSettings(userId);
   const { error } = await supabase
     .from("caption_settings")
-    .upsert(
-      {
-        user_id: userId,
-        tiktok_rules: rules.tiktok,
-        instagram_rules: rules.instagram,
-      },
-      { onConflict: "user_id" }
-    );
+    .update({
+      tiktok_rules: rules.tiktok,
+      instagram_rules: rules.instagram,
+    })
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Failed to update caption rules:", error);

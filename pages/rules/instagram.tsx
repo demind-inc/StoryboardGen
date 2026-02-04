@@ -174,23 +174,24 @@ const InstagramRulesPage: React.FC = () => {
                       className={styles.ruleInput}
                       aria-label={`Rule ${index + 1}`}
                     />
-                    <button
-                      type="button"
-                      className={styles.deleteRule}
-                      onClick={() => handleDeleteRule(index)}
-                      aria-label={`Delete rule ${index + 1}`}
-                    >
-                      Delete
-                    </button>
-                    {dirtyIndices.has(index) && (
+                    {!isSaving && (
+                      <button
+                        type="button"
+                        className={styles.deleteRule}
+                        onClick={() => handleDeleteRule(index)}
+                        aria-label={`Delete rule ${index + 1}`}
+                      >
+                        Delete
+                      </button>
+                    )}
+                    {dirtyIndices.has(index) && !isSaving && (
                       <button
                         type="button"
                         className={styles.saveRule}
                         onClick={handleSaveRules}
-                        disabled={isSaving}
                         aria-label="Save rules"
                       >
-                        {isSaving ? "Saving..." : "Save"}
+                        Save
                       </button>
                     )}
                   </div>
