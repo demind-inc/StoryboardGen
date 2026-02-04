@@ -5,23 +5,11 @@ import DashboardLayout from "./DashboardLayout";
 import { ReferenceSet } from "../../types";
 import type { DashboardManualState } from "../../hooks/useDashboardManual";
 
-function getDefaultProjectName(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const h = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
-  return `${y}-${m}-${day} ${h}:${min}`;
-}
-
 interface DashboardMainProps {
   dashboard: DashboardManualState;
 }
 
 const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
-  const [projectName, setProjectName] = React.useState(getDefaultProjectName);
-
   const {
     fileInputRef,
     references,
@@ -51,6 +39,9 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     setGuidelines,
     rules,
     captions,
+    setManualResults,
+    projectName,
+    setProjectName,
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
@@ -99,6 +90,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         captions={captions}
         results={manualResults}
         onRegenerateResult={handleRegenerate}
+        onBackToEditor={() => setManualResults([])}
       />
 
       <ReferenceLibraryModal

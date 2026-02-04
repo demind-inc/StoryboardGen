@@ -19,6 +19,7 @@ const nextConfig = {
       process.env.STRIPE_LINK_BUSINESS ||
       process.env.NEXT_PUBLIC_STRIPE_LINK_BUSINESS,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_TEXT_MODEL: process.env.GEMINI_TEXT_MODEL,
     SUPABASE_ROLE_KEY: process.env.SUPABASE_ROLE_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_PRICE_ID_BASIC: process.env.STRIPE_PRICE_ID_BASIC,

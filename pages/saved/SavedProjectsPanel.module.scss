@@ -1,0 +1,115 @@
+.savedProjects__content {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0f0f10;
+  color: #ededed;
+  padding: 32px;
+  gap: 16px;
+}
+
+.savedProjects__empty {
+  border: 1px dashed rgba(160, 160, 166, 0.4);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  color: #a0a0a6;
+  background: #1a1a1b;
+}
+
+.savedProjects__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.savedProjects__headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.savedProjects__eyebrow {
+  font-size: var(--fs-16);
+  letter-spacing: 0.125rem;
+  color: #f0a84b;
+}
+
+.savedProjects__subtitle {
+  margin-top: 4px;
+  font-size: var(--fs-14);
+  color: #9a9aa0;
+}
+
+.savedProjects__newButton {
+  height: 34px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: #f0a84b;
+  color: #1a1204;
+  border: none;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.savedProjects__newButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(240, 168, 75, 0.35);
+}
+
+.savedProjects__listItems {
+  list-style: none;
+  margin: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #1a1a1b;
+  border-radius: 14px;
+}
+
+.savedProjects__listItem {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  background: #202022;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #ededed;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.savedProjects__listItem:hover {
+  background: #242426;
+  border-color: rgba(240, 168, 75, 0.3);
+}
+
+.savedProjects__listItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.savedProjects__listItemTitle {
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+
+.savedProjects__listItemMeta {
+  font-size: var(--fs-12);
+  color: #a0a0a6;
+}
+
+.savedProjects__listItemUpdated {
+  font-size: var(--fs-12);
+  color: #8e8e93;
+}

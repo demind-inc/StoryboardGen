@@ -150,6 +150,67 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
       };
+      projects: {
+        Row: {
+          id: string; // uuid, primary key
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          name: string; // text
+          prompts: string[]; // text[]
+          tiktok_captions: string[]; // text[]
+          instagram_captions: string[]; // text[]
+          created_at: string; // timestamptz, default now()
+          updated_at: string; // timestamptz, default now()
+        };
+        Insert: {
+          id?: string; // uuid
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          name: string; // text
+          prompts: string[]; // text[]
+          tiktok_captions?: string[]; // text[]
+          instagram_captions?: string[]; // text[]
+          created_at?: string; // timestamptz
+          updated_at?: string; // timestamptz
+        };
+        Update: {
+          id?: string; // uuid
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
+          name?: string; // text
+          prompts?: string[]; // text[]
+          tiktok_captions?: string[]; // text[]
+          instagram_captions?: string[]; // text[]
+          created_at?: string | null; // timestamptz
+          updated_at?: string | null; // timestamptz
+        };
+      };
+      project_outputs: {
+        Row: {
+          id: string; // uuid, primary key
+          project_id: string; // uuid, FOREIGN KEY references projects(id)
+          scene_index: number; // integer
+          prompt: string; // text
+          file_path: string; // text
+          mime_type: string; // text
+          created_at: string; // timestamptz, default now()
+        };
+        Insert: {
+          id?: string; // uuid
+          project_id: string; // uuid, FOREIGN KEY references projects(id)
+          scene_index: number; // integer
+          prompt: string; // text
+          file_path: string; // text
+          mime_type: string; // text
+          created_at?: string; // timestamptz
+        };
+        Update: {
+          id?: string; // uuid
+          project_id?: string; // uuid, FOREIGN KEY references projects(id)
+          scene_index?: number; // integer
+          prompt?: string; // text
+          file_path?: string; // text
+          mime_type?: string; // text
+          created_at?: string | null; // timestamptz
+        };
+      };
       caption_settings: {
         Row: {
           user_id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
@@ -221,6 +282,17 @@ export type PromptLibraryInsert =
   Database["public"]["Tables"]["prompt_library"]["Insert"];
 export type PromptLibraryUpdate =
   Database["public"]["Tables"]["prompt_library"]["Update"];
+
+export type ProjectsRow = Database["public"]["Tables"]["projects"]["Row"];
+export type ProjectsInsert = Database["public"]["Tables"]["projects"]["Insert"];
+export type ProjectsUpdate = Database["public"]["Tables"]["projects"]["Update"];
+
+export type ProjectOutputsRow =
+  Database["public"]["Tables"]["project_outputs"]["Row"];
+export type ProjectOutputsInsert =
+  Database["public"]["Tables"]["project_outputs"]["Insert"];
+export type ProjectOutputsUpdate =
+  Database["public"]["Tables"]["project_outputs"]["Update"];
 
 export type CaptionSettingsRow =
   Database["public"]["Tables"]["caption_settings"]["Row"];

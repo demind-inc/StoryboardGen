@@ -32,7 +32,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   captions,
   results,
   onRegenerateResult,
+  allowRegenerate,
   onProjectNameChange,
+  onBackToEditor,
 }) => {
   if (results.length) {
     return (
@@ -44,6 +46,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onRegenerateAll={onGenerateAll}
           captions={captions}
           projectName={projectName}
+          allowRegenerate={allowRegenerate}
+          onBack={onBackToEditor}
         />
       </div>
     );
@@ -72,10 +76,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onRemoveScene={onRemoveScene}
               onSavePrompt={onSavePrompt}
               previewImageUrl={previewImageUrl}
-              isGenerating={isGenerating}
-              disableGenerate={disableGenerate}
-              onGenerateAll={onGenerateAll}
-              onRegenerateActive={onRegenerateActive}
             />
           </div>
           <div className={styles.rightColumn}>

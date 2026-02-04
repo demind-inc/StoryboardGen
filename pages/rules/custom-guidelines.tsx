@@ -140,6 +140,8 @@ const CustomGuidelinesPage: React.FC = () => {
                 router.push("/dashboard");
               } else if (panel === "saved") {
                 router.push("/saved/image");
+              } else if (panel === "projects") {
+                router.push("/saved/project");
               }
             }}
             onOpenSettings={() => router.push("/settings")}

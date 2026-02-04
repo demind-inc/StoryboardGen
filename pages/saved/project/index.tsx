@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { AppMode, SubscriptionPlan } from "../../types";
-import { useAuth } from "../../providers/AuthProvider";
-import { useSubscription } from "../../providers/SubscriptionProvider";
-import Sidebar, { PanelKey } from "../../components/Sidebar/Sidebar";
-import SavedImagesPanel from "./SavedImagesPanel";
+import { AppMode, SubscriptionPlan } from "../../../types";
+import { useAuth } from "../../../providers/AuthProvider";
+import { useSubscription } from "../../../providers/SubscriptionProvider";
+import Sidebar from "../../../components/Sidebar/Sidebar";
+import SavedProjectsPanel from "../SavedProjectsPanel";
+import { fetchProjectList } from "../../../services/projectService";
+import type { ProjectSummary } from "../../../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -12,12 +14,26 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const SavedImagesPage: React.FC = () => {
-  const { authStatus, displayEmail, signOut } = useAuth();
+const SavedProjectsListPage: React.FC = () => {
+  const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
-  const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
   const mode: AppMode = "manual";
+  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    setIsLoading(true);
+    fetchProjectList(userId)
+      .then(setProjects)
+      .catch((error) => {
+        console.error("Failed to load projects:", error);
+        setProjects([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [session?.user?.id]);
 
   if (authStatus === "checking") {
     return (
@@ -45,14 +61,12 @@ const SavedImagesPage: React.FC = () => {
           <Sidebar
             mode={mode}
             onModeChange={() => {}}
-            activePanel="saved"
+            activePanel="projects"
             onPanelChange={(panel) => {
               if (panel === "manual") {
                 router.push("/dashboard");
               } else if (panel === "saved") {
                 router.push("/saved/image");
-              } else if (panel === "projects") {
-                router.push("/saved/project");
               }
             }}
             onOpenSettings={() => router.push("/settings")}
@@ -80,10 +94,14 @@ const SavedImagesPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <SavedImagesPanel
-            sortDirection={librarySort}
-            onSortChange={setLibrarySort}
-            onSelectReferenceSet={() => {}}
+          <SavedProjectsPanel
+            projects={projects}
+            projectListLoading={isLoading}
+            selectedProject={null}
+            isLoadingDetail={false}
+            onSelectProject={(projectId) =>
+              router.push("/saved/project/" + projectId)
+            }
           />
         </div>
       </main>
@@ -91,4 +109,4 @@ const SavedImagesPage: React.FC = () => {
   );
 };
 
-export default SavedImagesPage;
+export default SavedProjectsListPage;

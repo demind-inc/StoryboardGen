@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
@@ -11,9 +11,11 @@ import {
 } from "../DashboardV2/DashboardIcons";
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
+import { fetchProjectList } from "../../services/projectService";
 
 export type PanelKey =
   | "saved"
+  | "projects"
   | "manual"
   | "settings"
   | "tiktok"
@@ -39,6 +41,8 @@ interface SidebarProps {
   onOpenBilling?: () => void;
   onCancelSubscription?: () => void;
   onSignOut: () => void;
+  onSelectSavedProject?: (projectId: string) => void;
+  onSavedProjectsClick?: () => void;
 }
 
 const SidebarIcon: React.FC<{ name: string }> = ({ name }) => {
@@ -88,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     remainingCredits,
     totalCredits,
     onOpenBilling,
+    onSelectSavedProject,
   } = props;
   const { session } = useAuth();
   const subscription = useSubscription();
@@ -95,6 +100,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const isManualActive = activePanel === "manual";
   const isSavedActive = activePanel === "saved";
+  const isProjectsActive = activePanel === "projects";
   const isSettingsActive = activePanel === "settings";
   const isTikTokActive = activePanel === "tiktok";
   const isInstagramActive = activePanel === "instagram";
@@ -114,6 +120,15 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     }
     return "0/3 credits";
   }, [isSubscribed, remainingCredits, totalCredits]);
+
+  const [savedProjects, setSavedProjects] = useState<
+    { id: string; name: string; createdAt?: string | null }[]
+  >([]);
+  const [activeSavedProjectId, setActiveSavedProjectId] = useState<
+    string | null
+  >(null);
+  const [isSavedProjectsOpen, setIsSavedProjectsOpen] = useState(false);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
 
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
@@ -138,144 +153,241 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     return links;
   }, [session?.user?.id]);
 
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    setIsProjectsLoading(true);
+    fetchProjectList(userId)
+      .then((list) =>
+        setSavedProjects(
+          list.map((project) => ({
+            id: project.id,
+            name: project.name,
+            createdAt: project.createdAt,
+          }))
+        )
+      )
+      .catch((error) => {
+        console.error("Failed to load projects:", error);
+        setSavedProjects([]);
+      })
+      .finally(() => setIsProjectsLoading(false));
+  }, [session?.user?.id]);
+
+  // Keep projects subnav open on saved projects list or detail page; sync active project from route
+  useEffect(() => {
+    const path = router.pathname;
+    const isProjectsList = path === "/saved/project";
+    const isProjectDetail = path === "/saved/project/[projectId]";
+    if (isProjectsList || isProjectDetail) {
+      setIsSavedProjectsOpen(true);
+    }
+    if (isProjectDetail && router.query.projectId) {
+      const id =
+        typeof router.query.projectId === "string"
+          ? router.query.projectId
+          : router.query.projectId?.[0];
+      if (id) setActiveSavedProjectId(id);
+    }
+  }, [router.pathname, router.query.projectId]);
+
   return (
-    <div className={`${styles.sidebar} custom-scrollbar`}>
-      <div className={styles.sidebar__header}>
-        <div className={styles.sidebar__brand}>
-          <div className={styles.sidebar__brandIcon}>
-            <img
-              src="/assets/images/logo.png"
-              alt="StoryboardGen Logo"
-              className={styles.sidebar__brandImage}
-            />
-          </div>
-          <div className={styles.sidebar__brandText}>
-            <span className={styles.sidebar__brandTitle}>StoryboardGen</span>
+    <>
+      <div className={`${styles.sidebar} custom-scrollbar`}>
+        <div className={styles.sidebar__header}>
+          <div className={styles.sidebar__brand}>
+            <div className={styles.sidebar__brandIcon}>
+              <img
+                src="/assets/images/logo.png"
+                alt="StoryboardGen Logo"
+                className={styles.sidebar__brandImage}
+              />
+            </div>
+            <div className={styles.sidebar__brandText}>
+              <span className={styles.sidebar__brandTitle}>StoryboardGen</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Workspace</p>
-        <nav className={styles.sidebar__nav}>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isManualActive ? styles.isActive : ""
-            }`}
-            onClick={() => {
-              onPanelChange("manual");
-              router.push("/dashboard");
-            }}
-          >
-            <SidebarIcon name="star" />
-            Generate
-          </button>
-          <button className={styles.sidebar__navItem} disabled>
-            <SidebarIcon name="folder" />
-            Saved Projects
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isSavedActive ? styles.isActive : ""
-            }`}
-            onClick={() => {
-              onPanelChange("saved");
-              router.push("/saved/image");
-            }}
-          >
-            <SidebarIcon name="history" />
-            Saved Images
-          </button>
-        </nav>
-      </div>
-
-      <div className={styles.sidebar__divider} />
-
-      <div className={styles.sidebar__section}>
-        <p className={styles.sidebar__eyebrow}>Settings</p>
-        <nav className={styles.sidebar__nav}>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isTikTokActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/tiktok")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <TikTokIcon />
-            </span>
-            TikTok Rules
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isInstagramActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/instagram")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <InstagramIcon />
-            </span>
-            Instagram Rules
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isCustomGuidelinesActive ? styles.isActive : ""
-            }`}
-            onClick={() => router.push("/rules/custom-guidelines")}
-          >
-            <span className={styles.sidebar__iconWrap} aria-hidden>
-              <CustomGuidelinesIcon />
-            </span>
-            Custom Guidelines
-          </button>
-          <button
-            className={`${styles.sidebar__navItem} ${
-              isSettingsActive ? styles.isActive : ""
-            }`}
-            onClick={onOpenSettings}
-          >
-            <SidebarIcon name="settings" />
-            Account
-          </button>
-        </nav>
-      </div>
-
-      <div className={styles.sidebar__footer}>
-        <div className={styles.sidebar__planCard}>
-          <div className={styles.sidebar__planLabel}>Current Plan</div>
-          <div className={styles.sidebar__planName}>
-            {isSubscribed && planType ? planType.toUpperCase() : "Free Plan"}
-          </div>
-          <div className={styles.sidebar__planDesc}>
-            {totalCredits != null
-              ? `${totalCredits} credits/month`
-              : isSubscribed
-              ? "500 credits/month"
-              : "3 credits/month"}
-          </div>
-          <div className={styles.sidebar__planCredits}>{creditText}</div>
+        <div className={styles.sidebar__section}>
+          <p className={styles.sidebar__eyebrow}>Workspace</p>
+          <nav className={styles.sidebar__nav}>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isManualActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("manual");
+                router.push("/dashboard");
+              }}
+            >
+              <SidebarIcon name="star" />
+              Generate
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isProjectsActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("projects");
+                setIsSavedProjectsOpen(true);
+                router.push("/saved/project");
+                if (props.onSavedProjectsClick) {
+                  props.onSavedProjectsClick();
+                }
+              }}
+            >
+              <SidebarIcon name="folder" />
+              <span className={styles.sidebar__navLabel}>Saved project</span>
+              <span className={styles.sidebar__navCaret} aria-hidden>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </span>
+            </button>
+            {isProjectsActive && isSavedProjectsOpen && (
+              <div className={styles.sidebar__subnav}>
+                {isProjectsLoading ? (
+                  <div className={styles.sidebar__subnavEmpty}>
+                    Loading projects...
+                  </div>
+                ) : savedProjects.length === 0 ? (
+                  <div className={styles.sidebar__subnavEmpty}>
+                    No projects yet
+                  </div>
+                ) : (
+                  savedProjects.map((project) => (
+                    <button
+                      key={project.id}
+                      className={`${styles.sidebar__subnavItem} ${
+                        activeSavedProjectId === project.id
+                          ? styles.isActive
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setActiveSavedProjectId(project.id);
+                        router.push("/saved/project/" + project.id);
+                        onSelectSavedProject?.(project.id);
+                      }}
+                    >
+                      {project.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isSavedActive ? styles.isActive : ""
+              }`}
+              onClick={() => {
+                onPanelChange("saved");
+                router.push("/saved/image");
+              }}
+            >
+              <SidebarIcon name="camera" />
+              Saved Images
+            </button>
+          </nav>
         </div>
-        {!isSubscribed && onOpenBilling && (
-          <button
-            className={styles.sidebar__upgradeBtn}
-            onClick={onOpenBilling}
-          >
-            Upgrade
-          </button>
-        )}
-        {!isSubscribed && !onOpenBilling && (
-          <button
-            className={styles.sidebar__upgradeBtn}
-            onClick={subscription.openPaymentModal}
-          >
-            Upgrade
-          </button>
-        )}
-      </div>
 
-      <div className={styles.sidebar__footerSection}>
-        <Footer />
-      </div>
+        <div className={styles.sidebar__divider} />
 
+        <div className={styles.sidebar__section}>
+          <p className={styles.sidebar__eyebrow}>Settings</p>
+          <nav className={styles.sidebar__nav}>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isTikTokActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/tiktok")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <TikTokIcon />
+              </span>
+              TikTok Rules
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isInstagramActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/instagram")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <InstagramIcon />
+              </span>
+              Instagram Rules
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isCustomGuidelinesActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/custom-guidelines")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <CustomGuidelinesIcon />
+              </span>
+              Custom Guidelines
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isSettingsActive ? styles.isActive : ""
+              }`}
+              onClick={onOpenSettings}
+            >
+              <SidebarIcon name="settings" />
+              Account
+            </button>
+          </nav>
+        </div>
+
+        <div className={styles.sidebar__footer}>
+          <div className={styles.sidebar__planCard}>
+            <div className={styles.sidebar__planLabel}>Current Plan</div>
+            <div className={styles.sidebar__planName}>
+              {isSubscribed && planType ? planType.toUpperCase() : "Free Plan"}
+            </div>
+            <div className={styles.sidebar__planDesc}>
+              {totalCredits != null
+                ? `${totalCredits} credits/month`
+                : isSubscribed
+                ? "500 credits/month"
+                : "3 credits/month"}
+            </div>
+            <div className={styles.sidebar__planCredits}>{creditText}</div>
+          </div>
+          {!isSubscribed && onOpenBilling && (
+            <button
+              className={styles.sidebar__upgradeBtn}
+              onClick={onOpenBilling}
+            >
+              Upgrade
+            </button>
+          )}
+          {!isSubscribed && !onOpenBilling && (
+            <button
+              className={styles.sidebar__upgradeBtn}
+              onClick={subscription.openPaymentModal}
+            >
+              Upgrade
+            </button>
+          )}
+        </div>
+
+        <div className={styles.sidebar__footerSection}>
+          <Footer />
+        </div>
+      </div>
       <PaymentModal
         isOpen={subscription.isPaymentModalOpen}
         onClose={() => subscription.setIsPaymentModalOpen(false)}
@@ -284,8 +396,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         onPlanSelect={(plan) => subscription.setPlanType(plan)}
         userId={session?.user?.id}
       />
-
-    </div>
+    </>
   );
 };
 

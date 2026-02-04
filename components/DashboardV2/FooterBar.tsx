@@ -15,15 +15,16 @@ const FooterBar: React.FC<FooterBarProps> = ({
   onGenerateAll,
   projectName,
 }) => {
-  const isReady = !disableGenerate && !isGenerating;
+  const isDisabled = disableGenerate || isGenerating;
+  const isReady = !isDisabled;
   return (
     <div className={styles.footerBar}>
       <button
         className={`${styles.actionButton} ${styles.actionButtonPrimary} ${
           isReady ? styles.actionButtonReady : ""
         }`}
-        onClick={onGenerateAll}
-        disabled={disableGenerate}
+        onClick={isDisabled ? undefined : onGenerateAll}
+        disabled={isDisabled}
       >
         <AIIcon />
         <span>{isGenerating ? "Generating..." : "Generate All Scenes"}</span>
