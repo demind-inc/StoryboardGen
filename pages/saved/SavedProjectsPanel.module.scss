@@ -31,14 +31,14 @@
 }
 
 .savedProjects__eyebrow {
-  font-size: 0.875rem;
+  font-size: var(--fs-16);
   letter-spacing: 0.125rem;
   color: #f0a84b;
 }
 
 .savedProjects__subtitle {
   margin-top: 4px;
-  font-size: 0.875rem;
+  font-size: var(--fs-14);
   color: #9a9aa0;
 }
 
@@ -49,7 +49,7 @@
   background: #f0a84b;
   color: #1a1204;
   border: none;
-  font-size: 0.75rem;
+  font-size: var(--fs-14);
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -100,16 +100,16 @@
 }
 
 .savedProjects__listItemTitle {
-  font-size: 1rem;
+  font-size: var(--fs-16);
   font-weight: 600;
 }
 
 .savedProjects__listItemMeta {
-  font-size: 0.75rem;
+  font-size: var(--fs-12);
   color: #a0a0a6;
 }
 
 .savedProjects__listItemUpdated {
-  font-size: 0.75rem;
+  font-size: var(--fs-12);
   color: #8e8e93;
 }

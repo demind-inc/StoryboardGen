@@ -122,6 +122,36 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   }
 
   // Detail view
+  if (!isLoadingDetail && selectedProject && results.length > 0) {
+    return (
+      <DashboardLayout
+        projectName={selectedProject.name}
+        onProjectNameChange={() => {}}
+        references={[]}
+        onUpload={() => {}}
+        onOpenLibrary={() => {}}
+        onRemoveReference={() => {}}
+        promptList={selectedProject.prompts}
+        activeSceneIndex={0}
+        onSceneSelect={() => {}}
+        onAddScene={() => {}}
+        onRemoveScene={() => {}}
+        onSavePrompt={() => {}}
+        previewImageUrl={previewImageUrl}
+        isGenerating={false}
+        disableGenerate
+        onGenerateAll={() => {}}
+        onRegenerateActive={() => {}}
+        rules={{ tiktok: [], instagram: [] }}
+        guidelines={[]}
+        onGuidelinesChange={() => {}}
+        captions={captions}
+        results={results}
+        onRegenerateResult={() => {}}
+      />
+    );
+  }
+
   return (
     <div className={styles.savedProjects__content}>
       {isLoadingDetail && (
@@ -132,33 +162,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           Select a project to view the results.
         </div>
       )}
-      {!isLoadingDetail && selectedProject && results.length > 0 && (
-        <DashboardLayout
-          projectName={selectedProject.name}
-          onProjectNameChange={() => {}}
-          references={[]}
-          onUpload={() => {}}
-          onOpenLibrary={() => {}}
-          onRemoveReference={() => {}}
-          promptList={selectedProject.prompts}
-          activeSceneIndex={0}
-          onSceneSelect={() => {}}
-          onAddScene={() => {}}
-          onRemoveScene={() => {}}
-          onSavePrompt={() => {}}
-          previewImageUrl={previewImageUrl}
-          isGenerating={false}
-          disableGenerate
-          onGenerateAll={() => {}}
-          onRegenerateActive={() => {}}
-          rules={{ tiktok: [], instagram: [] }}
-          guidelines={[]}
-          onGuidelinesChange={() => {}}
-          captions={captions}
-          results={results}
-          onRegenerateResult={() => {}}
-        />
-      )}
+
       {!isLoadingDetail && selectedProject && results.length === 0 && (
         <div className={styles.savedProjects__empty}>
           This project has no saved outputs yet.
