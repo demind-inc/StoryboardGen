@@ -40,6 +40,7 @@ const SettingsPage: React.FC = () => {
   const router = useRouter();
   const mode: AppMode = "manual";
   const [isCanceling, setIsCanceling] = useState(false);
+  const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -76,6 +77,7 @@ const SettingsPage: React.FC = () => {
 
   const handleCancelSubscription = async () => {
     if (!userId) return;
+    setIsCancelConfirmOpen(false);
     setCancelMessage(null);
     setIsCanceling(true);
     try {
@@ -237,13 +239,13 @@ const SettingsPage: React.FC = () => {
                 {subscription?.isActive ? (
                   <>
                     <button
-                      type="button"
-                      className={styles.actionButton}
-                      onClick={handleCancelSubscription}
-                      disabled={isCanceling}
-                    >
-                      {isCanceling ? "Canceling..." : "Cancel subscription"}
-                    </button>
+                        type="button"
+                        className={styles.actionButton}
+                        onClick={() => setIsCancelConfirmOpen(true)}
+                        disabled={isCanceling}
+                      >
+                        {isCanceling ? "Canceling..." : "Cancel subscription"}
+                      </button>
                     {cancelMessage && (
                       <span
                         className={
@@ -327,6 +329,46 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {isCancelConfirmOpen && (
+        <div
+          className={styles.confirmOverlay}
+          onClick={() => setIsCancelConfirmOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-cancel-title"
+        >
+          <div
+            className={styles.confirmModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="confirm-cancel-title" className={styles.confirmTitle}>
+              Cancel subscription?
+            </h2>
+            <p className={styles.confirmMessage}>
+              Are you sure you want to cancel your subscription? You will keep
+              access until the end of your billing period.
+            </p>
+            <div className={styles.confirmActions}>
+              <button
+                type="button"
+                className={styles.actionButton}
+                onClick={() => setIsCancelConfirmOpen(false)}
+              >
+                Keep subscription
+              </button>
+              <button
+                type="button"
+                className={styles.actionButtonDanger}
+                onClick={handleCancelSubscription}
+                disabled={isCanceling}
+              >
+                {isCanceling ? "Canceling..." : "Cancel subscription"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

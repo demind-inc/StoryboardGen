@@ -125,6 +125,70 @@
   color: #f29a9a;
 }
 
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  cursor: default;
+}
+
+.confirmModal {
+  background: #1a1a1b;
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid #2a2a2c;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.confirmTitle {
+  margin: 0 0 12px;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  color: #ededed;
+}
+
+.confirmMessage {
+  margin: 0 0 20px;
+  font-size: var(--fs-14);
+  color: #9a9aa0;
+  line-height: 1.5;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.actionButtonDanger {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: var(--fs-13);
+  border: 1px solid rgba(200, 80, 80, 0.5);
+  background: rgba(200, 80, 80, 0.2);
+  color: #f29a9a;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(200, 80, 80, 0.35);
+    border-color: rgba(200, 80, 80, 0.7);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .preferences {
   display: grid;
   gap: 16px;
