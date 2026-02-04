@@ -27,6 +27,7 @@ const TikTokRulesPage: React.FC = () => {
   const mode: AppMode = "manual";
   const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
+  const [isListDirty, setIsListDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const lastInputRef = useRef<HTMLInputElement>(null);
   const shouldFocusLastRef = useRef(false);
@@ -45,6 +46,7 @@ const TikTokRulesPage: React.FC = () => {
         if (!isMounted) return;
         setRules(settings.rules.tiktok);
         setDirtyIndices(new Set());
+        setIsListDirty(false);
       })
       .catch((error) => {
         console.error("Failed to load caption rules:", error);
@@ -66,8 +68,27 @@ const TikTokRulesPage: React.FC = () => {
     setDirtyIndices((prev) => new Set(prev).add(index));
   };
 
+  const persistRules = async (nextRules: string[]) => {
+    if (!session?.user?.id) return;
+    setIsSaving(true);
+    try {
+      await updateCaptionRulesForPlatform(
+        session.user.id,
+        "tiktok",
+        nextRules.map((rule) => rule.trim()).filter((rule) => rule.length > 0)
+      );
+      setDirtyIndices(new Set());
+      setIsListDirty(false);
+    } catch (error) {
+      console.error("Failed to save caption rules:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleDeleteRule = (index: number) => {
-    setRules((prev) => prev.filter((_, i) => i !== index));
+    const nextRules = rules.filter((_, i) => i !== index);
+    setRules(nextRules);
     setDirtyIndices((prev) => {
       const next = new Set<number>();
       prev.forEach((dirtyIndex) => {
@@ -76,6 +97,7 @@ const TikTokRulesPage: React.FC = () => {
       });
       return next;
     });
+    void persistRules(nextRules);
   };
 
   const handleAddRule = () => {
@@ -85,23 +107,12 @@ const TikTokRulesPage: React.FC = () => {
       return next;
     });
     shouldFocusLastRef.current = true;
+    setIsListDirty(true);
   };
 
   const handleSaveRules = async () => {
-    if (!session?.user?.id || dirtyIndices.size === 0) return;
-    setIsSaving(true);
-    try {
-      await updateCaptionRulesForPlatform(
-        session.user.id,
-        "tiktok",
-        rules.map((rule) => rule.trim()).filter((rule) => rule.length > 0)
-      );
-      setDirtyIndices(new Set());
-    } catch (error) {
-      console.error("Failed to save caption rules:", error);
-    } finally {
-      setIsSaving(false);
-    }
+    if (!session?.user?.id || (dirtyIndices.size === 0 && !isListDirty)) return;
+    await persistRules(rules);
   };
 
   if (authStatus === "checking") {
@@ -195,6 +206,15 @@ const TikTokRulesPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+              {isListDirty && !isSaving && (
+                <button
+                  type="button"
+                  className={styles.saveRule}
+                  onClick={handleSaveRules}
+                >
+                  Save Changes
+                </button>
+              )}
               <button
                 type="button"
                 className={styles.addRule}
