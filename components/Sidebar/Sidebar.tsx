@@ -174,6 +174,23 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       .finally(() => setIsProjectsLoading(false));
   }, [session?.user?.id]);
 
+  // Keep projects subnav open on saved projects list or detail page; sync active project from route
+  useEffect(() => {
+    const path = router.pathname;
+    const isProjectsList = path === "/saved/project";
+    const isProjectDetail = path === "/saved/project/[projectId]";
+    if (isProjectsList || isProjectDetail) {
+      setIsSavedProjectsOpen(true);
+    }
+    if (isProjectDetail && router.query.projectId) {
+      const id =
+        typeof router.query.projectId === "string"
+          ? router.query.projectId
+          : router.query.projectId?.[0];
+      if (id) setActiveSavedProjectId(id);
+    }
+  }, [router.pathname, router.query.projectId]);
+
   return (
     <>
       <div className={`${styles.sidebar} custom-scrollbar`}>
@@ -213,7 +230,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               }`}
               onClick={() => {
                 onPanelChange("projects");
-                setIsSavedProjectsOpen((prev) => !prev);
+                setIsSavedProjectsOpen(true);
+                router.push("/saved/project");
                 if (props.onSavedProjectsClick) {
                   props.onSavedProjectsClick();
                 }
@@ -237,36 +255,37 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 </svg>
               </span>
             </button>
-          {isProjectsActive && isSavedProjectsOpen && (
-            <div className={styles.sidebar__subnav}>
-              {isProjectsLoading ? (
-                <div className={styles.sidebar__subnavEmpty}>
-                  Loading projects...
-                </div>
-              ) : savedProjects.length === 0 ? (
-                <div className={styles.sidebar__subnavEmpty}>
-                  No projects yet
-                </div>
-              ) : (
-                savedProjects.map((project) => (
-                  <button
-                    key={project.id}
-                    className={`${styles.sidebar__subnavItem} ${
-                      activeSavedProjectId === project.id
-                        ? styles.isActive
-                        : ""
-                    }`}
-                    onClick={() => {
-                      setActiveSavedProjectId(project.id);
-                      onSelectSavedProject?.(project.id);
-                    }}
-                  >
-                    {project.name}
-                  </button>
-                ))
-              )}
-            </div>
-          )}
+            {isProjectsActive && isSavedProjectsOpen && (
+              <div className={styles.sidebar__subnav}>
+                {isProjectsLoading ? (
+                  <div className={styles.sidebar__subnavEmpty}>
+                    Loading projects...
+                  </div>
+                ) : savedProjects.length === 0 ? (
+                  <div className={styles.sidebar__subnavEmpty}>
+                    No projects yet
+                  </div>
+                ) : (
+                  savedProjects.map((project) => (
+                    <button
+                      key={project.id}
+                      className={`${styles.sidebar__subnavItem} ${
+                        activeSavedProjectId === project.id
+                          ? styles.isActive
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setActiveSavedProjectId(project.id);
+                        router.push("/saved/project/" + project.id);
+                        onSelectSavedProject?.(project.id);
+                      }}
+                    >
+                      {project.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
             <button
               className={`${styles.sidebar__navItem} ${
                 isSavedActive ? styles.isActive : ""

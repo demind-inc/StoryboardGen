@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
+import { useRouter } from "next/router";
 import DashboardLayout from "../../components/DashboardV2/DashboardLayout";
-import type { ProjectDetail, SceneResult } from "../../types";
+import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import styles from "./SavedProjectsPanel.module.scss";
 
 const formatCaptionList = (items: string[]) =>
@@ -11,14 +12,26 @@ const formatCaptionList = (items: string[]) =>
     .join("\n\n");
 
 interface SavedProjectsPanelProps {
+  /** List of projects for list view (/saved/project). When null, panel is in detail mode. */
+  projects?: ProjectSummary[] | null;
+  projectListLoading?: boolean;
+  /** Selected project detail for detail view (/saved/project/[id]). */
   selectedProject: ProjectDetail | null;
-  isLoading: boolean;
+  isLoadingDetail?: boolean;
+  onSelectProject?: (projectId: string) => void;
 }
 
 const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
+  projects = null,
+  projectListLoading = false,
   selectedProject,
-  isLoading,
+  isLoadingDetail = false,
+  onSelectProject,
 }) => {
+  const router = useRouter();
+  const handleSelectProject =
+    onSelectProject ?? ((id) => router.push("/saved/project/" + id));
+
   const results: SceneResult[] = useMemo(() => {
     if (!selectedProject) return [];
     return selectedProject.outputs.map((output) => ({
@@ -38,17 +51,53 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
 
   const previewImageUrl = results[0]?.imageUrl;
 
+  // List view: show projects when we have a list and no selected project
+  const isListMode = projects !== null && !selectedProject;
+  if (isListMode) {
+    return (
+      <div className={styles.savedProjects__content}>
+        {projectListLoading && (
+          <div className={styles.savedProjects__empty}>Loading projects...</div>
+        )}
+        {!projectListLoading && projects.length === 0 && (
+          <div className={styles.savedProjects__empty}>No projects yet.</div>
+        )}
+        {!projectListLoading && projects.length > 0 && (
+          <div className={styles.savedProjects__list}>
+            <h2 className={styles.savedProjects__listTitle}>Saved Projects</h2>
+            <ul className={styles.savedProjects__listItems}>
+              {projects.map((project) => (
+                <li key={project.id}>
+                  <button
+                    type="button"
+                    className={styles.savedProjects__listItem}
+                    onClick={() => handleSelectProject(project.id)}
+                  >
+                    <span className={styles.savedProjects__listItemName}>
+                      {project.name}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Detail view
   return (
     <div className={styles.savedProjects__content}>
-      {isLoading && (
+      {isLoadingDetail && (
         <div className={styles.savedProjects__empty}>Loading project...</div>
       )}
-      {!isLoading && !selectedProject && (
+      {!isLoadingDetail && !selectedProject && (
         <div className={styles.savedProjects__empty}>
           Select a project to view the results.
         </div>
       )}
-      {!isLoading && selectedProject && results.length > 0 && (
+      {!isLoadingDetail && selectedProject && results.length > 0 && (
         <DashboardLayout
           projectName={selectedProject.name}
           onProjectNameChange={() => {}}
@@ -75,7 +124,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           onRegenerateResult={() => {}}
         />
       )}
-      {!isLoading && selectedProject && results.length === 0 && (
+      {!isLoadingDetail && selectedProject && results.length === 0 && (
         <div className={styles.savedProjects__empty}>
           This project has no saved outputs yet.
         </div>
