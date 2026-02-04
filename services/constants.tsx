@@ -38,3 +38,5 @@ Generate an illustration of the exact same recurring character, reused identical
 `;
 
 export const MODEL_NAME = "gemini-3-pro-image-preview";
+export const CAPTION_MODEL_NAME =
+  process.env.GEMINI_TEXT_MODEL || "gemini-1.5-pro";
