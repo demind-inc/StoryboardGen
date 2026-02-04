@@ -46,9 +46,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
       <div className={styles.cardHeader}>
         <div>
           <h2 className={styles.cardTitle}>2. Scene Prompts</h2>
-          <p className={styles.cardDescription}>
-            One moment per slide - Medium detail
-          </p>
+          <p className={styles.cardDescription}>Describe the scene in detail</p>
         </div>
         <button className={styles.buttonGhost} onClick={onAddScene}>
           Add Scene
