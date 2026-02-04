@@ -39,9 +39,11 @@ const SettingsPage: React.FC = () => {
   } = useAuth();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [productUpdates, setProductUpdates] = useState(false);
-  const [weeklyTips, setWeeklyTips] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const userId = session?.user?.id;
   const {
@@ -71,6 +73,40 @@ const SettingsPage: React.FC = () => {
     const metadata = session?.user?.user_metadata ?? {};
     return metadata.full_name || metadata.name || "Not set";
   }, [session?.user?.user_metadata]);
+
+  const handleCancelSubscription = async () => {
+    if (!userId) return;
+    setCancelMessage(null);
+    setIsCanceling(true);
+    try {
+      const res = await fetch("/api/subscription/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCancelMessage({
+          type: "error",
+          text: data?.error ?? "Failed to cancel subscription",
+        });
+        return;
+      }
+      setCancelMessage({
+        type: "success",
+        text: data?.message ?? "Subscription canceled.",
+      });
+      await refreshSubscription(userId);
+      await refreshUsage(userId);
+    } catch (e) {
+      setCancelMessage({
+        type: "error",
+        text: "Failed to cancel subscription. Please try again.",
+      });
+    } finally {
+      setIsCanceling(false);
+    }
+  };
 
   if (authStatus === "checking") {
     return (
@@ -139,23 +175,21 @@ const SettingsPage: React.FC = () => {
                   <span className={styles.label}>Name</span>
                   <span className={styles.value}>{displayName}</span>
                 </div>
-                <div className={styles.cardActions}>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => requestPasswordResetForEmail(displayEmail)}
-                    disabled={isResettingPassword}
-                  >
-                    {isResettingPassword
-                      ? "Sending link..."
-                      : "Change Password"}
-                  </button>
-                  {authMessage ? (
-                    <span className={styles.statusMessage}>{authMessage}</span>
-                  ) : null}
-                  {authError ? (
-                    <span className={styles.statusError}>{authError}</span>
-                  ) : null}
-                </div>
+              </div>
+              <div className={styles.cardActions}>
+                <button
+                  className={styles.actionButton}
+                  onClick={() => requestPasswordResetForEmail(displayEmail)}
+                  disabled={isResettingPassword}
+                >
+                  {isResettingPassword ? "Sending link..." : "Change Password"}
+                </button>
+                {authMessage ? (
+                  <span className={styles.statusMessage}>{authMessage}</span>
+                ) : null}
+                {authError ? (
+                  <span className={styles.statusError}>{authError}</span>
+                ) : null}
               </div>
             </section>
 
@@ -188,14 +222,6 @@ const SettingsPage: React.FC = () => {
                       : "—"}
                   </span>
                 </div>
-                <div className={styles.cardActions}>
-                  <button
-                    className={styles.actionButtonPrimary}
-                    onClick={() => router.push("/dashboard?openBilling=1")}
-                  >
-                    Manage Plan
-                  </button>
-                </div>
                 <div>
                   <span className={styles.label}>Usage</span>
                   <span className={styles.value}>
@@ -206,6 +232,31 @@ const SettingsPage: React.FC = () => {
                       : "—"}
                   </span>
                 </div>
+              </div>
+              <div className={styles.cardActions}>
+                {subscription?.isActive ? (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.actionButton}
+                      onClick={handleCancelSubscription}
+                      disabled={isCanceling}
+                    >
+                      {isCanceling ? "Canceling..." : "Cancel subscription"}
+                    </button>
+                    {cancelMessage && (
+                      <span
+                        className={
+                          cancelMessage.type === "success"
+                            ? styles.statusMessage
+                            : styles.statusError
+                        }
+                      >
+                        {cancelMessage.text}
+                      </span>
+                    )}
+                  </>
+                ) : null}
               </div>
             </section>
 
