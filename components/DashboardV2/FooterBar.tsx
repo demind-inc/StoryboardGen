@@ -1,4 +1,5 @@
 import React from "react";
+import { AIIcon } from "./DashboardIcons";
 import styles from "./FooterBar.module.scss";
 
 export interface FooterBarProps {
@@ -13,16 +14,22 @@ const FooterBar: React.FC<FooterBarProps> = ({
   isGenerating,
   onGenerateAll,
   projectName,
-}) => (
-  <div className={styles.footerBar}>
-    <button
-      className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-      onClick={onGenerateAll}
-      disabled={disableGenerate}
-    >
-      {isGenerating ? "Generating..." : "Generate All Scenes"}
-    </button>
-  </div>
-);
+}) => {
+  const isReady = !disableGenerate && !isGenerating;
+  return (
+    <div className={styles.footerBar}>
+      <button
+        className={`${styles.actionButton} ${styles.actionButtonPrimary} ${
+          isReady ? styles.actionButtonReady : ""
+        }`}
+        onClick={onGenerateAll}
+        disabled={disableGenerate}
+      >
+        <AIIcon />
+        <span>{isGenerating ? "Generating..." : "Generate All Scenes"}</span>
+      </button>
+    </div>
+  );
+};
 
 export default FooterBar;
