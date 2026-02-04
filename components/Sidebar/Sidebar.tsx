@@ -2,7 +2,11 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/router";
 import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
-import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
+import {
+  TikTokIcon,
+  InstagramIcon,
+  CustomGuidelinesIcon,
+} from "../DashboardV2/DashboardIcons";
 import styles from "./Sidebar.module.scss";
 
 export type PanelKey =
@@ -190,7 +194,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => router.push("/rules/custom-guidelines")}
           >
-            <SidebarIcon name="dot" />
+            <span className={styles.sidebar__iconWrap} aria-hidden>
+              <CustomGuidelinesIcon />
+            </span>
             Custom Guidelines
           </button>
           <button
