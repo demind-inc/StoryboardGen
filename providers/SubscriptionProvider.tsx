@@ -1,7 +1,16 @@
-import React, { createContext, useContext, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from "react";
 import { useAuth } from "./AuthProvider";
 import { useUsage } from "../hooks/useUsage";
 import type { UseUsageReturn } from "../hooks/useUsage";
+import { trackButtonClick } from "../lib/analytics";
 
 const SubscriptionContext = createContext<UseUsageReturn | null>(null);
 
@@ -15,6 +24,22 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({
   const { session, authStatus } = useAuth();
   const userId = session?.user?.id;
   const usageValue = useUsage(userId, authStatus);
+
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const openPaymentModal = useCallback(() => {
+    trackButtonClick("open_payment_modal");
+    setIsPaymentModalOpen(true);
+  }, []);
+
+  const value = useMemo<UseUsageReturn>(
+    () => ({
+      ...usageValue,
+      isPaymentModalOpen,
+      setIsPaymentModalOpen,
+      openPaymentModal,
+    }),
+    [usageValue, isPaymentModalOpen, openPaymentModal]
+  );
 
   useEffect(() => {
     if (authStatus === "signed_in" && userId) {
@@ -31,7 +56,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({
   ]);
 
   return (
-    <SubscriptionContext.Provider value={usageValue}>
+    <SubscriptionContext.Provider value={value}>
       {children}
     </SubscriptionContext.Provider>
   );

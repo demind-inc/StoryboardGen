@@ -12,6 +12,36 @@ interface PaymentModalProps {
   userId?: string;
 }
 
+const plans = [
+  {
+    plan: "basic" as SubscriptionPlan,
+    badge: "BASIC",
+    title: "For trying the\nworkflow",
+    price: "$15/mo",
+    credits: "90 credits / month",
+    note: "1 credit = 1 image. Credits\nreset monthly.",
+    bullets: ["90 images each month", "Email support"],
+  },
+  {
+    plan: "pro" as SubscriptionPlan,
+    badge: "PRO",
+    title: "For weekly\nstorytellers",
+    price: "$29/mo",
+    credits: "180 credits / month",
+    note: "1 credit = 1 image. Credits\nreset monthly.",
+    bullets: ["180 images each month", "Email support"],
+  },
+  {
+    plan: "business" as SubscriptionPlan,
+    badge: "BUSINESS",
+    title: "For teams and\nvolume",
+    price: "$79/mo",
+    credits: "600 credits / month",
+    note: "1 credit = 1 image. Credits\nreset monthly.",
+    bullets: ["600 images each month", "Email support"],
+  },
+];
+
 const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
@@ -71,27 +101,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const plans = [
-    {
-      plan: "basic" as SubscriptionPlan,
-      badge: "Basic",
-      price: "$15/mo",
-      credits: "90 credits/month",
-    },
-    {
-      plan: "pro" as SubscriptionPlan,
-      badge: "Pro",
-      price: "$29/mo",
-      credits: "180 credits/month",
-    },
-    {
-      plan: "business" as SubscriptionPlan,
-      badge: "Business",
-      price: "$79/mo",
-      credits: "600 credits/month",
-    },
-  ];
-
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -114,39 +123,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         >
           ×
         </button>
-        <div className={styles["payment-modal__badge"]}>Upgrade</div>
-        <h3 id="payment-modal-title">Choose a credit plan</h3>
+        <h3 id="payment-modal-title" className={styles["payment-modal__title"]}>
+          Upgrade your plan
+        </h3>
         <p className={styles["payment-modal__lead"]}>
-          Your first render is on us. Pick a monthly credit pack to keep
-          generating scene-consistent images all month long.
+          Choose the plan that fits your workflow. Cancel anytime.
         </p>
-        <div className={styles["payment-modal__feature-grid"]}>
-          <div className={styles["payment-modal__feature"]}>
-            <span>⚡</span>
-            <div>
-              <strong>Flexible credits</strong>
-              <p>Credits reset monthly—1 credit equals 1 image.</p>
-            </div>
-          </div>
-          <div className={styles["payment-modal__feature"]}>
-            <span>🖼️</span>
-            <div>
-              <strong>High-res exports</strong>
-              <p>Keep 1K, 2K, or 4K scenes ready to ship.</p>
-            </div>
-          </div>
-          <div className={styles["payment-modal__feature"]}>
-            <span>📌</span>
-            <div>
-              <strong>Character lock</strong>
-              <p>Stay on-model across every prompt and storyboard.</p>
-            </div>
-          </div>
-        </div>
         <div className={styles["payment-modal__plans"]}>
           {plans.map((planOption) => {
-            const planUrl = paymentUrls?.[planOption.plan];
             const isSelected = planType === planOption.plan;
+            const planLabel =
+              planOption.badge.charAt(0) +
+              planOption.badge.slice(1).toLowerCase();
             return (
               <div
                 key={planOption.plan}
@@ -154,8 +142,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   isSelected ? styles["is-selected"] : ""
                 }`}
               >
-                <p className={styles["payment-modal__plan-badge"]}>
+                <div className={styles["payment-modal__plan-pill"]}>
                   {planOption.badge}
+                </div>
+                <p className={styles["payment-modal__plan-title"]}>
+                  {planOption.title.split("\n").map((line, index) => (
+                    <span
+                      key={`${planOption.plan}-title-${index}`}
+                      className={styles["payment-modal__plan-line"]}
+                    >
+                      {line}
+                    </span>
+                  ))}
                 </p>
                 <p className={styles["payment-modal__plan-price"]}>
                   {planOption.price}
@@ -163,6 +161,21 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 <p className={styles["payment-modal__plan-credits"]}>
                   {planOption.credits}
                 </p>
+                <p className={styles["payment-modal__plan-note"]}>
+                  {planOption.note.split("\n").map((line, index) => (
+                    <span
+                      key={`${planOption.plan}-note-${index}`}
+                      className={styles["payment-modal__plan-line"]}
+                    >
+                      {line}
+                    </span>
+                  ))}
+                </p>
+                <ul className={styles["payment-modal__plan-bullets"]}>
+                  {planOption.bullets.map((bullet) => (
+                    <li key={`${planOption.plan}-${bullet}`}>{bullet}</li>
+                  ))}
+                </ul>
                 {(() => {
                   const isLoading = loadingPlan === planOption.plan;
                   const planUrl = paymentUrls?.[planOption.plan];
@@ -171,20 +184,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     // Use new Checkout Session API
                     return (
                       <button
-                        className={`primary-button ${styles["payment-modal__plan-button"]}`}
+                        className={styles["payment-modal__plan-button"]}
                         onClick={() => handlePlanClick(planOption.plan)}
                         disabled={isLoading}
                       >
-                        {isLoading
-                          ? "Loading..."
-                          : `Choose ${planOption.badge}`}
+                        {isLoading ? "Loading..." : `Choose ${planLabel}`}
                       </button>
                     );
                   } else if (planUrl) {
                     // Fallback to static payment URLs
                     return (
                       <a
-                        className={`primary-button ${styles["payment-modal__plan-button"]}`}
+                        className={styles["payment-modal__plan-button"]}
                         href={planUrl}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -192,7 +203,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                           onPlanSelect?.(planOption.plan);
                         }}
                       >
-                        Choose {planOption.badge}
+                        Choose {planLabel}
                       </a>
                     );
                   } else {

@@ -1,12 +1,15 @@
 import React, { useMemo } from "react";
 import { useRouter } from "next/router";
-import { AppMode } from "../../types";
+import { AppMode, SubscriptionPlan } from "../../types";
+import { useAuth } from "../../providers/AuthProvider";
+import { useSubscription } from "../../providers/SubscriptionProvider";
 import Footer from "../Footer/Footer";
 import {
   TikTokIcon,
   InstagramIcon,
   CustomGuidelinesIcon,
 } from "../DashboardV2/DashboardIcons";
+import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
 
 export type PanelKey =
@@ -86,6 +89,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     totalCredits,
     onOpenBilling,
   } = props;
+  const { session } = useAuth();
+  const subscription = useSubscription();
   const router = useRouter();
 
   const isManualActive = activePanel === "manual";
@@ -109,6 +114,29 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     }
     return "0/3 credits";
   }, [isSubscribed, remainingCredits, totalCredits]);
+
+  const stripePlanLinks = useMemo(() => {
+    const baseLinks = {
+      basic: process.env.STRIPE_LINK_BASIC || "",
+      pro: process.env.STRIPE_LINK_PRO || "",
+      business: process.env.STRIPE_LINK_BUSINESS || "",
+    };
+    const userId = session?.user?.id;
+    if (!userId) return baseLinks;
+    const links: Partial<Record<SubscriptionPlan, string>> = {};
+    for (const [plan, baseUrl] of Object.entries(baseLinks)) {
+      if (baseUrl) {
+        try {
+          const url = new URL(baseUrl);
+          url.searchParams.set("client_reference_id", userId);
+          links[plan as SubscriptionPlan] = url.toString();
+        } catch {
+          links[plan as SubscriptionPlan] = baseUrl;
+        }
+      }
+    }
+    return links;
+  }, [session?.user?.id]);
 
   return (
     <div className={`${styles.sidebar} custom-scrollbar`}>
@@ -234,11 +262,29 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             Upgrade
           </button>
         )}
+        {!isSubscribed && !onOpenBilling && (
+          <button
+            className={styles.sidebar__upgradeBtn}
+            onClick={subscription.openPaymentModal}
+          >
+            Upgrade
+          </button>
+        )}
       </div>
 
       <div className={styles.sidebar__footerSection}>
         <Footer />
       </div>
+
+      <PaymentModal
+        isOpen={subscription.isPaymentModalOpen}
+        onClose={() => subscription.setIsPaymentModalOpen(false)}
+        planType={subscription.planType}
+        paymentUrls={stripePlanLinks}
+        onPlanSelect={(plan) => subscription.setPlanType(plan)}
+        userId={session?.user?.id}
+      />
+
     </div>
   );
 };

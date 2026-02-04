@@ -40,10 +40,12 @@ export const useDashboardManual = ({
     usageError,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
+    isPaymentModalOpen,
     planType,
     setUsage,
     setUsageError,
     setHasGeneratedFreeImage,
+    setIsPaymentModalOpen,
     setPlanType,
     refreshUsage,
     refreshSubscription,
@@ -78,10 +80,8 @@ export const useDashboardManual = ({
   const modalsHook = useModals();
   const {
     isReferenceLibraryOpen,
-    isPaymentModalOpen,
     nameModal,
     setIsReferenceLibraryOpen,
-    setIsPaymentModalOpen,
     openReferenceNameModal,
     closeNameModal,
     handleNameModalSave,
@@ -126,11 +126,6 @@ export const useDashboardManual = ({
     }
   }, [activeSceneIndex, displayPromptList.length]);
 
-  const openPaymentModal = useCallback(
-    () => setIsPaymentModalOpen(true),
-    [setIsPaymentModalOpen]
-  );
-
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
@@ -144,7 +139,7 @@ export const useDashboardManual = ({
     setUsage,
     setUsageError,
     setHasGeneratedFreeImage,
-    openPaymentModal,
+    openPaymentModal: usageHook.openPaymentModal,
     refreshUsage,
   });
 

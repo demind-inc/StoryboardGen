@@ -8,11 +8,9 @@ interface NameModalState {
 interface UseModalsReturn {
   isReferenceLibraryOpen: boolean;
   isPromptLibraryOpen: boolean;
-  isPaymentModalOpen: boolean;
   nameModal: NameModalState;
   setIsReferenceLibraryOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsPromptLibraryOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsPaymentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   openReferenceNameModal: () => void;
   openPromptNameModal: () => void;
   closeNameModal: () => void;
@@ -26,7 +24,6 @@ interface UseModalsReturn {
 export const useModals = (): UseModalsReturn => {
   const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
   const [isPromptLibraryOpen, setIsPromptLibraryOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [nameModal, setNameModal] = useState<NameModalState>({
     type: null,
     defaultValue: "",
@@ -63,11 +60,9 @@ export const useModals = (): UseModalsReturn => {
   return {
     isReferenceLibraryOpen,
     isPromptLibraryOpen,
-    isPaymentModalOpen,
     nameModal,
     setIsReferenceLibraryOpen,
     setIsPromptLibraryOpen,
-    setIsPaymentModalOpen,
     openReferenceNameModal,
     openPromptNameModal,
     closeNameModal,

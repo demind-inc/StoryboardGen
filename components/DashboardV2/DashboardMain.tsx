@@ -1,11 +1,9 @@
 import React from "react";
 import ReferenceLibraryModal from "../DatasetModal/ReferenceLibraryModal";
 import NameCaptureModal from "../DatasetModal/NameCaptureModal";
-import PaymentModal from "../PaymentModal/PaymentModal";
-import { useAuth } from "../../providers/AuthProvider";
 import DashboardLayout from "./DashboardLayout";
-import { useDashboardManual } from "../../hooks/useDashboardManual";
 import { ReferenceSet } from "../../types";
+import type { DashboardManualState } from "../../hooks/useDashboardManual";
 
 function getDefaultProjectName(): string {
   const d = new Date();
@@ -18,20 +16,10 @@ function getDefaultProjectName(): string {
 }
 
 interface DashboardMainProps {
-  openBilling?: boolean;
-  onBillingHandled?: () => void;
+  dashboard: DashboardManualState;
 }
 
-const DashboardMain: React.FC<DashboardMainProps> = ({
-  openBilling = false,
-  onBillingHandled,
-}) => {
-  const { session, authStatus } = useAuth();
-  const dashboard = useDashboardManual({
-    userId: session?.user?.id,
-    authStatus,
-  });
-
+const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
   const [projectName, setProjectName] = React.useState(getDefaultProjectName);
 
   const {
@@ -59,11 +47,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     nameModal,
     closeNameModal,
     handleNameModalSave,
-    isPaymentModalOpen,
-    setIsPaymentModalOpen,
-    planType,
-    setPlanType,
-    stripePlanLinks,
     guidelines,
     setGuidelines,
     rules,
@@ -71,13 +54,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
-
-  React.useEffect(() => {
-    if (openBilling) {
-      setIsPaymentModalOpen(true);
-      onBillingHandled?.();
-    }
-  }, [openBilling, onBillingHandled, setIsPaymentModalOpen]);
 
   if (isGenerating && manualResults.length === 0) {
     return (
@@ -147,15 +123,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
           )
         }
         onCancel={closeNameModal}
-      />
-
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        planType={planType}
-        paymentUrls={stripePlanLinks}
-        onPlanSelect={(plan) => setPlanType(plan)}
-        userId={session?.user?.id}
       />
     </>
   );

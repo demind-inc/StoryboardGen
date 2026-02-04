@@ -4,8 +4,8 @@ import { AppMode, SubscriptionPlan } from "../types";
 import { useAuth } from "../providers/AuthProvider";
 import { useSubscription } from "../providers/SubscriptionProvider";
 import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
-import SavedImagesPanel from "./saved/SavedImagesPanel";
 import DashboardMain from "../components/DashboardV2/DashboardMain";
+import { useDashboardManual } from "../hooks/useDashboardManual";
 import styles from "./DashboardPage.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -15,12 +15,10 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
 };
 
 const DashboardPage: React.FC = () => {
-  const { authStatus, displayEmail, signOut } = useAuth();
+  const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
   const [activePanel, setActivePanel] = useState<PanelKey>("manual");
-  const [librarySort, setLibrarySort] = useState<"newest" | "oldest">("newest");
-  const [isBillingOpen, setIsBillingOpen] = useState(false);
   const mode: AppMode = "manual";
 
   const openBillingFromQuery = router.query.openBilling === "1";
@@ -30,6 +28,22 @@ const DashboardPage: React.FC = () => {
       router.replace("/dashboard", undefined, { shallow: true });
     }
   };
+
+  const dashboard = useDashboardManual({
+    userId: session?.user?.id,
+    authStatus,
+  });
+
+  useEffect(() => {
+    if (openBillingFromQuery) {
+      subscription.setIsPaymentModalOpen(true);
+      handleBillingHandled();
+    }
+  }, [
+    openBillingFromQuery,
+    subscription.setIsPaymentModalOpen,
+    handleBillingHandled,
+  ]);
 
   if (authStatus === "checking") {
     return (
@@ -79,15 +93,13 @@ const DashboardPage: React.FC = () => {
             expiredAt={subscription.subscription?.expiredAt ?? null}
             unsubscribedAt={subscription.subscription?.unsubscribedAt ?? null}
             subscriptionStatus={subscription.subscription?.status ?? null}
-            onOpenBilling={() => setIsBillingOpen(true)}
+            onOpenBilling={() => subscription.setIsPaymentModalOpen(true)}
             onCancelSubscription={() => {}}
             onSignOut={signOut}
           />
 
-          <DashboardMain
-            openBilling={openBillingFromQuery}
-            onBillingHandled={handleBillingHandled}
-          />
+          <DashboardMain dashboard={dashboard} />
+
         </div>
       </main>
     </div>

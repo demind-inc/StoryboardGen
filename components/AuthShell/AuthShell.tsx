@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { AuthStatus } from "../../types";
 import styles from "./AuthShell.module.scss";
 
@@ -35,45 +35,75 @@ const AuthShell: React.FC<AuthShellProps> = ({
   onSignIn,
   onSignUp,
 }) => {
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const subtitle = useMemo(() => {
+    if (isSignUpMode) {
+      return "Sign up with your email and password. We will save your account details into the profiles table when you sign up.";
+    }
+    return "Enter your email and password to sign in. We will save your account details into the profiles table when you sign in.";
+  }, [isSignUpMode]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    if (isSignUpMode) {
+      if (confirmPassword.trim() !== authPassword.trim()) {
+        event.preventDefault();
+        setLocalError("Passwords do not match.");
+        return;
+      }
+    }
+
+    setLocalError(null);
+    if (isSignUpMode) {
+      onSignUp(event);
+    } else {
+      onSignIn(event);
+    }
+  };
+
+  const handleToggleMode = () => {
+    setLocalError(null);
+    setFullName("");
+    setConfirmPassword("");
+    onToggleAuthMode();
+  };
+
   return (
     <div className={styles["auth-shell"]}>
-      <div className={`${styles["auth-card"]} card card--gradient`}>
-        <div className="brand">
-          <div className="brand__icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+      <div className={styles["auth-card"]}>
+        <div className={styles["brand"]}>
+          <div className={styles["brand__mark"]}>
+            <span>SG</span>
           </div>
-          <h1 className="brand__title">StoryboardGen</h1>
+          <span className={styles["brand__text"]}>StoryboardGen</span>
         </div>
 
         <h2 className={styles["auth-card__title"]}>
           {isSignUpMode ? "Create your account" : "Sign in to your account"}
         </h2>
-        <p className={styles["auth-card__subtitle"]}>
-          {isSignUpMode
-            ? "Enter your email and password to create an account. We will save your account details into the profiles table when you sign up."
-            : "Enter your email and password to sign in. We will save your account details into the profiles table when you sign in."}
-        </p>
+        <p className={styles["auth-card__subtitle"]}>{subtitle}</p>
 
-        <form
-          className={styles["auth-form"]}
-          onSubmit={isSignUpMode ? onSignUp : onSignIn}
-        >
-          <label className="label" htmlFor="auth-email">
-            Email
+        <form className={styles["auth-form"]} onSubmit={handleSubmit}>
+          {isSignUpMode && (
+            <>
+              <label className={styles["auth-label"]} htmlFor="auth-name">
+                FULL NAME
+              </label>
+              <input
+                id="auth-name"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your name"
+                className={styles["auth-input"]}
+                autoComplete="name"
+              />
+            </>
+          )}
+          <label className={styles["auth-label"]} htmlFor="auth-email">
+            EMAIL
           </label>
           <input
             id="auth-email"
@@ -81,120 +111,120 @@ const AuthShell: React.FC<AuthShellProps> = ({
             value={authEmail}
             onChange={(e) => onEmailChange(e.target.value)}
             placeholder="you@example.com"
-            className="input"
+            className={styles["auth-input"]}
             required
             autoComplete="email"
           />
-          <label
-            className="label"
-            htmlFor="auth-password"
-            style={{ marginTop: "16px" }}
-          >
-            Password
+          <label className={styles["auth-label"]} htmlFor="auth-password">
+            PASSWORD
           </label>
           <input
             id="auth-password"
             type="password"
             value={authPassword}
             onChange={(e) => onPasswordChange(e.target.value)}
-            placeholder={
-              isSignUpMode
-                ? "Create a password (min. 6 characters)"
-                : "Enter your password"
-            }
-            className="input"
+            placeholder="Enter your password"
+            className={styles["auth-input"]}
             required
             autoComplete={isSignUpMode ? "new-password" : "current-password"}
             minLength={6}
           />
+
+          {isSignUpMode && (
+            <>
+              <label className={styles["auth-label"]} htmlFor="auth-confirm">
+                CONFIRM PASSWORD
+              </label>
+              <input
+                id="auth-confirm"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                className={styles["auth-input"]}
+                required
+                autoComplete="new-password"
+                minLength={6}
+              />
+            </>
+          )}
+
           {!isSignUpMode && (
-            <div style={{ textAlign: "right" }}>
+            <div className={styles["auth-forgot"]}>
               <button
                 type="button"
                 onClick={onRequestPasswordReset}
                 disabled={isResettingPassword}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  padding: 0,
-                  font: "inherit",
-                }}
+                className={styles["auth-link"]}
               >
                 {isResettingPassword ? "Sending reset email..." : "Forgot password?"}
               </button>
             </div>
           )}
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={isLoading}
-            style={{ width: "100%", marginTop: "16px" }}
-          >
+
+          <button type="submit" className={styles["auth-submit"]} disabled={isLoading}>
             {isLoading
               ? isSignUpMode
                 ? "Creating account..."
                 : "Signing in..."
               : isSignUpMode
-              ? "Sign up"
+              ? "Create account"
               : "Sign in"}
           </button>
+          {isSignUpMode && (
+            <p className={styles["auth-terms"]}>
+              By creating an account, you agree to the Terms.
+            </p>
+          )}
         </form>
 
-        <div style={{ marginTop: "16px", textAlign: "center" }}>
+        <div className={styles["auth-footer"]}>
           {isSignUpMode ? (
-            <p className="text text--helper">
-              Already have an account?{" "}
+            <>
+              <span className={styles["auth-footer__label"]}>
+                ALREADY HAVE AN ACCOUNT?
+              </span>
               <button
                 type="button"
-                onClick={onToggleAuthMode}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  padding: 0,
-                  font: "inherit",
-                }}
+                onClick={handleToggleMode}
+                className={styles["auth-footer__link"]}
               >
                 Sign in
               </button>
-            </p>
+            </>
           ) : (
-            <p className="text text--helper">
-              Don't have an account?{" "}
+            <>
+              <span className={styles["auth-footer__label"]}>
+                DON'T HAVE AN ACCOUNT?
+              </span>
               <button
                 type="button"
-                onClick={onToggleAuthMode}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                  padding: 0,
-                  font: "inherit",
-                }}
+                onClick={handleToggleMode}
+                className={styles["auth-footer__link"]}
               >
                 Sign up
               </button>
-            </p>
+            </>
           )}
         </div>
 
         {authMessage && (
-          <div className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}>{authMessage}</div>
+          <div className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}>
+            {authMessage}
+          </div>
         )}
         {authError && (
-          <div className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}>{authError}</div>
+          <div className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}>
+            {authError}
+          </div>
+        )}
+        {localError && (
+          <div className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}>
+            {localError}
+          </div>
         )}
         {authStatus === "checking" && !authError && (
-          <p className="text text--helper" style={{ marginTop: "12px" }}>
-            Checking your session...
-          </p>
+          <p className={styles["auth-helper"]}>Checking your session...</p>
         )}
       </div>
     </div>
