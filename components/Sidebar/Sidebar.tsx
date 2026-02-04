@@ -40,6 +40,12 @@ interface SidebarProps {
   onOpenBilling?: () => void;
   onCancelSubscription?: () => void;
   onSignOut: () => void;
+  savedProjects?: { id: string; name: string; createdAt?: string | null }[];
+  activeSavedProjectId?: string | null;
+  isSavedProjectsOpen?: boolean;
+  onToggleSavedProjects?: () => void;
+  onSelectSavedProject?: (projectId: string) => void;
+  onSavedProjectsClick?: () => void;
 }
 
 const SidebarIcon: React.FC<{ name: string }> = ({ name }) => {
@@ -89,6 +95,11 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     remainingCredits,
     totalCredits,
     onOpenBilling,
+    savedProjects,
+    activeSavedProjectId,
+    isSavedProjectsOpen,
+    onToggleSavedProjects,
+    onSelectSavedProject,
   } = props;
   const { session } = useAuth();
   const subscription = useSubscription();
@@ -179,12 +190,55 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               }`}
               onClick={() => {
                 onPanelChange("projects");
-                router.push("/saved/project");
+                onToggleSavedProjects?.();
+                if (props.onSavedProjectsClick) {
+                  props.onSavedProjectsClick();
+                } else {
+                  router.push("/saved/project");
+                }
               }}
             >
               <SidebarIcon name="folder" />
-              Saved Projects
-            </button>
+              <span className={styles.sidebar__navLabel}>Saved project</span>
+            <span className={styles.sidebar__navCaret} aria-hidden>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+          {isProjectsActive && isSavedProjectsOpen && savedProjects && (
+            <div className={styles.sidebar__subnav}>
+              {savedProjects.length === 0 ? (
+                <div className={styles.sidebar__subnavEmpty}>
+                  No projects yet
+                </div>
+              ) : (
+                savedProjects.map((project) => (
+                  <button
+                    key={project.id}
+                    className={`${styles.sidebar__subnavItem} ${
+                      activeSavedProjectId === project.id
+                        ? styles.isActive
+                        : ""
+                    }`}
+                    onClick={() => onSelectSavedProject?.(project.id)}
+                  >
+                    {project.name}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
             <button
               className={`${styles.sidebar__navItem} ${
                 isSavedActive ? styles.isActive : ""

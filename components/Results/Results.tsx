@@ -59,29 +59,30 @@ const Results: React.FC<ResultsProps> = ({
     <div className={styles.resultsPage} data-mode={mode}>
       <div className={styles.resultsHeader}>
         <div className={styles.headerLeft}>
-          <button
-            className={styles.secondaryButton}
-            onClick={handleBack}
-            disabled={!onBack}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+          {onBack && (
+            <button
+              className={styles.secondaryButton}
+              onClick={handleBack}
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 18l-6-6 6-6"
-              />
-            </svg>
-            Back
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 18l-6-6 6-6"
+                />
+              </svg>
+              Back
+            </button>
+          )}
           <span className={styles.headerTitle}>Generated results</span>
         </div>
         <div className={styles.headerRight}>

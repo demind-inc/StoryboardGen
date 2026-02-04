@@ -138,6 +138,49 @@
     }
   }
 
+  &__navLabel {
+    text-align: left;
+    flex: 1;
+  }
+
+  &__navCaret {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+  }
+
+  &__subnav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 8px 8px 36px;
+  }
+
+  &__subnavItem {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 6px 10px;
+    color: #cbd5e1;
+    font-size: var(--fs-12);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+      border-color: rgba(255, 138, 0, 0.4);
+      color: #ffb56b;
+      background: rgba(255, 138, 0, 0.12);
+    }
+  }
+
+  &__subnavEmpty {
+    font-size: var(--fs-12);
+    color: #94a3b8;
+    padding: 4px 10px 8px;
+  }
+
   &__icon {
     color: #ff8a00;
   }

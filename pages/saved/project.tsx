@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import SavedProjectsPanel from "./SavedProjectsPanel";
+import {
+  fetchProjectDetail,
+  fetchProjectList,
+} from "../../services/projectService";
+import type { ProjectDetail, ProjectSummary } from "../../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -13,10 +18,51 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
 };
 
 const SavedProjectsPage: React.FC = () => {
-  const { authStatus, displayEmail, signOut } = useAuth();
+  const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
+  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(
+    null
+  );
+  const [isLoadingList, setIsLoadingList] = useState(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [isSavedProjectsOpen, setIsSavedProjectsOpen] = useState(true);
+
+  const loadProjects = useCallback(async (userId: string) => {
+    setIsLoadingList(true);
+    try {
+      const list = await fetchProjectList(userId);
+      setProjects(list);
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+    } finally {
+      setIsLoadingList(false);
+    }
+  }, []);
+
+  const loadProjectDetail = useCallback(
+    async (userId: string, projectId: string) => {
+      setIsLoadingDetail(true);
+      try {
+        const detail = await fetchProjectDetail({ userId, projectId });
+        setSelectedProject(detail);
+      } catch (error) {
+        console.error("Failed to load project detail:", error);
+      } finally {
+        setIsLoadingDetail(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (authStatus === "signed_in" && userId) {
+      loadProjects(userId);
+    }
+  }, [authStatus, session?.user?.id, loadProjects]);
 
   if (authStatus === "checking") {
     return (
@@ -50,9 +96,23 @@ const SavedProjectsPage: React.FC = () => {
                 router.push("/dashboard");
               } else if (panel === "saved") {
                 router.push("/saved/image");
-              } else if (panel === "projects") {
-                router.push("/saved/project");
               }
+            }}
+            onSavedProjectsClick={() => {}}
+            savedProjects={projects.map((project) => ({
+              id: project.id,
+              name: project.name,
+              createdAt: project.createdAt,
+            }))}
+            activeSavedProjectId={selectedProject?.id ?? null}
+            isSavedProjectsOpen={isSavedProjectsOpen}
+            onToggleSavedProjects={() =>
+              setIsSavedProjectsOpen((prev) => !prev)
+            }
+            onSelectSavedProject={(projectId) => {
+              const userId = session?.user?.id;
+              if (!userId) return;
+              loadProjectDetail(userId, projectId);
             }}
             onOpenSettings={() => router.push("/settings")}
             displayEmail={displayEmail}
@@ -79,7 +139,10 @@ const SavedProjectsPage: React.FC = () => {
             onSignOut={signOut}
           />
 
-          <SavedProjectsPanel />
+          <SavedProjectsPanel
+            selectedProject={selectedProject}
+            isLoading={isLoadingDetail || isLoadingList}
+          />
         </div>
       </main>
     </div>
