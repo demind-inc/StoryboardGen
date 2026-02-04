@@ -67,7 +67,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     guidelines,
     setGuidelines,
     rules,
-    setRules,
     captions,
   } = dashboard;
 
@@ -119,7 +118,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
         onGenerateAll={startGeneration}
         onRegenerateActive={() => handleRegenerate(activeSceneIndex)}
         rules={rules}
-        onRulesChange={setRules}
         guidelines={guidelines}
         onGuidelinesChange={setGuidelines}
         captions={captions}

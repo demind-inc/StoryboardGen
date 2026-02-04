@@ -14,7 +14,6 @@ import {
   DEFAULT_CAPTION_RULES,
   DEFAULT_CAPTIONS,
   getCaptionSettings,
-  updateCaptionRules,
 } from "../services/captionSettingsService";
 import type { CaptionRules } from "../types";
 
@@ -174,15 +173,6 @@ export const useDashboardManual = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authStatus, userId]);
 
-  useEffect(() => {
-    if (authStatus !== "signed_in" || !userId) return;
-    const handle = window.setTimeout(() => {
-      updateCaptionRules(userId, rules).catch((error) => {
-        console.error("Failed to save caption rules:", error);
-      });
-    }, 400);
-    return () => window.clearTimeout(handle);
-  }, [authStatus, userId, rules]);
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);
@@ -283,7 +273,6 @@ export const useDashboardManual = ({
     guidelines,
     setGuidelines,
     rules,
-    setRules,
     captions,
     manualResults,
     isGenerating,

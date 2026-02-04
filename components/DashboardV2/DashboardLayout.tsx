@@ -27,7 +27,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onGenerateAll,
   onRegenerateActive,
   rules,
-  onRulesChange,
   guidelines,
   onGuidelinesChange,
   captions,
@@ -80,7 +79,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
           </div>
           <div className={styles.rightColumn}>
-            <RulesCard rules={rules} onRulesChange={onRulesChange} />
+            <RulesCard rules={rules} />
             <GuidelinesCard
               guidelines={guidelines}
               onGuidelinesChange={onGuidelinesChange}

@@ -19,7 +19,6 @@ export interface DashboardLayoutProps {
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
   rules: CaptionRules;
-  onRulesChange?: (rules: CaptionRules) => void;
   guidelines: string[];
   onGuidelinesChange?: (guidelines: string[]) => void;
   captions: {
