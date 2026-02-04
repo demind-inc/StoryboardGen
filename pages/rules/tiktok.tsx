@@ -5,7 +5,7 @@ import { useAuth } from "../../providers/AuthProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import {
   getCaptionSettings,
-  updateCaptionRules,
+  updateCaptionRulesForPlatform,
 } from "../../services/captionSettingsService";
 import styles from "./TikTokRules.module.scss";
 
@@ -26,7 +26,6 @@ const TikTokRulesPage: React.FC = () => {
   const router = useRouter();
   const mode: AppMode = "manual";
   const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
-  const [instagramRules, setInstagramRules] = useState<string[]>([]);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
   const lastInputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +44,6 @@ const TikTokRulesPage: React.FC = () => {
       .then((settings) => {
         if (!isMounted) return;
         setRules(settings.rules.tiktok);
-        setInstagramRules(settings.rules.instagram);
         setDirtyIndices(new Set());
       })
       .catch((error) => {
@@ -93,10 +91,11 @@ const TikTokRulesPage: React.FC = () => {
     if (!session?.user?.id || dirtyIndices.size === 0) return;
     setIsSaving(true);
     try {
-      await updateCaptionRules(session.user.id, {
-        tiktok: rules,
-        instagram: instagramRules,
-      });
+      await updateCaptionRulesForPlatform(
+        session.user.id,
+        "tiktok",
+        rules.map((rule) => rule.trim()).filter((rule) => rule.length > 0)
+      );
       setDirtyIndices(new Set());
     } catch (error) {
       console.error("Failed to save caption rules:", error);

@@ -101,3 +101,25 @@ export async function updateCaptionRules(
     throw error;
   }
 }
+
+export async function updateCaptionRulesForPlatform(
+  userId: string,
+  platform: "tiktok" | "instagram",
+  rules: string[]
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  await ensureCaptionSettings(userId);
+  const column =
+    platform === "tiktok" ? "tiktok_rules" : "instagram_rules";
+  const { error } = await supabase
+    .from("caption_settings")
+    .update({ [column]: rules })
+    .eq("user_id", userId)
+    .select("user_id")
+    .single();
+
+  if (error) {
+    console.error("Failed to update caption rules:", error);
+    throw error;
+  }
+}

@@ -114,7 +114,10 @@
   display: grid;
   gap: 12px;
   min-height: 320px;
+  max-height: 420px;
   align-content: start;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .ruleRow {
