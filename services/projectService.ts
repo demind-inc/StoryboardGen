@@ -35,8 +35,7 @@ export async function saveProjectWithOutputs(params: {
   let finalProjectId = projectId || null;
 
   if (finalProjectId) {
-    const { error } = await supabase
-      .from("projects")
+    const { error } = await (supabase.from("projects") as any)
       .update({
         name: projectName,
         prompts,
@@ -48,15 +47,14 @@ export async function saveProjectWithOutputs(params: {
       .eq("user_id", userId);
     if (error) throw error;
   } else {
-    const { data, error } = await supabase
-      .from("projects")
+    const { data, error } = await (supabase.from("projects") as any)
       .insert({
         user_id: userId,
         name: projectName,
         prompts,
         tiktok_captions: captions.tiktok,
         instagram_captions: captions.instagram,
-      } as any)
+      })
       .select("id")
       .single();
     if (error) throw error;
@@ -147,8 +145,7 @@ export async function saveProjectOutput(params: {
   );
   if (upsertError) throw upsertError;
 
-  const { error: projectError } = await supabase
-    .from("projects")
+  const { error: projectError } = await (supabase.from("projects") as any)
     .update({ updated_at: new Date().toISOString() })
     .eq("id", projectId)
     .eq("user_id", userId);
@@ -185,8 +182,9 @@ export async function fetchProjectDetail(params: {
   const { userId, projectId } = params;
   const supabase = getSupabaseClient();
 
-  const { data: project, error: projectError } = await supabase
-    .from("projects")
+  const { data: project, error: projectError } = await (
+    supabase.from("projects") as any
+  )
     .select(
       "id, name, prompts, tiktok_captions, instagram_captions, created_at, updated_at"
     )

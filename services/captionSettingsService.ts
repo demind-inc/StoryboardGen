@@ -1,4 +1,8 @@
 import { getSupabaseClient } from "./supabaseClient";
+import type {
+  CaptionSettingsInsert,
+  CaptionSettingsRow,
+} from "../database.types";
 import type { CaptionRules } from "../types";
 
 export const DEFAULT_CAPTION_RULES: CaptionRules = {
@@ -31,13 +35,14 @@ export const DEFAULT_CUSTOM_GUIDELINES = [
 
 export async function ensureCaptionSettings(userId: string): Promise<void> {
   const supabase = getSupabaseClient();
-  const { error } = await supabase.from("caption_settings").upsert(
-    {
-      user_id: userId,
-      tiktok_rules: DEFAULT_CAPTION_RULES.tiktok,
-      instagram_rules: DEFAULT_CAPTION_RULES.instagram,
-      custom_guidelines: DEFAULT_CUSTOM_GUIDELINES,
-    },
+  const row: CaptionSettingsInsert = {
+    user_id: userId,
+    tiktok_rules: DEFAULT_CAPTION_RULES.tiktok,
+    instagram_rules: DEFAULT_CAPTION_RULES.instagram,
+    custom_guidelines: DEFAULT_CUSTOM_GUIDELINES,
+  };
+  const { error } = await (supabase.from("caption_settings") as any).upsert(
+    row,
     { onConflict: "user_id", ignoreDuplicates: true }
   );
 
@@ -52,11 +57,9 @@ export async function getCaptionSettings(userId: string): Promise<{
   guidelines: string[];
 }> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
+  const { data: rawData, error } = await supabase
     .from("caption_settings")
-    .select(
-      "tiktok_rules, instagram_rules, custom_guidelines"
-    )
+    .select("tiktok_rules, instagram_rules, custom_guidelines")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -65,6 +68,10 @@ export async function getCaptionSettings(userId: string): Promise<{
     throw error;
   }
 
+  const data = rawData as Pick<
+    CaptionSettingsRow,
+    "tiktok_rules" | "instagram_rules" | "custom_guidelines"
+  > | null;
   if (!data) {
     await ensureCaptionSettings(userId);
     return {
@@ -94,8 +101,7 @@ export async function updateCaptionRules(
 ): Promise<void> {
   const supabase = getSupabaseClient();
   await ensureCaptionSettings(userId);
-  const { error } = await supabase
-    .from("caption_settings")
+  const { error } = await (supabase.from("caption_settings") as any)
     .update({
       tiktok_rules: rules.tiktok,
       instagram_rules: rules.instagram,
@@ -116,8 +122,7 @@ export async function updateCaptionRulesForPlatform(
   const supabase = getSupabaseClient();
   await ensureCaptionSettings(userId);
   const column = platform === "tiktok" ? "tiktok_rules" : "instagram_rules";
-  const { error } = await supabase
-    .from("caption_settings")
+  const { error } = await (supabase.from("caption_settings") as any)
     .update({ [column]: rules })
     .eq("user_id", userId)
     .select("user_id")
@@ -135,8 +140,7 @@ export async function updateCustomGuidelines(
 ): Promise<void> {
   const supabase = getSupabaseClient();
   await ensureCaptionSettings(userId);
-  const { error } = await supabase
-    .from("caption_settings")
+  const { error } = await (supabase.from("caption_settings") as any)
     .update({ custom_guidelines: guidelines })
     .eq("user_id", userId)
     .select("user_id")
