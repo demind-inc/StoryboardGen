@@ -58,6 +58,7 @@ export const useImageGeneration = ({
   userId,
   references,
   manualPrompts,
+  projectName,
   size,
   planType,
   captionRules,
@@ -322,6 +323,7 @@ export const useImageGeneration = ({
     );
     setManualResults(initialManualResults);
     const generatedResults = [...initialManualResults];
+    setCaptions({ tiktok: "", instagram: "" });
 
     let latestCaptions: { tiktok: string[]; instagram: string[] } = {
       tiktok: [],
@@ -379,10 +381,9 @@ export const useImageGeneration = ({
 
     const finalCaptions = await captionPromise;
 
-    const isComplete = generatedResults.every(
-      (result) => Boolean(result.imageUrl) && !result.isLoading
-    );
-    if (isComplete) {
+    const isFinished = generatedResults.every((result) => !result.isLoading);
+    const hasAnyOutput = generatedResults.some((result) => result.imageUrl);
+    if (isFinished && hasAnyOutput) {
       try {
         const savedProjectId = await saveProjectWithOutputs({
           userId,
@@ -395,6 +396,7 @@ export const useImageGeneration = ({
         setProjectId(savedProjectId);
       } catch (error) {
         console.error("Failed to save project outputs:", error);
+        alert("Failed to save project outputs. Please try again.");
       }
     }
     setIsGenerating(false);

@@ -102,7 +102,9 @@ export async function generateSceneCaptions(
     },
   }));
 
-  const sceneList = prompts.map((scene, idx) => `${idx + 1}. ${scene}`).join("\n");
+  const sceneList = prompts
+    .map((scene, idx) => `${idx + 1}. ${scene}`)
+    .join("\n");
   const tiktokRules = rules.tiktok.map((rule) => `- ${rule}`).join("\n");
   const instagramRules = rules.instagram.map((rule) => `- ${rule}`).join("\n");
   const guidelineList = guidelines.map((rule) => `- ${rule}`).join("\n");
@@ -149,18 +151,16 @@ Requirements:
         .join("") || "";
 
     const parsed = JSON.parse(extractJson(responseText));
-    if (
-      !Array.isArray(parsed?.tiktok) ||
-      !Array.isArray(parsed?.instagram) ||
-      parsed.tiktok.length !== prompts.length ||
-      parsed.instagram.length !== prompts.length
-    ) {
+    console.log(parsed);
+    if (!Array.isArray(parsed?.tiktok) || !Array.isArray(parsed?.instagram)) {
       throw new Error("CAPTION_PARSE_ERROR");
     }
 
     return {
-      tiktok: parsed.tiktok.map((item: any) => String(item).trim()),
-      instagram: parsed.instagram.map((item: any) => String(item).trim()),
+      tiktok: prompts.map((_, idx) => String(parsed.tiktok[idx] ?? "").trim()),
+      instagram: prompts.map((_, idx) =>
+        String(parsed.instagram[idx] ?? "").trim()
+      ),
     };
   } catch (error: any) {
     if (error.message?.includes("Requested entity was not found")) {
