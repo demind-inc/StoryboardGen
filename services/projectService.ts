@@ -112,6 +112,49 @@ export async function saveProjectWithOutputs(params: {
   return finalProjectId;
 }
 
+export async function saveProjectOutput(params: {
+  userId: string;
+  projectId: string;
+  sceneIndex: number;
+  prompt: string;
+  imageUrl: string;
+}): Promise<void> {
+  const { userId, projectId, sceneIndex, prompt, imageUrl } = params;
+  const supabase = getSupabaseClient();
+
+  const blob = dataURLtoBlob(imageUrl);
+  const mimeType = blob.type || "image/png";
+  const ext = getFileExtension(mimeType);
+  const filePath = `${userId}/${projectId}/${sceneIndex}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(OUTPUT_BUCKET)
+    .upload(filePath, blob, {
+      contentType: mimeType,
+      upsert: true,
+    });
+  if (uploadError) throw uploadError;
+
+  const { error: upsertError } = await supabase.from("project_outputs").upsert(
+    {
+      project_id: projectId,
+      scene_index: sceneIndex,
+      prompt,
+      file_path: filePath,
+      mime_type: mimeType,
+    } as any,
+    { onConflict: "project_id,scene_index" }
+  );
+  if (upsertError) throw upsertError;
+
+  const { error: projectError } = await supabase
+    .from("projects")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .eq("user_id", userId);
+  if (projectError) throw projectError;
+}
+
 export async function fetchProjectList(
   userId: string
 ): Promise<ProjectSummary[]> {

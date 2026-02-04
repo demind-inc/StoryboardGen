@@ -32,6 +32,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   captions,
   results,
   onRegenerateResult,
+  allowRegenerate,
   onProjectNameChange,
   onBackToEditor,
 }) => {
@@ -45,6 +46,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onRegenerateAll={onGenerateAll}
           captions={captions}
           projectName={projectName}
+          allowRegenerate={allowRegenerate}
           onBack={onBackToEditor}
         />
       </div>

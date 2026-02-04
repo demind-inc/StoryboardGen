@@ -109,6 +109,7 @@ const SavedProjectDetailPage: React.FC = () => {
             selectedProject={selectedProject}
             isLoadingDetail={isLoadingDetail}
             onSelectProject={(id) => router.push("/saved/project/" + id)}
+            userId={session?.user?.id}
           />
         </div>
       </main>

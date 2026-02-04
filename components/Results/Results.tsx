@@ -7,7 +7,7 @@ interface ResultsProps {
   mode: AppMode;
   results: SceneResult[];
   isGenerating: boolean;
-  onRegenerate: (index: number) => void;
+  onRegenerate?: (index: number) => void;
   captions?: {
     tiktok: string;
     instagram: string;
@@ -16,6 +16,7 @@ interface ResultsProps {
   onDownloadAll?: () => void;
   onBack?: () => void;
   projectName?: string;
+  allowRegenerate?: boolean;
 }
 
 const Results: React.FC<ResultsProps> = ({
@@ -28,6 +29,7 @@ const Results: React.FC<ResultsProps> = ({
   onDownloadAll,
   onBack,
   projectName,
+  allowRegenerate = true,
 }) => {
   const handleBack = onBack ?? (() => undefined);
   const handleDownloadAll = onDownloadAll ?? (() => undefined);
@@ -89,16 +91,19 @@ const Results: React.FC<ResultsProps> = ({
           <button
             className={styles.secondaryButton}
             onClick={handleDownloadAll}
+            disabled={!onDownloadAll || isGenerating}
           >
             Download all
           </button>
-          <button
-            className={styles.primaryButton}
-            onClick={onRegenerateAll}
-            disabled={!onRegenerateAll || isGenerating}
-          >
-            {isGenerating ? "Regenerating..." : "Regenerate"}
-          </button>
+          {allowRegenerate && (
+            <button
+              className={styles.primaryButton}
+              onClick={onRegenerateAll}
+              disabled={!onRegenerateAll || isGenerating}
+            >
+              {isGenerating ? "Regenerating..." : "Regenerate"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -198,12 +203,14 @@ const Results: React.FC<ResultsProps> = ({
                   ) : result.error ? (
                     <div className={styles.resultOverlayError}>
                       <div>Error</div>
-                      <button
-                        className={styles.retryButton}
-                        onClick={() => onRegenerate(idx)}
-                      >
-                        Retry
-                      </button>
+                      {allowRegenerate && onRegenerate && (
+                        <button
+                          className={styles.retryButton}
+                          onClick={() => onRegenerate(idx)}
+                        >
+                          Retry
+                        </button>
+                      )}
                     </div>
                   ) : hasImage ? (
                     <button
@@ -229,10 +236,18 @@ const Results: React.FC<ResultsProps> = ({
                   <div className={styles.downloadRow}>
                     <a
                       className={`${styles.downloadButton} ${
-                        !hasImage ? styles.downloadButtonDisabled : ""
+                        !hasImage || isGenerating
+                          ? styles.downloadButtonDisabled
+                          : ""
                       }`}
                       href={result.imageUrl || "#"}
                       download={`scene-${idx + 1}.png`}
+                      aria-disabled={!hasImage || isGenerating}
+                      onClick={(event) => {
+                        if (!hasImage || isGenerating) {
+                          event.preventDefault();
+                        }
+                      }}
                     >
                       Download
                     </a>

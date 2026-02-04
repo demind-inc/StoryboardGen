@@ -1,7 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import DashboardLayout from "../../components/DashboardV2/DashboardLayout";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
+import { generateCharacterScene } from "../../services/geminiService";
+import { saveProjectOutput } from "../../services/projectService";
 import styles from "./SavedProjectsPanel.module.scss";
 
 const formatShortDate = (value?: string | null) => {
@@ -30,6 +32,7 @@ interface SavedProjectsPanelProps {
   selectedProject: ProjectDetail | null;
   isLoadingDetail?: boolean;
   onSelectProject?: (projectId: string) => void;
+  userId?: string;
 }
 
 const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
@@ -38,10 +41,13 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   selectedProject,
   isLoadingDetail = false,
   onSelectProject,
+  userId,
 }) => {
   const router = useRouter();
   const handleSelectProject =
     onSelectProject ?? ((id) => router.push("/saved/project/" + id));
+  const [detailResults, setDetailResults] = useState<SceneResult[]>([]);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   const results: SceneResult[] = useMemo(() => {
     if (!selectedProject) return [];
@@ -52,6 +58,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     }));
   }, [selectedProject]);
 
+  const displayResults = detailResults.length ? detailResults : results;
+
   const captions = useMemo(() => {
     if (!selectedProject) return { tiktok: "", instagram: "" };
     return {
@@ -60,7 +68,106 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     };
   }, [selectedProject]);
 
-  const previewImageUrl = results[0]?.imageUrl;
+  const previewImageUrl = displayResults[0]?.imageUrl;
+
+  useEffect(() => {
+    if (!selectedProject) {
+      setDetailResults([]);
+      return;
+    }
+    setDetailResults(results);
+  }, [selectedProject, results]);
+
+  const handleRegenerateResult = async (index: number) => {
+    if (!selectedProject) return;
+    const prompt =
+      displayResults[index]?.prompt || selectedProject.prompts[index] || "";
+    if (!prompt) return;
+
+    setIsRegenerating(true);
+    setDetailResults((prev) =>
+      prev.map((res, idx) =>
+        idx === index ? { ...res, isLoading: true, error: undefined } : res
+      )
+    );
+
+    try {
+      const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+      setDetailResults((prev) =>
+        prev.map((res, idx) =>
+          idx === index ? { ...res, imageUrl, isLoading: false } : res
+        )
+      );
+      if (userId) {
+        await saveProjectOutput({
+          userId,
+          projectId: selectedProject.id,
+          sceneIndex: index,
+          prompt,
+          imageUrl,
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to regenerate image:", error);
+      setDetailResults((prev) =>
+        prev.map((res, idx) =>
+          idx === index
+            ? {
+                ...res,
+                isLoading: false,
+                error: error?.message || "Regeneration failed",
+              }
+            : res
+        )
+      );
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
+  const handleRegenerateAll = async () => {
+    if (!selectedProject || displayResults.length === 0) return;
+    setIsRegenerating(true);
+    setDetailResults((prev) =>
+      prev.map((res) => ({ ...res, isLoading: true, error: undefined }))
+    );
+
+    const nextResults = [...displayResults];
+    for (let i = 0; i < nextResults.length; i++) {
+      const prompt = nextResults[i]?.prompt || selectedProject.prompts[i] || "";
+      if (!prompt) {
+        nextResults[i] = { ...nextResults[i], isLoading: false };
+        continue;
+      }
+      try {
+        const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+        nextResults[i] = { ...nextResults[i], imageUrl, isLoading: false };
+        if (userId) {
+          try {
+            await saveProjectOutput({
+              userId,
+              projectId: selectedProject.id,
+              sceneIndex: i,
+              prompt,
+              imageUrl,
+            });
+          } catch (error) {
+            console.error("Failed to save regenerated output:", error);
+          }
+        }
+      } catch (error: any) {
+        console.error("Failed to regenerate image:", error);
+        nextResults[i] = {
+          ...nextResults[i],
+          isLoading: false,
+          error: error?.message || "Regeneration failed",
+        };
+      }
+      setDetailResults([...nextResults]);
+    }
+
+    setIsRegenerating(false);
+  };
 
   // List view: show projects when we have a list and no selected project
   const isListMode = projects !== null && !selectedProject;
@@ -122,7 +229,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   }
 
   // Detail view
-  if (!isLoadingDetail && selectedProject && results.length > 0) {
+  if (!isLoadingDetail && selectedProject && displayResults.length > 0) {
     return (
       <DashboardLayout
         projectName={selectedProject.name}
@@ -138,16 +245,17 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         onRemoveScene={() => {}}
         onSavePrompt={() => {}}
         previewImageUrl={previewImageUrl}
-        isGenerating={false}
+        isGenerating={isRegenerating}
         disableGenerate
-        onGenerateAll={() => {}}
+        onGenerateAll={handleRegenerateAll}
         onRegenerateActive={() => {}}
         rules={{ tiktok: [], instagram: [] }}
         guidelines={[]}
         onGuidelinesChange={() => {}}
         captions={captions}
-        results={results}
-        onRegenerateResult={() => {}}
+        results={displayResults}
+        onRegenerateResult={handleRegenerateResult}
+        allowRegenerate={false}
       />
     );
   }
