@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SubscriptionPlan } from "../types";
-import { useUsage } from "./useUsage";
+import { useSubscription } from "../providers/SubscriptionProvider";
 import { useReferences } from "./useReferences";
 import { usePrompts } from "./usePrompts";
 import { useImageGeneration } from "./useImageGeneration";
@@ -10,6 +10,13 @@ import {
   DEFAULT_MONTHLY_CREDITS,
   PLAN_CREDITS,
 } from "../services/usageService";
+import {
+  DEFAULT_CAPTION_RULES,
+  DEFAULT_CAPTIONS,
+  DEFAULT_CUSTOM_GUIDELINES,
+  getCaptionSettings,
+} from "../services/captionSettingsService";
+import type { CaptionRules } from "../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -17,18 +24,15 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const DEFAULT_GUIDELINES = [
-  "Always show product in natural use context",
-  "Maintain warm, approachable lighting",
-  "Include diverse representation in scenes",
-];
-
-const DEFAULT_CAPTIONS = {
-  tiktok:
-    "Starting my morning right (sun)\n\nThere's something magical about that first sip of @BrandCoffee...\n\n#MorningVibes #CoffeeLovers #DailyRitual #BrandCoffee #CoffeeMoments",
-  instagram:
-    "There's a reason why your morning routine matters (coffee)\n\nResearch shows that taking just 5 minutes to enjoy your morning coffee mindfully can set a positive tone for your entire day...\n\n#MorningRoutine #CoffeeTime #WellnessJourney #MindfulMornings #CoffeeCulture #SelfCare #DailyRituals",
-};
+function getDefaultProjectName(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const h = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${day} ${h}:${min}`;
+}
 
 interface UseDashboardManualProps {
   userId: string | undefined;
@@ -39,17 +43,19 @@ export const useDashboardManual = ({
   userId,
   authStatus,
 }: UseDashboardManualProps) => {
-  const usageHook = useUsage(userId, authStatus);
+  const usageHook = useSubscription();
   const {
     usage,
     isUsageLoading,
     usageError,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
+    isPaymentModalOpen,
     planType,
     setUsage,
     setUsageError,
     setHasGeneratedFreeImage,
+    setIsPaymentModalOpen,
     setPlanType,
     refreshUsage,
     refreshSubscription,
@@ -77,16 +83,15 @@ export const useDashboardManual = ({
     manualPrompts,
     editingPromptIndex,
     handleSavePrompt,
+    handleRemovePrompt,
     setManualPrompts,
   } = promptsHook;
 
   const modalsHook = useModals();
   const {
     isReferenceLibraryOpen,
-    isPaymentModalOpen,
     nameModal,
     setIsReferenceLibraryOpen,
-    setIsPaymentModalOpen,
     openReferenceNameModal,
     closeNameModal,
     handleNameModalSave,
@@ -97,38 +102,59 @@ export const useDashboardManual = ({
   const [captionTab, setCaptionTab] = useState<"tiktok" | "instagram">(
     "tiktok"
   );
-  const [guidelines, setGuidelines] = useState(DEFAULT_GUIDELINES);
+  const [projectName, setProjectName] = useState(getDefaultProjectName);
+  const [guidelines, setGuidelines] = useState(DEFAULT_CUSTOM_GUIDELINES);
+  const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
+  const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
+
+  const loadCaptionSettings = useCallback(async (currentUserId: string) => {
+    try {
+      const settings = await getCaptionSettings(currentUserId);
+      setRules(settings.rules);
+      setGuidelines(settings.guidelines);
+    } catch (error) {
+      console.error("Failed to load caption settings:", error);
+      setRules(DEFAULT_CAPTION_RULES);
+      setCaptions(DEFAULT_CAPTIONS);
+      setGuidelines(DEFAULT_CUSTOM_GUIDELINES);
+    }
+  }, []);
 
   const promptList = useMemo(
     () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
     [manualPrompts]
   );
 
-  useEffect(() => {
-    if (activeSceneIndex >= promptList.length) {
-      setActiveSceneIndex(Math.max(promptList.length - 1, 0));
-    }
-  }, [activeSceneIndex, promptList.length]);
-
-  const openPaymentModal = useCallback(
-    () => setIsPaymentModalOpen(true),
-    [setIsPaymentModalOpen]
+  /** At least one tab (Scene 1) for the Scene Prompts UI. */
+  const displayPromptList = useMemo(
+    () => (promptList.length > 0 ? promptList : [""]),
+    [promptList]
   );
+
+  useEffect(() => {
+    if (activeSceneIndex >= displayPromptList.length) {
+      setActiveSceneIndex(Math.max(displayPromptList.length - 1, 0));
+    }
+  }, [activeSceneIndex, displayPromptList.length]);
 
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
     references,
     manualPrompts,
+    projectName,
     size: "1K",
     planType,
+    captionRules: rules,
+    guidelines,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
     usage,
     setUsage,
     setUsageError,
     setHasGeneratedFreeImage,
-    openPaymentModal,
+    setCaptions,
+    openPaymentModal: usageHook.openPaymentModal,
     refreshUsage,
   });
 
@@ -138,13 +164,17 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    projectId,
   } = imageGenerationHook;
 
   useEffect(() => {
     if (authStatus === "signed_in" && userId) {
-      refreshUsage(userId);
-      refreshSubscription(userId);
-      refreshHasGeneratedFreeImage(userId);
+      void Promise.all([
+        refreshUsage(userId),
+        refreshSubscription(userId),
+        refreshHasGeneratedFreeImage(userId),
+        loadCaptionSettings(userId),
+      ]);
     }
     // Only re-run when auth or user identity changes; refresh fns are stable via useCallback in useUsage
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,9 +190,12 @@ export const useDashboardManual = ({
     ? usage?.remaining ?? planCreditLimit
     : undefined;
 
+  const hasValidScenePrompts =
+    promptList.filter((p) => p.trim() !== "").length > 0;
   const disableGenerate =
     isGenerating ||
     references.length === 0 ||
+    !hasValidScenePrompts ||
     (!!usage && usage.remaining <= 0) ||
     !!usageError;
 
@@ -198,6 +231,19 @@ export const useDashboardManual = ({
     setActiveSceneIndex(promptList.length);
   }, [promptList.length, setManualPrompts]);
 
+  const removeScene = useCallback(
+    (index: number) => {
+      if (promptList.length <= 1) return;
+      handleRemovePrompt(index);
+      setActiveSceneIndex((prev) => {
+        if (prev === index) return Math.max(0, index - 1);
+        if (prev > index) return prev - 1;
+        return prev;
+      });
+    },
+    [promptList.length, handleRemovePrompt]
+  );
+
   return {
     usage,
     isUsageLoading,
@@ -219,22 +265,29 @@ export const useDashboardManual = ({
     handleAddReferencesFromLibrary,
     manualPrompts,
     promptList,
+    displayPromptList,
     editingPromptIndex,
     handleSavePrompt,
     addScene,
+    removeScene,
     activeSceneIndex,
     setActiveSceneIndex,
     rulesTab,
     setRulesTab,
     captionTab,
     setCaptionTab,
+    projectName,
+    setProjectName,
     guidelines,
     setGuidelines,
+    rules,
+    captions,
     manualResults,
     isGenerating,
     setManualResults,
     startGeneration,
     handleRegenerate,
+    projectId,
     disableGenerate,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,
@@ -245,7 +298,6 @@ export const useDashboardManual = ({
     closeNameModal,
     handleNameModalSave,
     stripePlanLinks,
-    defaultCaptions: DEFAULT_CAPTIONS,
     planPriceLabel: PLAN_PRICE_LABEL,
   };
 };

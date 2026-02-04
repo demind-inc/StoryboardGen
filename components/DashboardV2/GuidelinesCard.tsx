@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { PencilIcon } from "./DashboardIcons";
+import { CustomGuidelinesIcon, SettingsIcon } from "./DashboardIcons";
 import styles from "./GuidelinesCard.module.scss";
 
 export interface GuidelinesCardProps {
@@ -40,6 +40,7 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({
       <div className={styles.cardHeader}>
         <div>
           <div className={styles.cardTitleRow}>
+            <CustomGuidelinesIcon />
             <h2 className={styles.cardTitle}>Custom Guidelines</h2>
             {onGuidelinesChange && (
               <button
@@ -49,11 +50,10 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({
                 onClick={() => setIsEditing((prev) => !prev)}
                 aria-pressed={isEditing}
               >
-                <PencilIcon />
+                <SettingsIcon />
               </button>
             )}
           </div>
-          <p className={styles.cardDescription}>Brand-specific constraints</p>
         </div>
       </div>
       <div className={styles.cardBody}>

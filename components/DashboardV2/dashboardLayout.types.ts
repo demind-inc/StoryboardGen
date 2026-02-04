@@ -1,9 +1,4 @@
-import { ReferenceImage, SceneResult } from "../../types";
-
-export interface Rule {
-  tiktok: string[];
-  instagram: string[];
-}
+import { CaptionRules, ReferenceImage, SceneResult } from "../../types";
 
 export interface DashboardLayoutProps {
   projectName: string;
@@ -11,18 +6,19 @@ export interface DashboardLayoutProps {
   references: ReferenceImage[];
   onUpload: () => void;
   onOpenLibrary: () => void;
+  onRemoveReference?: (id: string) => void;
   promptList: string[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
+  onRemoveScene?: (index: number) => void;
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;
   disableGenerate: boolean;
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
-  rules: Rule;
-  onRulesChange?: (rules: Rule) => void;
+  rules: CaptionRules;
   guidelines: string[];
   onGuidelinesChange?: (guidelines: string[]) => void;
   captions: {
@@ -31,4 +27,6 @@ export interface DashboardLayoutProps {
   };
   results: SceneResult[];
   onRegenerateResult: (index: number) => void;
+  allowRegenerate?: boolean;
+  onBackToEditor?: () => void;
 }

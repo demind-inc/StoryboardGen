@@ -6,15 +6,14 @@ import {
   getHasGeneratedFreeImage,
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
 } from "../services/authService";
-import { trackButtonClick } from "../lib/analytics";
-
-interface UseUsageReturn {
+export interface UseUsageReturn {
   usage: MonthlyUsage | null;
   isUsageLoading: boolean;
   usageError: string | null;
   hasGeneratedFreeImage: boolean;
   isFreeImageLoading: boolean;
   isPaymentUnlocked: boolean;
+  isPaymentModalOpen: boolean;
   planType: SubscriptionPlan;
   planLockedFromSubscription: boolean;
   stripeSubscriptionId: string | null | undefined;
@@ -23,6 +22,7 @@ interface UseUsageReturn {
   setUsage: React.Dispatch<React.SetStateAction<MonthlyUsage | null>>;
   setUsageError: React.Dispatch<React.SetStateAction<string | null>>;
   setHasGeneratedFreeImage: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsPaymentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setPlanType: React.Dispatch<React.SetStateAction<SubscriptionPlan>>;
   refreshUsage: (userId: string) => Promise<void>;
   refreshSubscription: (userId: string) => Promise<void>;
@@ -108,11 +108,6 @@ export const useUsage = (
     }
   }, []);
 
-  const openPaymentModal = () => {
-    trackButtonClick("open_payment_modal");
-    // This will be handled by the parent component
-  };
-
   // Load plan type from URL or localStorage
   useEffect(() => {
     if (planLockedFromSubscription) return;
@@ -158,6 +153,9 @@ export const useUsage = (
     refreshUsage,
     refreshSubscription,
     refreshHasGeneratedFreeImage,
-    openPaymentModal,
+    // Payment modal state and openPaymentModal are provided by SubscriptionProvider
+    isPaymentModalOpen: false,
+    setIsPaymentModalOpen: () => {},
+    openPaymentModal: () => {},
   };
 };

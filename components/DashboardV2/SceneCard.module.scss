@@ -1,18 +1,19 @@
 .card {
   background: var(--card-bg);
   border: none;
-  border-radius: 0;
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
-  gap: 12px;
+  padding: 16px 20px;
+  gap: 8px;
 }
 
 .cardTitle {
@@ -32,7 +33,9 @@
 }
 
 .cardBody {
-  padding: 0 24px 24px;
+  flex: 1;
+  min-height: 0;
+  padding: 0 20px 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -40,7 +43,7 @@
 
 .buttonGhost {
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 8px 12px;
   font-size: var(--fs-14);
   font-weight: 600;
   border: 1px solid transparent;
@@ -60,12 +63,18 @@
 
 .sceneTabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
+.sceneTabWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .sceneTab {
-  padding: 6px 16px;
+  padding: 4px 12px;
   border-radius: 999px;
   border: 1px solid var(--chip-border);
   background: var(--chip-bg);
@@ -79,6 +88,28 @@
   color: var(--text);
 }
 
+.sceneTabRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.sceneTabRemove:hover {
+  color: var(--text);
+  background: var(--chip-bg);
+}
+
 .promptLabel {
   font-size: var(--fs-14);
   font-weight: 600;
@@ -89,8 +120,9 @@
 
 .promptBox {
   border: none;
+  border-radius: 8px;
   background: #2e2e2e;
-  padding: 16px;
+  padding: 10px 12px;
 }
 
 .promptTextarea {
@@ -104,6 +136,10 @@
   font-family: "Geist", "Inter", system-ui, sans-serif;
 }
 
+.promptTextarea::placeholder {
+  color: var(--muted);
+}
+
 .promptHint {
   font-size: var(--fs-13);
   color: var(--muted);
@@ -112,7 +148,7 @@
 .optionRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 10px;
   color: var(--muted);
   font-size: var(--fs-14);
 }

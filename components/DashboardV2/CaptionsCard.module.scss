@@ -1,7 +1,8 @@
 .card {
   background: var(--card-bg);
   border: none;
-  border-radius: 0;
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -44,6 +45,16 @@
   justify-content: space-between;
   font-size: var(--fs-14);
   color: var(--muted);
+}
+
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
 }
 
 .captionBox {

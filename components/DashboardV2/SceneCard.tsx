@@ -6,12 +6,9 @@ export interface SceneCardProps {
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
+  onRemoveScene?: (index: number) => void;
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
-  isGenerating: boolean;
-  disableGenerate: boolean;
-  onGenerateAll: () => void;
-  onRegenerateActive: () => void;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
@@ -19,12 +16,10 @@ const SceneCard: React.FC<SceneCardProps> = ({
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
+  onRemoveScene,
   onSavePrompt,
-  isGenerating,
-  disableGenerate,
-  onGenerateAll,
-  onRegenerateActive,
 }) => {
+  const canRemove = onRemoveScene != null && promptList.length > 1;
   const [draftPrompt, setDraftPrompt] = useState(
     promptList[activeSceneIndex] || ""
   );
@@ -45,10 +40,8 @@ const SceneCard: React.FC<SceneCardProps> = ({
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>Scene Prompts</h2>
-          <p className={styles.cardDescription}>
-            One moment per slide - Medium detail
-          </p>
+          <h2 className={styles.cardTitle}>2. Scene Prompts</h2>
+          <p className={styles.cardDescription}>Describe the scene in detail</p>
         </div>
         <button className={styles.buttonGhost} onClick={onAddScene}>
           Add Scene
@@ -57,28 +50,46 @@ const SceneCard: React.FC<SceneCardProps> = ({
       <div className={styles.cardBody}>
         <div className={styles.sceneTabs}>
           {promptList.map((_, idx) => (
-            <button
-              key={`scene-${idx}`}
-              className={`${styles.sceneTab} ${
-                idx === activeSceneIndex ? styles.sceneTabActive : ""
-              }`}
-              onClick={() => onSceneSelect(idx)}
-            >
-              Scene {idx + 1}
-            </button>
+            <span key={`scene-${idx}`} className={styles.sceneTabWrap}>
+              <button
+                type="button"
+                className={`${styles.sceneTab} ${
+                  idx === activeSceneIndex ? styles.sceneTabActive : ""
+                }`}
+                onClick={() => onSceneSelect(idx)}
+              >
+                Scene {idx + 1}
+              </button>
+              {canRemove && (
+                <button
+                  type="button"
+                  className={styles.sceneTabRemove}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveScene?.(idx);
+                  }}
+                  title="Remove scene"
+                  aria-label={`Remove scene ${idx + 1}`}
+                >
+                  ×
+                </button>
+              )}
+            </span>
           ))}
-          <button className={styles.sceneTab} onClick={onAddScene}>
+          <button
+            type="button"
+            className={styles.sceneTab}
+            onClick={onAddScene}
+          >
             +
           </button>
         </div>
 
         <div>
-          <p className={styles.promptLabel}>
-            Scene {activeSceneIndex + 1} Prompt
-          </p>
           <div className={styles.promptBox}>
             <textarea
               className={styles.promptTextarea}
+              placeholder="e.g. Boy studying at a cafe"
               value={draftPrompt}
               onChange={(event) => setDraftPrompt(event.target.value)}
               onBlur={handleBlur}
@@ -88,25 +99,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
             Tips: One person, one concrete moment, one clear environment, one
             visible emotion
           </p>
-        </div>
-
-        <div className={styles.optionRow}>
-          <label>
-            <input
-              type="checkbox"
-              checked={useGlobalRef}
-              onChange={(event) => setUseGlobalRef(event.target.checked)}
-            />
-            Use global reference
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={transparentBg}
-              onChange={(event) => setTransparentBg(event.target.checked)}
-            />
-            Transparent background (title slide)
-          </label>
         </div>
       </div>
     </section>

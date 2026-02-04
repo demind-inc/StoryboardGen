@@ -14,10 +14,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   references,
   onUpload,
   onOpenLibrary,
+  onRemoveReference,
   promptList,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
+  onRemoveScene,
   onSavePrompt,
   previewImageUrl,
   isGenerating,
@@ -25,13 +27,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onGenerateAll,
   onRegenerateActive,
   rules,
-  onRulesChange,
   guidelines,
   onGuidelinesChange,
   captions,
   results,
   onRegenerateResult,
+  allowRegenerate,
   onProjectNameChange,
+  onBackToEditor,
 }) => {
   if (results.length) {
     return (
@@ -43,6 +46,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onRegenerateAll={onGenerateAll}
           captions={captions}
           projectName={projectName}
+          allowRegenerate={allowRegenerate}
+          onBack={onBackToEditor}
         />
       </div>
     );
@@ -61,22 +66,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               references={references}
               onUpload={onUpload}
               onOpenLibrary={onOpenLibrary}
+              onRemoveReference={onRemoveReference}
             />
             <SceneCard
               promptList={promptList}
               activeSceneIndex={activeSceneIndex}
               onSceneSelect={onSceneSelect}
               onAddScene={onAddScene}
+              onRemoveScene={onRemoveScene}
               onSavePrompt={onSavePrompt}
               previewImageUrl={previewImageUrl}
-              isGenerating={isGenerating}
-              disableGenerate={disableGenerate}
-              onGenerateAll={onGenerateAll}
-              onRegenerateActive={onRegenerateActive}
             />
           </div>
           <div className={styles.rightColumn}>
-            <RulesCard rules={rules} onRulesChange={onRulesChange} />
+            <RulesCard rules={rules} />
             <GuidelinesCard
               guidelines={guidelines}
               onGuidelinesChange={onGuidelinesChange}

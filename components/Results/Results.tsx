@@ -1,12 +1,13 @@
 import React from "react";
 import { AppMode, SceneResult } from "../../types";
+import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
 import styles from "./Results.module.scss";
 
 interface ResultsProps {
   mode: AppMode;
   results: SceneResult[];
   isGenerating: boolean;
-  onRegenerate: (index: number) => void;
+  onRegenerate?: (index: number) => void;
   captions?: {
     tiktok: string;
     instagram: string;
@@ -15,6 +16,7 @@ interface ResultsProps {
   onDownloadAll?: () => void;
   onBack?: () => void;
   projectName?: string;
+  allowRegenerate?: boolean;
 }
 
 const Results: React.FC<ResultsProps> = ({
@@ -27,52 +29,81 @@ const Results: React.FC<ResultsProps> = ({
   onDownloadAll,
   onBack,
   projectName,
+  allowRegenerate = true,
 }) => {
   const handleBack = onBack ?? (() => undefined);
+  const handleDownloadAll = onDownloadAll ?? (() => undefined);
+  const [expandedImage, setExpandedImage] = React.useState<string | null>(null);
+  const [copiedTarget, setCopiedTarget] = React.useState<
+    "tiktok" | "instagram" | null
+  >(null);
+  const closeExpandedImage = () => setExpandedImage(null);
+  const handleCopy = async (platform: "tiktok" | "instagram") => {
+    if (!captions) return;
+    const text = captions[platform];
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedTarget(platform);
+      window.setTimeout(() => setCopiedTarget(null), 1200);
+    } catch (error) {
+      console.error("Failed to copy caption:", error);
+    }
+  };
+  const handleBackdropClick = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (event.target === event.currentTarget) {
+      closeExpandedImage();
+    }
+  };
   return (
     <div className={styles.resultsPage} data-mode={mode}>
       <div className={styles.resultsHeader}>
         <div className={styles.headerLeft}>
-          <button
-            className={styles.secondaryButton}
-            onClick={handleBack}
-            disabled={!onBack}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+          {onBack && (
+            <button
+              className={styles.secondaryButton}
+              onClick={handleBack}
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 18l-6-6 6-6"
-              />
-            </svg>
-            Back
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 18l-6-6 6-6"
+                />
+              </svg>
+              Back
+            </button>
+          )}
           <span className={styles.headerTitle}>Generated results</span>
         </div>
         <div className={styles.headerRight}>
           <button
             className={styles.secondaryButton}
-            onClick={onDownloadAll}
-            disabled={!onDownloadAll}
+            onClick={handleDownloadAll}
+            disabled={!onDownloadAll || isGenerating}
           >
             Download all
           </button>
-          <button
-            className={styles.primaryButton}
-            onClick={onRegenerateAll}
-            disabled={!onRegenerateAll || isGenerating}
-          >
-            {isGenerating ? "Regenerating..." : "Regenerate"}
-          </button>
+          {allowRegenerate && (
+            <button
+              className={styles.primaryButton}
+              onClick={onRegenerateAll}
+              disabled={!onRegenerateAll || isGenerating}
+            >
+              {isGenerating ? "Regenerating..." : "Regenerate"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -83,12 +114,74 @@ const Results: React.FC<ResultsProps> = ({
       {captions && (
         <div className={styles.captionsCard}>
           <div className={styles.captionBox}>
-            <div className={styles.captionTitle}>TikTok Caption</div>
-            <div className={styles.captionText}>{captions.tiktok}</div>
+            <div className={styles.captionTitleRow}>
+              <div className={styles.captionTitle}>
+                <TikTokIcon />
+                <span>TikTok Caption</span>
+              </div>
+              <button
+                className={styles.copyButton}
+                onClick={() => handleCopy("tiktok")}
+                aria-label="Copy TikTok caption"
+                disabled={!captions.tiktok}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                {copiedTarget === "tiktok" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div className={styles.captionText}>
+              {isGenerating && !captions.tiktok
+                ? "Generating captions..."
+                : captions.tiktok}
+            </div>
           </div>
           <div className={styles.captionBox}>
-            <div className={styles.captionTitle}>Instagram Caption</div>
-            <div className={styles.captionText}>{captions.instagram}</div>
+            <div className={styles.captionTitleRow}>
+              <div className={styles.captionTitle}>
+                <InstagramIcon />
+                <span>Instagram Caption</span>
+              </div>
+              <button
+                className={styles.copyButton}
+                onClick={() => handleCopy("instagram")}
+                aria-label="Copy Instagram caption"
+                disabled={!captions.instagram}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                {copiedTarget === "instagram" ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div className={styles.captionText}>
+              {isGenerating && !captions.instagram
+                ? "Generating captions..."
+                : captions.instagram}
+            </div>
           </div>
         </div>
       )}
@@ -110,19 +203,28 @@ const Results: React.FC<ResultsProps> = ({
                   ) : result.error ? (
                     <div className={styles.resultOverlayError}>
                       <div>Error</div>
-                      <button
-                        className={styles.retryButton}
-                        onClick={() => onRegenerate(idx)}
-                      >
-                        Retry
-                      </button>
+                      {allowRegenerate && onRegenerate && (
+                        <button
+                          className={styles.retryButton}
+                          onClick={() => onRegenerate(idx)}
+                        >
+                          Retry
+                        </button>
+                      )}
                     </div>
                   ) : hasImage ? (
-                    <img
-                      src={result.imageUrl}
-                      alt={`Scene ${idx + 1}`}
-                      loading="lazy"
-                    />
+                    <button
+                      className={styles.imageButton}
+                      onClick={() => setExpandedImage(result.imageUrl!)}
+                      aria-label={`Expand scene ${idx + 1}`}
+                    >
+                      <img
+                        src={result.imageUrl}
+                        alt={`Scene ${idx + 1}`}
+                        loading="lazy"
+                      />
+                      <span className={styles.imageHint}>Click to expand</span>
+                    </button>
                   ) : (
                     <div className={styles.resultOverlay}>Awaiting...</div>
                   )}
@@ -132,30 +234,65 @@ const Results: React.FC<ResultsProps> = ({
                   <div className={styles.promptLabel}>Prompt</div>
                   <div className={styles.promptText}>{result.prompt}</div>
                   <div className={styles.downloadRow}>
-                    <span className={styles.downloadLabel}>Download</span>
                     <a
                       className={`${styles.downloadButton} ${
-                        !hasImage ? styles.downloadButtonDisabled : ""
+                        !hasImage || isGenerating
+                          ? styles.downloadButtonDisabled
+                          : ""
                       }`}
                       href={result.imageUrl || "#"}
                       download={`scene-${idx + 1}.png`}
+                      aria-disabled={!hasImage || isGenerating}
+                      onClick={(event) => {
+                        if (!hasImage || isGenerating) {
+                          event.preventDefault();
+                        }
+                      }}
                     >
-                      PNG
-                    </a>
-                    <a
-                      className={`${styles.downloadButton} ${
-                        !hasImage ? styles.downloadButtonDisabled : ""
-                      }`}
-                      href={result.imageUrl || "#"}
-                      download={`scene-${idx + 1}.jpg`}
-                    >
-                      JPG
+                      Download
                     </a>
                   </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {expandedImage && (
+        <div
+          className={styles.imageExpandModal__backdrop}
+          role="dialog"
+          aria-modal="true"
+          onClick={handleBackdropClick}
+        >
+          <div className={styles.imageExpandModal}>
+            <button
+              className={styles.imageExpandModal__close}
+              onClick={closeExpandedImage}
+              aria-label="Close"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={expandedImage}
+              alt="Expanded scene"
+              className={styles.imageExpandModal__image}
+            />
+          </div>
         </div>
       )}
     </div>

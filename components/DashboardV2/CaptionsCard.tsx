@@ -1,4 +1,6 @@
 import React from "react";
+import { TikTokIcon, InstagramIcon } from "./DashboardIcons";
+
 import styles from "./CaptionsCard.module.scss";
 
 export interface CaptionsCardProps {
@@ -16,14 +18,20 @@ const CaptionsCard: React.FC<CaptionsCardProps> = ({ captions }) => (
     <div className={styles.cardBody}>
       <div>
         <div className={styles.captionHeader}>
-          <span>TikTok</span>
+          <span className={styles.platformLabel}>
+            <TikTokIcon />
+            <span>TikTok</span>
+          </span>
           <span>Copy</span>
         </div>
         <div className={styles.captionBox}>{captions.tiktok}</div>
       </div>
       <div>
         <div className={styles.captionHeader}>
-          <span>Instagram</span>
+          <span className={styles.platformLabel}>
+            <InstagramIcon />
+            <span>Instagram</span>
+          </span>
           <span>Copy</span>
         </div>
         <div className={styles.captionBox}>{captions.instagram}</div>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { AppMode, SubscriptionPlan } from "../types";
-import { useAuth } from "../providers/AuthProvider";
-import { useSubscription } from "../providers/SubscriptionProvider";
-import Sidebar, { PanelKey } from "../components/Sidebar/Sidebar";
-import DashboardMain from "../components/DashboardV2/DashboardMain";
-import { useDashboardManual } from "../hooks/useDashboardManual";
-import styles from "./DashboardPage.module.scss";
+import { AppMode, SubscriptionPlan } from "../../../types";
+import { useAuth } from "../../../providers/AuthProvider";
+import { useSubscription } from "../../../providers/SubscriptionProvider";
+import Sidebar from "../../../components/Sidebar/Sidebar";
+import SavedProjectsPanel from "../SavedProjectsPanel";
+import { fetchProjectList } from "../../../services/projectService";
+import type { ProjectSummary } from "../../../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -14,36 +14,26 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const DashboardPage: React.FC = () => {
+const SavedProjectsListPage: React.FC = () => {
   const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
-  const [activePanel, setActivePanel] = useState<PanelKey>("manual");
   const mode: AppMode = "manual";
-
-  const openBillingFromQuery = router.query.openBilling === "1";
-
-  const handleBillingHandled = () => {
-    if (openBillingFromQuery) {
-      router.replace("/dashboard", undefined, { shallow: true });
-    }
-  };
-
-  const dashboard = useDashboardManual({
-    userId: session?.user?.id,
-    authStatus,
-  });
+  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (openBillingFromQuery) {
-      subscription.setIsPaymentModalOpen(true);
-      handleBillingHandled();
-    }
-  }, [
-    openBillingFromQuery,
-    subscription.setIsPaymentModalOpen,
-    handleBillingHandled,
-  ]);
+    const userId = session?.user?.id;
+    if (!userId) return;
+    setIsLoading(true);
+    fetchProjectList(userId)
+      .then(setProjects)
+      .catch((error) => {
+        console.error("Failed to load projects:", error);
+        setProjects([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [session?.user?.id]);
 
   if (authStatus === "checking") {
     return (
@@ -66,13 +56,19 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="app">
-      <main className={`app__body ${styles.body}`}>
+      <main className="app__body">
         <div className="app__content">
           <Sidebar
             mode={mode}
             onModeChange={() => {}}
-            activePanel={activePanel}
-            onPanelChange={(panel) => setActivePanel(panel)}
+            activePanel="projects"
+            onPanelChange={(panel) => {
+              if (panel === "manual") {
+                router.push("/dashboard");
+              } else if (panel === "saved") {
+                router.push("/saved/image");
+              }
+            }}
             onOpenSettings={() => router.push("/settings")}
             displayEmail={displayEmail}
             isSubscribed={subscription.subscription?.isActive ?? false}
@@ -93,17 +89,24 @@ const DashboardPage: React.FC = () => {
             expiredAt={subscription.subscription?.expiredAt ?? null}
             unsubscribedAt={subscription.subscription?.unsubscribedAt ?? null}
             subscriptionStatus={subscription.subscription?.status ?? null}
-            onOpenBilling={() => subscription.setIsPaymentModalOpen(true)}
+            onOpenBilling={() => router.push("/dashboard?openBilling=1")}
             onCancelSubscription={() => {}}
             onSignOut={signOut}
           />
 
-          <DashboardMain dashboard={dashboard} />
-
+          <SavedProjectsPanel
+            projects={projects}
+            projectListLoading={isLoading}
+            selectedProject={null}
+            isLoadingDetail={false}
+            onSelectProject={(projectId) =>
+              router.push("/saved/project/" + projectId)
+            }
+          />
         </div>
       </main>
     </div>
   );
 };
 
-export default DashboardPage;
+export default SavedProjectsListPage;

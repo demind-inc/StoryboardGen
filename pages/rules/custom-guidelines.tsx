@@ -5,10 +5,11 @@ import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import {
+  DEFAULT_CUSTOM_GUIDELINES,
   getCaptionSettings,
-  updateCaptionRulesForPlatform,
+  updateCustomGuidelines,
 } from "../../services/captionSettingsService";
-import styles from "./InstagramRules.module.scss";
+import styles from "./CustomGuidelines.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -16,19 +17,14 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const DEFAULT_RULES = [
-  "Longer, educational captions",
-  "Natural brand mention integration",
-  "More hashtags allowed",
-  "Hashtags at bottom of caption",
-];
-
-const InstagramRulesPage: React.FC = () => {
+const CustomGuidelinesPage: React.FC = () => {
   const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
+  const [guidelines, setGuidelines] = useState<string[]>(
+    DEFAULT_CUSTOM_GUIDELINES
+  );
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
   const [isListDirty, setIsListDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,12 +37,12 @@ const InstagramRulesPage: React.FC = () => {
     getCaptionSettings(session.user.id)
       .then((settings) => {
         if (!isMounted) return;
-        setRules(settings.rules.instagram);
+        setGuidelines(settings.guidelines);
         setDirtyIndices(new Set());
         setIsListDirty(false);
       })
       .catch((error) => {
-        console.error("Failed to load caption rules:", error);
+        console.error("Failed to load custom guidelines:", error);
       });
     return () => {
       isMounted = false;
@@ -54,38 +50,45 @@ const InstagramRulesPage: React.FC = () => {
   }, [authStatus, session?.user?.id]);
 
   useEffect(() => {
-    if (shouldFocusLastRef.current && rules.length > 0) {
+    if (shouldFocusLastRef.current && guidelines.length > 0) {
       lastInputRef.current?.focus();
       shouldFocusLastRef.current = false;
     }
-  }, [rules]);
+  }, [guidelines]);
 
-  const handleRuleChange = (index: number, value: string) => {
-    setRules((prev) => prev.map((rule, idx) => (idx === index ? value : rule)));
+  const handleGuidelineChange = (index: number, value: string) => {
+    setGuidelines((prev) =>
+      prev.map((rule, idx) => (idx === index ? value : rule))
+    );
     setDirtyIndices((prev) => new Set(prev).add(index));
   };
 
-  const persistRules = async (nextRules: string[]) => {
+  const persistGuidelines = async (nextGuidelines: string[]) => {
     if (!session?.user?.id) return;
+    const previousDirty = new Set(dirtyIndices);
+    const previousIsListDirty = isListDirty;
     setIsSaving(true);
+    setDirtyIndices(new Set());
+    setIsListDirty(false);
     try {
-      await updateCaptionRulesForPlatform(
+      await updateCustomGuidelines(
         session.user.id,
-        "instagram",
-        nextRules.map((rule) => rule.trim()).filter((rule) => rule.length > 0)
+        nextGuidelines
+          .map((rule) => rule.trim())
+          .filter((rule) => rule.length > 0)
       );
-      setDirtyIndices(new Set());
-      setIsListDirty(false);
     } catch (error) {
-      console.error("Failed to save caption rules:", error);
+      console.error("Failed to save custom guidelines:", error);
+      setDirtyIndices(previousDirty);
+      setIsListDirty(previousIsListDirty);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDeleteRule = (index: number) => {
-    const nextRules = rules.filter((_, i) => i !== index);
-    setRules(nextRules);
+  const handleDeleteGuideline = (index: number) => {
+    const nextGuidelines = guidelines.filter((_, i) => i !== index);
+    setGuidelines(nextGuidelines);
     setDirtyIndices((prev) => {
       const next = new Set<number>();
       prev.forEach((dirtyIndex) => {
@@ -94,11 +97,11 @@ const InstagramRulesPage: React.FC = () => {
       });
       return next;
     });
-    void persistRules(nextRules);
+    void persistGuidelines(nextGuidelines);
   };
 
-  const handleAddRule = () => {
-    setRules((prev) => {
+  const handleAddGuideline = () => {
+    setGuidelines((prev) => {
       const next = [...prev, ""];
       setDirtyIndices((current) => new Set(current).add(next.length - 1));
       return next;
@@ -107,9 +110,9 @@ const InstagramRulesPage: React.FC = () => {
     setIsListDirty(true);
   };
 
-  const handleSaveRules = async () => {
+  const handleSaveGuidelines = async () => {
     if (!session?.user?.id || (dirtyIndices.size === 0 && !isListDirty)) return;
-    await persistRules(rules);
+    await persistGuidelines(guidelines);
   };
 
   if (authStatus === "checking") {
@@ -131,7 +134,7 @@ const InstagramRulesPage: React.FC = () => {
           <Sidebar
             mode={mode}
             onModeChange={() => {}}
-            activePanel="instagram"
+            activePanel="customGuidelines"
             onPanelChange={(panel) => {
               if (panel === "manual") {
                 router.push("/dashboard");
@@ -168,35 +171,37 @@ const InstagramRulesPage: React.FC = () => {
 
           <div className={styles.main}>
             <header className={styles.header}>
-              <p className={styles.eyebrow}>Instagram Rules</p>
+              <p className={styles.eyebrow}>Custom Guidelines</p>
               <p className={styles.subtitle}>
-                Edit rules that govern Instagram caption generation
+                Manage brand-specific constraints and creative guardrails
               </p>
             </header>
 
             <section className={styles.rulesCard}>
-              <h2>Caption Rules</h2>
-              <div className={styles.rulesList}>
-                {rules.map((rule, index) => (
+              <h2>Guidelines</h2>
+              <div className={`${styles.rulesList} custom-scrollbar`}>
+                {guidelines.map((rule, index) => (
                   <div key={index} className={styles.ruleRow}>
                     <input
                       ref={
-                        index === rules.length - 1 ? lastInputRef : undefined
+                        index === guidelines.length - 1
+                          ? lastInputRef
+                          : undefined
                       }
                       value={rule}
                       onChange={(event) =>
-                        handleRuleChange(index, event.target.value)
+                        handleGuidelineChange(index, event.target.value)
                       }
                       readOnly={false}
                       className={styles.ruleInput}
-                      aria-label={`Rule ${index + 1}`}
+                      aria-label={`Guideline ${index + 1}`}
                     />
                     {!isSaving && (
                       <button
                         type="button"
                         className={styles.deleteRule}
-                        onClick={() => handleDeleteRule(index)}
-                        aria-label={`Delete rule ${index + 1}`}
+                        onClick={() => handleDeleteGuideline(index)}
+                        aria-label={`Delete guideline ${index + 1}`}
                       >
                         Delete
                       </button>
@@ -205,8 +210,8 @@ const InstagramRulesPage: React.FC = () => {
                       <button
                         type="button"
                         className={styles.saveRule}
-                        onClick={handleSaveRules}
-                        aria-label="Save rules"
+                        onClick={handleSaveGuidelines}
+                        aria-label="Save guidelines"
                       >
                         Save
                       </button>
@@ -217,9 +222,9 @@ const InstagramRulesPage: React.FC = () => {
               <button
                 type="button"
                 className={styles.addRule}
-                onClick={handleAddRule}
+                onClick={handleAddGuideline}
               >
-                Add Rule
+                Add Guideline
               </button>
             </section>
           </div>
@@ -229,4 +234,4 @@ const InstagramRulesPage: React.FC = () => {
   );
 };
 
-export default InstagramRulesPage;
+export default CustomGuidelinesPage;

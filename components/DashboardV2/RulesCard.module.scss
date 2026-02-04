@@ -1,7 +1,8 @@
 .card {
-  background: var(--card-bg);
-  border: none;
-  border-radius: 0;
+  background: var(--card-bg-secondary, #151518);
+  border: 1px solid var(--card-border-secondary, rgba(255, 255, 255, 0.06));
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -11,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
+  padding: 24px 24px 0;
   gap: 12px;
 }
 
@@ -19,6 +20,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
 }
 
 .cardTitle {
@@ -48,7 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: var(--fs-15);
+  font-size: var(--fs-13);
   color: var(--muted);
 }
 
@@ -75,7 +86,7 @@
   border-radius: 10px;
   padding: 12px;
   color: var(--text);
-  font-size: var(--fs-15);
+  font-size: var(--fs-11);
   line-height: 1.6;
   font-family: "Geist", "Inter", system-ui, sans-serif;
   white-space: pre-wrap;
@@ -90,4 +101,18 @@
 .ruleTextarea[readonly] {
   cursor: default;
   opacity: 0.9;
+}
+
+.ruleText {
+  background: #2e2e2e;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: var(--fs-11);
+  line-height: 1.6;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  white-space: pre-wrap;
+  max-height: 140px;
+  overflow-y: auto;
 }

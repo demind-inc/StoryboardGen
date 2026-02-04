@@ -5,9 +5,11 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useRouter } from "next/router";
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
 import { signOut, upsertProfile } from "../services/authService";
+import { ensureCaptionSettings } from "../services/captionSettingsService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
 interface AuthContextType {
@@ -25,6 +27,7 @@ interface AuthContextType {
   setAuthPassword: (password: string) => void;
   toggleAuthMode: () => void;
   requestPasswordReset: () => Promise<void>;
+  requestPasswordResetForEmail: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
   signIn: (e: React.FormEvent) => Promise<void>;
   signUp: (e: React.FormEvent) => Promise<void>;
@@ -39,6 +42,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
@@ -51,6 +55,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isSignUpMode, setIsSignUpMode] = useState(true); // Default to signup
 
   const displayEmail = profile?.email || session?.user?.email || "";
+
+  // Redirect to /auth when signed out, except on auth and landing pages
+  useEffect(() => {
+    if (authStatus !== "signed_out" || !router.isReady) return;
+    const path = router.pathname;
+    if (path === "/" || path.startsWith("/auth")) return;
+    router.replace("/auth");
+  }, [authStatus, router]);
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
@@ -244,6 +256,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             email: data.session.user.email,
             user_metadata: data.session.user.user_metadata,
           });
+          await ensureCaptionSettings(data.session.user.id);
         } catch (profileError) {
           console.error("Failed to create profile:", profileError);
           // Don't fail the sign up if profile creation fails
@@ -264,6 +277,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             email: data.user.email,
             user_metadata: data.user.user_metadata,
           });
+          await ensureCaptionSettings(data.user.id);
         } catch (profileError) {
           console.error("Failed to create profile:", profileError);
           // Don't fail the sign up if profile creation fails
@@ -285,11 +299,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthError(null);
   };
 
-  const requestPasswordReset = async () => {
+  const requestPasswordResetForEmail = async (email: string) => {
     setAuthMessage(null);
     setAuthError(null);
 
-    if (!authEmail.trim()) {
+    if (!email.trim()) {
       setAuthError("Enter your email address to reset your password.");
       return;
     }
@@ -298,7 +312,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const supabase = getSupabaseClient();
       const { error } = await supabase.auth.resetPasswordForEmail(
-        authEmail.trim(),
+        email.trim(),
         {
           redirectTo: `${window.location.origin}/auth/reset-password`,
         }
@@ -319,6 +333,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsResettingPassword(false);
     }
+  };
+
+  const requestPasswordReset = async () => {
+    await requestPasswordResetForEmail(authEmail);
   };
 
   const handleUpdatePassword = async (newPassword: string) => {
@@ -364,6 +382,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthPassword,
     toggleAuthMode,
     requestPasswordReset,
+    requestPasswordResetForEmail,
     updatePassword: handleUpdatePassword,
     signIn: handleSignIn,
     signUp: handleSignUp,
