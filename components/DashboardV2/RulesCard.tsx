@@ -100,7 +100,7 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
           </div>
           <textarea
             ref={instagramTextareaRef}
-            className={styles.ruleTextarea}
+            className={`${styles.ruleTextarea} ${styles.ruleTextareaInstagram}`}
             value={isEditingInstagram ? instagramText : instagramDisplay}
             readOnly={!isEditingInstagram}
             onChange={(event) => updateRules("instagram", event.target.value)}
