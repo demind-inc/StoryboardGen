@@ -24,18 +24,16 @@ export const DEFAULT_CAPTIONS = {
 
 export async function ensureCaptionSettings(userId: string): Promise<void> {
   const supabase = getSupabaseClient();
-  const { error } = await supabase
-    .from("caption_settings")
-    .upsert(
-      {
-        user_id: userId,
-        tiktok_rules: DEFAULT_CAPTION_RULES.tiktok,
-        instagram_rules: DEFAULT_CAPTION_RULES.instagram,
-        tiktok_caption: DEFAULT_CAPTIONS.tiktok,
-        instagram_caption: DEFAULT_CAPTIONS.instagram,
-      },
-      { onConflict: "user_id", ignoreDuplicates: true }
-    );
+  const { error } = await supabase.from("caption_settings").upsert(
+    {
+      user_id: userId,
+      tiktok_rules: DEFAULT_CAPTION_RULES.tiktok,
+      instagram_rules: DEFAULT_CAPTION_RULES.instagram,
+      tiktok_caption: DEFAULT_CAPTIONS.tiktok,
+      instagram_caption: DEFAULT_CAPTIONS.instagram,
+    },
+    { onConflict: "user_id", ignoreDuplicates: true }
+  );
 
   if (error) {
     console.error("Failed to ensure caption settings:", error);
@@ -50,9 +48,7 @@ export async function getCaptionSettings(userId: string): Promise<{
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("caption_settings")
-    .select(
-      "tiktok_rules, instagram_rules, tiktok_caption, instagram_caption"
-    )
+    .select("tiktok_rules, instagram_rules, tiktok_caption, instagram_caption")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -109,8 +105,7 @@ export async function updateCaptionRulesForPlatform(
 ): Promise<void> {
   const supabase = getSupabaseClient();
   await ensureCaptionSettings(userId);
-  const column =
-    platform === "tiktok" ? "tiktok_rules" : "instagram_rules";
+  const column = platform === "tiktok" ? "tiktok_rules" : "instagram_rules";
   const { error } = await supabase
     .from("caption_settings")
     .update({ [column]: rules })
