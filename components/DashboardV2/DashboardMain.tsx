@@ -57,6 +57,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
     handleFileUpload,
     manualResults,
     promptList,
+    displayPromptList,
     activeSceneIndex,
     setActiveSceneIndex,
     addScene,
@@ -117,7 +118,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({
         references={references}
         onUpload={triggerUpload}
         onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
-        promptList={promptList}
+        promptList={displayPromptList}
         activeSceneIndex={activeSceneIndex}
         onSceneSelect={setActiveSceneIndex}
         onAddScene={addScene}

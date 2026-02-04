@@ -71,9 +71,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
         </div>
 
         <div>
-          <p className={styles.promptLabel}>
-            Scene {activeSceneIndex + 1} Prompt
-          </p>
           <div className={styles.promptBox}>
             <textarea
               className={styles.promptTextarea}

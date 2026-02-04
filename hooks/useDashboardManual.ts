@@ -104,11 +104,17 @@ export const useDashboardManual = ({
     [manualPrompts]
   );
 
+  /** At least one tab (Scene 1) for the Scene Prompts UI. */
+  const displayPromptList = useMemo(
+    () => (promptList.length > 0 ? promptList : [""]),
+    [promptList]
+  );
+
   useEffect(() => {
-    if (activeSceneIndex >= promptList.length) {
-      setActiveSceneIndex(Math.max(promptList.length - 1, 0));
+    if (activeSceneIndex >= displayPromptList.length) {
+      setActiveSceneIndex(Math.max(displayPromptList.length - 1, 0));
     }
-  }, [activeSceneIndex, promptList.length]);
+  }, [activeSceneIndex, displayPromptList.length]);
 
   const openPaymentModal = useCallback(
     () => setIsPaymentModalOpen(true),
@@ -219,6 +225,7 @@ export const useDashboardManual = ({
     handleAddReferencesFromLibrary,
     manualPrompts,
     promptList,
+    displayPromptList,
     editingPromptIndex,
     handleSavePrompt,
     addScene,
