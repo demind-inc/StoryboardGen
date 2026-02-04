@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SubscriptionPlan } from "../types";
-import { useUsage } from "./useUsage";
+import { useSubscription } from "../providers/SubscriptionProvider";
 import { useReferences } from "./useReferences";
 import { usePrompts } from "./usePrompts";
 import { useImageGeneration } from "./useImageGeneration";
@@ -33,7 +33,7 @@ export const useDashboardManual = ({
   userId,
   authStatus,
 }: UseDashboardManualProps) => {
-  const usageHook = useUsage(userId, authStatus);
+  const usageHook = useSubscription();
   const {
     usage,
     isUsageLoading,
@@ -168,7 +168,6 @@ export const useDashboardManual = ({
     // Only re-run when auth or user identity changes; refresh fns are stable via useCallback in useUsage
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authStatus, userId]);
-
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);

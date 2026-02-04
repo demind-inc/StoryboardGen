@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
-import { useUsage } from "../../hooks/useUsage";
+import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import styles from "./SettingsPage.module.scss";
 
@@ -55,7 +55,7 @@ const SettingsPage: React.FC = () => {
     isUsageLoading,
     refreshUsage,
     refreshSubscription,
-  } = useUsage(userId, authStatus);
+  } = useSubscription();
 
   useEffect(() => {
     if (authStatus === "signed_out") {
@@ -239,13 +239,13 @@ const SettingsPage: React.FC = () => {
                 {subscription?.isActive ? (
                   <>
                     <button
-                        type="button"
-                        className={styles.actionButton}
-                        onClick={() => setIsCancelConfirmOpen(true)}
-                        disabled={isCanceling}
-                      >
-                        {isCanceling ? "Canceling..." : "Cancel subscription"}
-                      </button>
+                      type="button"
+                      className={styles.actionButton}
+                      onClick={() => setIsCancelConfirmOpen(true)}
+                      disabled={isCanceling}
+                    >
+                      {isCanceling ? "Canceling..." : "Cancel subscription"}
+                    </button>
                     {cancelMessage && (
                       <span
                         className={

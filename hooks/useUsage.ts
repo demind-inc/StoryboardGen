@@ -8,7 +8,7 @@ import {
 } from "../services/authService";
 import { trackButtonClick } from "../lib/analytics";
 
-interface UseUsageReturn {
+export interface UseUsageReturn {
   usage: MonthlyUsage | null;
   isUsageLoading: boolean;
   usageError: string | null;
