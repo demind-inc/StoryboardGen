@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
@@ -11,6 +11,7 @@ import {
 } from "../DashboardV2/DashboardIcons";
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
+import { fetchProjectList } from "../../services/projectService";
 
 export type PanelKey =
   | "saved"
@@ -40,10 +41,6 @@ interface SidebarProps {
   onOpenBilling?: () => void;
   onCancelSubscription?: () => void;
   onSignOut: () => void;
-  savedProjects?: { id: string; name: string; createdAt?: string | null }[];
-  activeSavedProjectId?: string | null;
-  isSavedProjectsOpen?: boolean;
-  onToggleSavedProjects?: () => void;
   onSelectSavedProject?: (projectId: string) => void;
   onSavedProjectsClick?: () => void;
 }
@@ -95,10 +92,6 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     remainingCredits,
     totalCredits,
     onOpenBilling,
-    savedProjects,
-    activeSavedProjectId,
-    isSavedProjectsOpen,
-    onToggleSavedProjects,
     onSelectSavedProject,
   } = props;
   const { session } = useAuth();
@@ -128,6 +121,15 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     return "0/3 credits";
   }, [isSubscribed, remainingCredits, totalCredits]);
 
+  const [savedProjects, setSavedProjects] = useState<
+    { id: string; name: string; createdAt?: string | null }[]
+  >([]);
+  const [activeSavedProjectId, setActiveSavedProjectId] = useState<
+    string | null
+  >(null);
+  const [isSavedProjectsOpen, setIsSavedProjectsOpen] = useState(false);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
+
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
       basic: process.env.STRIPE_LINK_BASIC || "",
@@ -149,6 +151,27 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       }
     }
     return links;
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    setIsProjectsLoading(true);
+    fetchProjectList(userId)
+      .then((list) =>
+        setSavedProjects(
+          list.map((project) => ({
+            id: project.id,
+            name: project.name,
+            createdAt: project.createdAt,
+          }))
+        )
+      )
+      .catch((error) => {
+        console.error("Failed to load projects:", error);
+        setSavedProjects([]);
+      })
+      .finally(() => setIsProjectsLoading(false));
   }, [session?.user?.id]);
 
   return (
@@ -190,35 +213,37 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               }`}
               onClick={() => {
                 onPanelChange("projects");
-                onToggleSavedProjects?.();
+                setIsSavedProjectsOpen((prev) => !prev);
                 if (props.onSavedProjectsClick) {
                   props.onSavedProjectsClick();
-                } else {
-                  router.push("/saved/project");
                 }
               }}
             >
               <SidebarIcon name="folder" />
               <span className={styles.sidebar__navLabel}>Saved project</span>
-            <span className={styles.sidebar__navCaret} aria-hidden>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </span>
-          </button>
-          {isProjectsActive && isSavedProjectsOpen && savedProjects && (
+              <span className={styles.sidebar__navCaret} aria-hidden>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </span>
+            </button>
+          {isProjectsActive && isSavedProjectsOpen && (
             <div className={styles.sidebar__subnav}>
-              {savedProjects.length === 0 ? (
+              {isProjectsLoading ? (
+                <div className={styles.sidebar__subnavEmpty}>
+                  Loading projects...
+                </div>
+              ) : savedProjects.length === 0 ? (
                 <div className={styles.sidebar__subnavEmpty}>
                   No projects yet
                 </div>
@@ -231,7 +256,10 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                         ? styles.isActive
                         : ""
                     }`}
-                    onClick={() => onSelectSavedProject?.(project.id)}
+                    onClick={() => {
+                      setActiveSavedProjectId(project.id);
+                      onSelectSavedProject?.(project.id);
+                    }}
                   >
                     {project.name}
                   </button>

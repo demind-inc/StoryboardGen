@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import SavedProjectsPanel from "./SavedProjectsPanel";
-import {
-  fetchProjectDetail,
-  fetchProjectList,
-} from "../../services/projectService";
-import type { ProjectDetail, ProjectSummary } from "../../types";
+import { fetchProjectDetail } from "../../services/projectService";
+import type { ProjectDetail } from "../../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -22,25 +19,10 @@ const SavedProjectsPage: React.FC = () => {
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(
     null
   );
-  const [isLoadingList, setIsLoadingList] = useState(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
-  const [isSavedProjectsOpen, setIsSavedProjectsOpen] = useState(true);
-
-  const loadProjects = useCallback(async (userId: string) => {
-    setIsLoadingList(true);
-    try {
-      const list = await fetchProjectList(userId);
-      setProjects(list);
-    } catch (error) {
-      console.error("Failed to load projects:", error);
-    } finally {
-      setIsLoadingList(false);
-    }
-  }, []);
 
   const loadProjectDetail = useCallback(
     async (userId: string, projectId: string) => {
@@ -56,13 +38,6 @@ const SavedProjectsPage: React.FC = () => {
     },
     []
   );
-
-  useEffect(() => {
-    const userId = session?.user?.id;
-    if (authStatus === "signed_in" && userId) {
-      loadProjects(userId);
-    }
-  }, [authStatus, session?.user?.id, loadProjects]);
 
   if (authStatus === "checking") {
     return (
@@ -82,6 +57,7 @@ const SavedProjectsPage: React.FC = () => {
   if (authStatus !== "signed_in") {
     return null;
   }
+  console.log(selectedProject);
 
   return (
     <div className="app">
@@ -98,17 +74,6 @@ const SavedProjectsPage: React.FC = () => {
                 router.push("/saved/image");
               }
             }}
-            onSavedProjectsClick={() => {}}
-            savedProjects={projects.map((project) => ({
-              id: project.id,
-              name: project.name,
-              createdAt: project.createdAt,
-            }))}
-            activeSavedProjectId={selectedProject?.id ?? null}
-            isSavedProjectsOpen={isSavedProjectsOpen}
-            onToggleSavedProjects={() =>
-              setIsSavedProjectsOpen((prev) => !prev)
-            }
             onSelectSavedProject={(projectId) => {
               const userId = session?.user?.id;
               if (!userId) return;
@@ -141,7 +106,7 @@ const SavedProjectsPage: React.FC = () => {
 
           <SavedProjectsPanel
             selectedProject={selectedProject}
-            isLoading={isLoadingDetail || isLoadingList}
+            isLoading={isLoadingDetail}
           />
         </div>
       </main>
