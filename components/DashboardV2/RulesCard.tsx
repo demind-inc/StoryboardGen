@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Rule } from "./dashboardLayout.types";
-import { PencilIcon } from "./DashboardIcons";
+import { PencilIcon, TikTokIcon, InstagramIcon } from "./DashboardIcons";
 import styles from "./RulesCard.module.scss";
 
 export interface RulesCardProps {
@@ -57,7 +57,10 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
       <div className={styles.cardBody}>
         <div className={styles.ruleList}>
           <div className={styles.cardTitleRow}>
-            <strong>TikTok Caption Rules</strong>
+            <span className={styles.platformLabel}>
+              <TikTokIcon />
+              <strong>TikTok Caption Rules</strong>
+            </span>
             {onRulesChange && (
               <button
                 type="button"
@@ -83,7 +86,10 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
         </div>
         <div className={styles.ruleList}>
           <div className={styles.cardTitleRow}>
-            <strong>Instagram Caption Rules</strong>
+            <span className={styles.platformLabel}>
+              <InstagramIcon />
+              <strong>Instagram Caption Rules</strong>
+            </span>
             {onRulesChange && (
               <button
                 type="button"

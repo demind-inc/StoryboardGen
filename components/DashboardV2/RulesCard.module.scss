@@ -22,6 +22,16 @@
   gap: 8px;
 }
 
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;

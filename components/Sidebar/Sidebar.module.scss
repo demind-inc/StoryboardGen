@@ -142,6 +142,22 @@
     color: #ff8a00;
   }
 
+  &__iconWrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: #ff8a00;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+  }
+
   .isActive {
     background: rgba(255, 138, 0, 0.12);
     border-color: rgba(255, 138, 0, 0.32);

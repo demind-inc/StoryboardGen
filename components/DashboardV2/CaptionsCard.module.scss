@@ -47,6 +47,16 @@
   color: var(--muted);
 }
 
+.platformLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
 .captionBox {
   background: #2e2e2e;
   border: none;

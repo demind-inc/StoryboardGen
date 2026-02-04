@@ -1,5 +1,6 @@
 import React from "react";
 import { AppMode, SceneResult } from "../../types";
+import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
 import styles from "./Results.module.scss";
 
 interface ResultsProps {
@@ -83,11 +84,17 @@ const Results: React.FC<ResultsProps> = ({
       {captions && (
         <div className={styles.captionsCard}>
           <div className={styles.captionBox}>
-            <div className={styles.captionTitle}>TikTok Caption</div>
+            <div className={styles.captionTitle}>
+              <TikTokIcon />
+              <span>TikTok Caption</span>
+            </div>
             <div className={styles.captionText}>{captions.tiktok}</div>
           </div>
           <div className={styles.captionBox}>
-            <div className={styles.captionTitle}>Instagram Caption</div>
+            <div className={styles.captionTitle}>
+              <InstagramIcon />
+              <span>Instagram Caption</span>
+            </div>
             <div className={styles.captionText}>{captions.instagram}</div>
           </div>
         </div>

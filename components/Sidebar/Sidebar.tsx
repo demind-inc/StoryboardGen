@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/router";
 import { AppMode } from "../../types";
 import Footer from "../Footer/Footer";
+import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
 import styles from "./Sidebar.module.scss";
 
 export type PanelKey =
@@ -167,7 +168,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => router.push("/rules/tiktok")}
           >
-            <SidebarIcon name="play" />
+            <span className={styles.sidebar__iconWrap} aria-hidden>
+              <TikTokIcon />
+            </span>
             TikTok Rules
           </button>
           <button
@@ -176,7 +179,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => router.push("/rules/instagram")}
           >
-            <SidebarIcon name="camera" />
+            <span className={styles.sidebar__iconWrap} aria-hidden>
+              <InstagramIcon />
+            </span>
             Instagram Rules
           </button>
           <button

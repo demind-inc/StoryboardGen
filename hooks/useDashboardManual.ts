@@ -167,9 +167,12 @@ export const useDashboardManual = ({
     ? usage?.remaining ?? planCreditLimit
     : undefined;
 
+  const hasValidScenePrompts =
+    promptList.filter((p) => p.trim() !== "").length > 0;
   const disableGenerate =
     isGenerating ||
     references.length === 0 ||
+    !hasValidScenePrompts ||
     (!!usage && usage.remaining <= 0) ||
     !!usageError;
 
