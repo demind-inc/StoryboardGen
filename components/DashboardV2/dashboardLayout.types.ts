@@ -1,9 +1,4 @@
-import { ReferenceImage, SceneResult } from "../../types";
-
-export interface Rule {
-  tiktok: string[];
-  instagram: string[];
-}
+import { CaptionRules, ReferenceImage, SceneResult } from "../../types";
 
 export interface DashboardLayoutProps {
   projectName: string;
@@ -23,8 +18,8 @@ export interface DashboardLayoutProps {
   disableGenerate: boolean;
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
-  rules: Rule;
-  onRulesChange?: (rules: Rule) => void;
+  rules: CaptionRules;
+  onRulesChange?: (rules: CaptionRules) => void;
   guidelines: string[];
   onGuidelinesChange?: (guidelines: string[]) => void;
   captions: {

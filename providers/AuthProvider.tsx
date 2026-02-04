@@ -8,6 +8,7 @@ import React, {
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
 import { signOut, upsertProfile } from "../services/authService";
+import { ensureCaptionSettings } from "../services/captionSettingsService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
 interface AuthContextType {
@@ -244,6 +245,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             email: data.session.user.email,
             user_metadata: data.session.user.user_metadata,
           });
+          await ensureCaptionSettings(data.session.user.id);
         } catch (profileError) {
           console.error("Failed to create profile:", profileError);
           // Don't fail the sign up if profile creation fails
@@ -264,6 +266,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             email: data.user.email,
             user_metadata: data.user.user_metadata,
           });
+          await ensureCaptionSettings(data.user.id);
         } catch (profileError) {
           console.error("Failed to create profile:", profileError);
           // Don't fail the sign up if profile creation fails

@@ -150,6 +150,35 @@ export interface Database {
           created_at?: string | null; // timestamptz
         };
       };
+      caption_settings: {
+        Row: {
+          user_id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
+          tiktok_rules: string[]; // text[]
+          instagram_rules: string[]; // text[]
+          tiktok_caption: string; // text
+          instagram_caption: string; // text
+          created_at: string; // timestamptz, default now()
+          updated_at: string; // timestamptz, default now()
+        };
+        Insert: {
+          user_id: string; // uuid, FOREIGN KEY references auth.users(id)
+          tiktok_rules?: string[]; // text[]
+          instagram_rules?: string[]; // text[]
+          tiktok_caption: string; // text
+          instagram_caption: string; // text
+          created_at?: string; // timestamptz
+          updated_at?: string; // timestamptz
+        };
+        Update: {
+          user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
+          tiktok_rules?: string[]; // text[]
+          instagram_rules?: string[]; // text[]
+          tiktok_caption?: string; // text
+          instagram_caption?: string; // text
+          created_at?: string | null; // timestamptz
+          updated_at?: string | null; // timestamptz
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -195,3 +224,10 @@ export type PromptLibraryInsert =
   Database["public"]["Tables"]["prompt_library"]["Insert"];
 export type PromptLibraryUpdate =
   Database["public"]["Tables"]["prompt_library"]["Update"];
+
+export type CaptionSettingsRow =
+  Database["public"]["Tables"]["caption_settings"]["Row"];
+export type CaptionSettingsInsert =
+  Database["public"]["Tables"]["caption_settings"]["Insert"];
+export type CaptionSettingsUpdate =
+  Database["public"]["Tables"]["caption_settings"]["Update"];

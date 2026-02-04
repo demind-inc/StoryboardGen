@@ -10,6 +10,13 @@ import {
   DEFAULT_MONTHLY_CREDITS,
   PLAN_CREDITS,
 } from "../services/usageService";
+import {
+  DEFAULT_CAPTION_RULES,
+  DEFAULT_CAPTIONS,
+  getCaptionSettings,
+  updateCaptionRules,
+} from "../services/captionSettingsService";
+import type { CaptionRules } from "../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -22,13 +29,6 @@ const DEFAULT_GUIDELINES = [
   "Maintain warm, approachable lighting",
   "Include diverse representation in scenes",
 ];
-
-const DEFAULT_CAPTIONS = {
-  tiktok:
-    "Starting my morning right (sun)\n\nThere's something magical about that first sip of @BrandCoffee...\n\n#MorningVibes #CoffeeLovers #DailyRitual #BrandCoffee #CoffeeMoments",
-  instagram:
-    "There's a reason why your morning routine matters (coffee)\n\nResearch shows that taking just 5 minutes to enjoy your morning coffee mindfully can set a positive tone for your entire day...\n\n#MorningRoutine #CoffeeTime #WellnessJourney #MindfulMornings #CoffeeCulture #SelfCare #DailyRituals",
-};
 
 interface UseDashboardManualProps {
   userId: string | undefined;
@@ -99,6 +99,20 @@ export const useDashboardManual = ({
     "tiktok"
   );
   const [guidelines, setGuidelines] = useState(DEFAULT_GUIDELINES);
+  const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
+  const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
+
+  const loadCaptionSettings = useCallback(async (currentUserId: string) => {
+    try {
+      const settings = await getCaptionSettings(currentUserId);
+      setRules(settings.rules);
+      setCaptions(settings.captions);
+    } catch (error) {
+      console.error("Failed to load caption settings:", error);
+      setRules(DEFAULT_CAPTION_RULES);
+      setCaptions(DEFAULT_CAPTIONS);
+    }
+  }, []);
 
   const promptList = useMemo(
     () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
@@ -149,13 +163,26 @@ export const useDashboardManual = ({
 
   useEffect(() => {
     if (authStatus === "signed_in" && userId) {
-      refreshUsage(userId);
-      refreshSubscription(userId);
-      refreshHasGeneratedFreeImage(userId);
+      void Promise.all([
+        refreshUsage(userId),
+        refreshSubscription(userId),
+        refreshHasGeneratedFreeImage(userId),
+        loadCaptionSettings(userId),
+      ]);
     }
     // Only re-run when auth or user identity changes; refresh fns are stable via useCallback in useUsage
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authStatus, userId]);
+
+  useEffect(() => {
+    if (authStatus !== "signed_in" || !userId) return;
+    const handle = window.setTimeout(() => {
+      updateCaptionRules(userId, rules).catch((error) => {
+        console.error("Failed to save caption rules:", error);
+      });
+    }, 400);
+    return () => window.clearTimeout(handle);
+  }, [authStatus, userId, rules]);
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);
@@ -255,6 +282,9 @@ export const useDashboardManual = ({
     setCaptionTab,
     guidelines,
     setGuidelines,
+    rules,
+    setRules,
+    captions,
     manualResults,
     isGenerating,
     setManualResults,
@@ -270,7 +300,6 @@ export const useDashboardManual = ({
     closeNameModal,
     handleNameModalSave,
     stripePlanLinks,
-    defaultCaptions: DEFAULT_CAPTIONS,
     planPriceLabel: PLAN_PRICE_LABEL,
   };
 };

@@ -56,3 +56,8 @@ export interface MonthlyUsage {
   monthlyLimit: number;
   remaining: number;
 }
+
+export interface CaptionRules {
+  tiktok: string[];
+  instagram: string[];
+}

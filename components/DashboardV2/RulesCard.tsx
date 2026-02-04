@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Rule } from "./dashboardLayout.types";
+import type { CaptionRules } from "../../types";
 import { PencilIcon, TikTokIcon, InstagramIcon } from "./DashboardIcons";
 import styles from "./RulesCard.module.scss";
 
 export interface RulesCardProps {
-  rules: Rule;
-  onRulesChange?: (rules: Rule) => void;
+  rules: CaptionRules;
+  onRulesChange?: (rules: CaptionRules) => void;
 }
 
 const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
@@ -28,12 +28,10 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
 
   const updateRules = (platform: "tiktok" | "instagram", value: string) => {
     if (!onRulesChange) return;
-    const next: Rule = {
+    const lines = value.split("\n").map((rule) => rule.replace(/^•\s?/, ""));
+    const next: CaptionRules = {
       ...rules,
-      [platform]: value
-        .split("\n")
-        .map((rule) => rule.replace(/^•\s?/, "").trim())
-        .filter(Boolean),
+      [platform]: lines,
     };
     onRulesChange(next);
   };
