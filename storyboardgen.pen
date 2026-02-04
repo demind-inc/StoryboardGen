@@ -199,7 +199,7 @@
               "y": 604,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -246,7 +246,7 @@
               "y": 878,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -609,7 +609,7 @@
               "y": 196,
               "name": "platformList",
               "fill": "#B3B3B8",
-              "content": "TikTok Caption Rules\n• Slightly long captions with line breaks\n• Natural brand mention integration\n• Exactly 5 approved hashtags\n\nInstagram Caption Rules\n• Longer, educational captions\n• Natural brand mention integration\n• More hashtags allowed\n• Hashtags at bottom of caption",
+              "content": "TikTok Caption Rules\n\u2022 Slightly long captions with line breaks\n\u2022 Natural brand mention integration\n\u2022 Exactly 5 approved hashtags\n\nInstagram Caption Rules\n\u2022 Longer, educational captions\n\u2022 Natural brand mention integration\n\u2022 More hashtags allowed\n\u2022 Hashtags at bottom of caption",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -739,7 +739,7 @@
               "y": 494,
               "name": "customList",
               "fill": "#B3B3B8",
-              "content": "• Always show product in natural use context\n• Maintain warm, approachable lighting\n• Include diverse representation in scenes",
+              "content": "\u2022 Always show product in natural use context\n\u2022 Maintain warm, approachable lighting\n\u2022 Include diverse representation in scenes",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -1086,7 +1086,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -1133,7 +1133,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -2106,7 +2106,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -2153,7 +2153,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -2362,7 +2362,7 @@
               "y": 82,
               "name": "filterText",
               "fill": "#C9C9CF",
-              "content": "All • Style • Subject • Product",
+              "content": "All \u2022 Style \u2022 Subject \u2022 Product",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2430,7 +2430,7 @@
               "y": 332,
               "name": "capA",
               "fill": "#C7C7CC",
-              "content": "Warm ceramic cup — style anchor",
+              "content": "Warm ceramic cup \u2014 style anchor",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2464,7 +2464,7 @@
               "y": 332,
               "name": "capB",
               "fill": "#C7C7CC",
-              "content": "Packaging close-up — product",
+              "content": "Packaging close-up \u2014 product",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2498,7 +2498,7 @@
               "y": 332,
               "name": "capC",
               "fill": "#C7C7CC",
-              "content": "Cafe ambience — lighting",
+              "content": "Cafe ambience \u2014 lighting",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2532,7 +2532,7 @@
               "y": 332,
               "name": "capD",
               "fill": "#C7C7CC",
-              "content": "Latte art — subject",
+              "content": "Latte art \u2014 subject",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2581,7 +2581,7 @@
                 "type": "unsplash",
                 "username": "jovanamladenovic",
                 "link": "https://unsplash.com/@jovanamladenovic",
-                "author": "Joвана Младеновић"
+                "author": "Jo\u0432\u0430\u043d\u0430 \u041c\u043b\u0430\u0434\u0435\u043d\u043e\u0432\u0438\u045b"
               },
               "width": 200,
               "height": 180,
@@ -2600,7 +2600,7 @@
               "y": 562,
               "name": "capF",
               "fill": "#C7C7CC",
-              "content": "Bean textures — detail",
+              "content": "Bean textures \u2014 detail",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2615,7 +2615,7 @@
                 "type": "unsplash",
                 "username": "ahmetyuksek",
                 "link": "https://unsplash.com/@ahmetyuksek",
-                "author": "Ahmet Yüksek ✪"
+                "author": "Ahmet Y\u00fcksek \u272a"
               },
               "width": 200,
               "height": 180,
@@ -2634,7 +2634,7 @@
               "y": 562,
               "name": "capG",
               "fill": "#C7C7CC",
-              "content": "Wood textures — mood",
+              "content": "Wood textures \u2014 mood",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2668,7 +2668,7 @@
               "y": 562,
               "name": "capH",
               "fill": "#C7C7CC",
-              "content": "Lifestyle hands — usage",
+              "content": "Lifestyle hands \u2014 usage",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2702,7 +2702,7 @@
               "y": 792,
               "name": "capI",
               "fill": "#C7C7CC",
-              "content": "Outdoor cafe — palette",
+              "content": "Outdoor cafe \u2014 palette",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2736,7 +2736,7 @@
               "y": 792,
               "name": "capJ",
               "fill": "#C7C7CC",
-              "content": "Countertop — clean layout",
+              "content": "Countertop \u2014 clean layout",
               "fontFamily": "Inter",
               "fontSize": 11,
               "fontWeight": "normal"
@@ -2943,7 +2943,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -2990,7 +2990,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -3341,7 +3341,7 @@
               "y": 354,
               "name": "planRenewVal",
               "fill": "#D5D5DA",
-              "content": "Monthly · Renews Mar 01, 2026",
+              "content": "Monthly \u00b7 Renews Mar 01, 2026",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -3778,7 +3778,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -3825,7 +3825,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -4435,7 +4435,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -4482,7 +4482,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -5115,7 +5115,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -5162,7 +5162,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -6115,7 +6115,7 @@
               "y": 36,
               "name": "close_text",
               "fill": "#C9CFDB",
-              "content": "×",
+              "content": "\u00d7",
               "fontFamily": "Inter",
               "fontSize": 16,
               "fontWeight": "bold"
@@ -6941,7 +6941,7 @@
                           "cornerRadius": 50,
                           "id": "hovrh",
                           "x": 24,
-                          "y": 6.993795977905393e-7,
+                          "y": 6.993795977905393e-07,
                           "name": "Bg",
                           "rotation": -90.00000250447808,
                           "fill": {
@@ -9324,7 +9324,7 @@
               "y": 546,
               "name": "planMeta",
               "fill": "#A0A0A6",
-              "content": "3 images/month · Limited prompts",
+              "content": "3 images/month \u00b7 Limited prompts",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -9371,7 +9371,7 @@
               "y": 820,
               "name": "footer",
               "fill": "#7B7B80",
-              "content": "© 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
+              "content": "\u00a9 2026 STORYBOARDGEN\nGEMINI 3 PRO ENGINE",
               "fontFamily": "Inter",
               "fontSize": 10,
               "fontWeight": "normal"
@@ -9631,7 +9631,7 @@
                       "y": 0,
                       "name": "meta",
                       "fill": "#A0A0A6",
-                      "content": "12 images · 3 variations",
+                      "content": "12 images \u00b7 3 variations",
                       "fontFamily": "Inter",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -9681,7 +9681,7 @@
                       "y": 0,
                       "name": "meta",
                       "fill": "#A0A0A6",
-                      "content": "8 images · 2 mood boards",
+                      "content": "8 images \u00b7 2 mood boards",
                       "fontFamily": "Inter",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -9731,7 +9731,7 @@
                       "y": 0,
                       "name": "meta",
                       "fill": "#A0A0A6",
-                      "content": "15 images · 5 prompts",
+                      "content": "15 images \u00b7 5 prompts",
                       "fontFamily": "Inter",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -9781,7 +9781,7 @@
                       "y": 0,
                       "name": "meta",
                       "fill": "#A0A0A6",
-                      "content": "6 images · 1 collection",
+                      "content": "6 images \u00b7 1 collection",
                       "fontFamily": "Inter",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -9803,6 +9803,604 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "BdgW3",
+      "x": 270,
+      "y": 1020,
+      "name": "landing-page",
+      "clip": true,
+      "width": 1400,
+      "height": 900,
+      "fill": "#0F0F10",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "68HaJ",
+          "x": 40,
+          "y": 24,
+          "name": "logo",
+          "width": 36,
+          "height": 36,
+          "fill": "#232325",
+          "cornerRadius": 10
+        },
+        {
+          "type": "text",
+          "id": "7POCs",
+          "x": 86,
+          "y": 30,
+          "name": "brand",
+          "fill": "#F1F1F1",
+          "content": "StoryboardGen",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "S32mq",
+          "x": 360,
+          "y": 34,
+          "name": "navProduct",
+          "fill": "#A9A9AE",
+          "content": "Product",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "WOypp",
+          "x": 450,
+          "y": 34,
+          "name": "navTemplates",
+          "fill": "#A9A9AE",
+          "content": "Templates",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "i2Gre",
+          "x": 560,
+          "y": 34,
+          "name": "navPricing",
+          "fill": "#A9A9AE",
+          "content": "Pricing",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "thTOh",
+          "x": 640,
+          "y": 34,
+          "name": "navBlog",
+          "fill": "#A9A9AE",
+          "content": "Blog",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "zH1Ew",
+          "x": 1180,
+          "y": 24,
+          "name": "cta",
+          "width": 180,
+          "height": 40,
+          "fill": "#2A221A",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "8NoTQ",
+          "x": 1214,
+          "y": 34,
+          "name": "ctaText",
+          "fill": "#F2E6D6",
+          "content": "Get started",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "dJS83",
+          "x": 120,
+          "y": 150,
+          "name": "heroTitle",
+          "fill": "#F1F1F1",
+          "content": "Turn prompts into storyboards,\ncaptions, and ready-to-post visuals.",
+          "fontFamily": "Inter",
+          "fontSize": 36,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "KPg16",
+          "x": 120,
+          "y": 248,
+          "name": "heroSub",
+          "fill": "#A9A9AE",
+          "content": "Generate multi-platform creative bundles with frames, TikTok & Instagram captions,\nand image concepts that match your brand voice.",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "ARFpp",
+          "x": 120,
+          "y": 320,
+          "name": "promptInput",
+          "width": 620,
+          "height": 54,
+          "fill": "#161617",
+          "cornerRadius": 14
+        },
+        {
+          "type": "text",
+          "id": "3USRp",
+          "x": 144,
+          "y": 336,
+          "name": "promptPlaceholder",
+          "fill": "#8B8B8F",
+          "content": "Paste a prompt or campaign brief...",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "3XWTQ",
+          "x": 760,
+          "y": 320,
+          "name": "generateButton",
+          "width": 220,
+          "height": 54,
+          "fill": "#2A221A",
+          "cornerRadius": 14
+        },
+        {
+          "type": "text",
+          "id": "6Zd5K",
+          "x": 796,
+          "y": 336,
+          "name": "generateText",
+          "fill": "#F2E6D6",
+          "content": "Generate bundle",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "y1ZgL",
+          "x": 820,
+          "y": 150,
+          "name": "resultsPanel",
+          "width": 520,
+          "height": 700,
+          "fill": "#161617",
+          "cornerRadius": 20,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "MpLN2",
+              "x": 24,
+              "y": 24,
+              "name": "resultsTitle",
+              "fill": "#F1F1F1",
+              "content": "Results",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Z3G8c",
+              "x": 24,
+              "y": 54,
+              "name": "resultsMeta",
+              "fill": "#8B8B8F",
+              "content": "3 storyboard frames \u2022 6 captions \u2022 4 image concepts",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "4SQQR",
+              "x": 24,
+              "y": 90,
+              "name": "storyboardCard",
+              "width": 472,
+              "height": 170,
+              "fill": "#0F0F10",
+              "cornerRadius": 16,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ibys4",
+                  "x": 16,
+                  "y": 14,
+                  "name": "storyboardLabel",
+                  "fill": "#F1F1F1",
+                  "content": "Storyboard frames",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "QzGSc",
+                  "x": 16,
+                  "y": 44,
+                  "name": "frame1",
+                  "width": 136,
+                  "height": 92,
+                  "fill": "#232325",
+                  "cornerRadius": 12
+                },
+                {
+                  "type": "frame",
+                  "id": "PGLI9",
+                  "x": 168,
+                  "y": 44,
+                  "name": "frame2",
+                  "width": 136,
+                  "height": 92,
+                  "fill": "#232325",
+                  "cornerRadius": 12
+                },
+                {
+                  "type": "frame",
+                  "id": "pHi83",
+                  "x": 320,
+                  "y": 44,
+                  "name": "frame3",
+                  "width": 136,
+                  "height": 92,
+                  "fill": "#232325",
+                  "cornerRadius": 12
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "A0wqM",
+              "x": 24,
+              "y": 276,
+              "name": "tiktokCard",
+              "width": 472,
+              "height": 150,
+              "fill": "#0F0F10",
+              "cornerRadius": 16,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DEwyO",
+                  "x": 16,
+                  "y": 14,
+                  "name": "tiktokLabel",
+                  "fill": "#F1F1F1",
+                  "content": "TikTok captions",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "Gk0R4",
+                  "x": 16,
+                  "y": 44,
+                  "name": "tiktokCap1",
+                  "fill": "#A9A9AE",
+                  "content": "1. Hook your audience with the first frame.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "n4rS6",
+                  "x": 16,
+                  "y": 68,
+                  "name": "tiktokCap2",
+                  "fill": "#A9A9AE",
+                  "content": "2. Behind-the-scenes on how the shot was made.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "9OADP",
+                  "x": 16,
+                  "y": 92,
+                  "name": "tiktokCap3",
+                  "fill": "#A9A9AE",
+                  "content": "3. CTA: Save this template for your next launch.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "740kc",
+              "x": 24,
+              "y": 442,
+              "name": "instaCard",
+              "width": 472,
+              "height": 150,
+              "fill": "#0F0F10",
+              "cornerRadius": 16,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PTsaY",
+                  "x": 16,
+                  "y": 14,
+                  "name": "instaLabel",
+                  "fill": "#F1F1F1",
+                  "content": "Instagram captions",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "uw9Ax",
+                  "x": 16,
+                  "y": 44,
+                  "name": "instaCap1",
+                  "fill": "#A9A9AE",
+                  "content": "\u2022 Carousel ready: frame-by-frame story beats.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "mKIz3",
+                  "x": 16,
+                  "y": 68,
+                  "name": "instaCap2",
+                  "fill": "#A9A9AE",
+                  "content": "\u2022 Share the shot list and caption in one tap.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "ZiK48",
+                  "x": 16,
+                  "y": 92,
+                  "name": "instaCap3",
+                  "fill": "#A9A9AE",
+                  "content": "\u2022 Hashtags + CTA suggestions included.",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "9tZFS",
+              "x": 24,
+              "y": 608,
+              "name": "imageCard",
+              "width": 472,
+              "height": 72,
+              "fill": "#0F0F10",
+              "cornerRadius": 16,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y5s9d",
+                  "x": 16,
+                  "y": 16,
+                  "name": "imageLabel",
+                  "fill": "#F1F1F1",
+                  "content": "Image concepts",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "NcOG1",
+                  "x": 192,
+                  "y": 16,
+                  "name": "image1",
+                  "width": 48,
+                  "height": 40,
+                  "fill": "#232325",
+                  "cornerRadius": 10
+                },
+                {
+                  "type": "frame",
+                  "id": "5vmrF",
+                  "x": 250,
+                  "y": 16,
+                  "name": "image2",
+                  "width": 48,
+                  "height": 40,
+                  "fill": "#232325",
+                  "cornerRadius": 10
+                },
+                {
+                  "type": "frame",
+                  "id": "oDZA5",
+                  "x": 308,
+                  "y": 16,
+                  "name": "image3",
+                  "width": 48,
+                  "height": 40,
+                  "fill": "#232325",
+                  "cornerRadius": 10
+                },
+                {
+                  "type": "frame",
+                  "id": "V2U8p",
+                  "x": 366,
+                  "y": 16,
+                  "name": "image4",
+                  "width": 48,
+                  "height": 40,
+                  "fill": "#232325",
+                  "cornerRadius": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "6GaTT",
+          "x": 120,
+          "y": 410,
+          "name": "trustTitle",
+          "fill": "#F1F1F1",
+          "content": "Everything you need for each campaign",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "R2tyl",
+          "x": 120,
+          "y": 444,
+          "name": "trustText",
+          "fill": "#8B8B8F",
+          "content": "Storyboard frames, platform-ready captions, and curated image packs delivered in one click.",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "5rSSW",
+          "x": 120,
+          "y": 500,
+          "name": "feature1",
+          "width": 210,
+          "height": 120,
+          "fill": "#161617",
+          "cornerRadius": 16
+        },
+        {
+          "type": "text",
+          "id": "dqdmE",
+          "x": 140,
+          "y": 520,
+          "name": "feature1Title",
+          "fill": "#F1F1F1",
+          "content": "Frame pacing",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "Hdmca",
+          "x": 140,
+          "y": 542,
+          "name": "feature1Text",
+          "fill": "#8B8B8F",
+          "content": "Auto-timed beats",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LSGAa",
+          "x": 350,
+          "y": 500,
+          "name": "feature2",
+          "width": 210,
+          "height": 120,
+          "fill": "#161617",
+          "cornerRadius": 16
+        },
+        {
+          "type": "text",
+          "id": "mBZbF",
+          "x": 370,
+          "y": 520,
+          "name": "feature2Title",
+          "fill": "#F1F1F1",
+          "content": "Dual captions",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "GEyGU",
+          "x": 370,
+          "y": 542,
+          "name": "feature2Text",
+          "fill": "#8B8B8F",
+          "content": "TikTok + Instagram",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "EDgEH",
+          "x": 580,
+          "y": 500,
+          "name": "feature3",
+          "width": 210,
+          "height": 120,
+          "fill": "#161617",
+          "cornerRadius": 16
+        },
+        {
+          "type": "text",
+          "id": "144cw",
+          "x": 600,
+          "y": 520,
+          "name": "feature3Title",
+          "fill": "#F1F1F1",
+          "content": "Image packs",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "ajWtD",
+          "x": 600,
+          "y": 542,
+          "name": "feature3Text",
+          "fill": "#8B8B8F",
+          "content": "Concept-ready visuals",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
         }
       ]
     }
