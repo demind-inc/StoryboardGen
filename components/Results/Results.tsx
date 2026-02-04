@@ -147,16 +147,7 @@ const Results: React.FC<ResultsProps> = ({
                       href={result.imageUrl || "#"}
                       download={`scene-${idx + 1}.png`}
                     >
-                      PNG
-                    </a>
-                    <a
-                      className={`${styles.downloadButton} ${
-                        !hasImage ? styles.downloadButtonDisabled : ""
-                      }`}
-                      href={result.imageUrl || "#"}
-                      download={`scene-${idx + 1}.jpg`}
-                    >
-                      JPG
+                      Download
                     </a>
                   </div>
                 </div>
