@@ -81,7 +81,6 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
   const [referenceLibrary, setReferenceLibrary] = useState<ReferenceSet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingNewSet, setIsAddingNewSet] = useState(false);
-  const [isManageOpen, setIsManageOpen] = useState(false);
   const [newSetImages, setNewSetImages] = useState<ReferenceImage[]>([]);
   const [newSetLabel, setNewSetLabel] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -279,13 +278,6 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
           <p className={styles.subtitle}>Project: Coffee Brand Campaign</p>
         </div>
         <div className={styles.headerActions}>
-          <button
-            type="button"
-            className={styles.manageButton}
-            onClick={() => setIsManageOpen((prev) => !prev)}
-          >
-            {isManageOpen ? "Close manager" : "Manage sets"}
-          </button>
           <input
             type="file"
             ref={fileInputRef}
@@ -320,83 +312,6 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
           </select>
         </label>
       </div>
-      {isManageOpen && (
-        <div className={styles.managePanel}>
-          {sortedSets.length === 0 ? (
-            <p className={styles.empty}>No saved reference images.</p>
-          ) : (
-            sortedSets.map((set) => {
-              const isEditing = editingSetId === set.setId;
-              return (
-                <div key={set.setId} className={styles.manageRow}>
-                  <div className={styles.manageInfo}>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        className={styles.manageInput}
-                        placeholder="Set name"
-                        value={editingSetLabel}
-                        onChange={(e) => setEditingSetLabel(e.target.value)}
-                        disabled={isUpdatingSet}
-                      />
-                    ) : (
-                      <button
-                        className={styles.manageTitle}
-                        onClick={() => onSelectReferenceSet([set])}
-                        title="Use this set"
-                      >
-                        {formatSetTitle(set)}
-                      </button>
-                    )}
-                    {set.createdAt && (
-                      <span className={styles.manageDate}>
-                        {formatSetDate(set)}
-                      </span>
-                    )}
-                  </div>
-                  <div className={styles.manageActions}>
-                    {isEditing ? (
-                      <>
-                        <button
-                          onClick={handleSaveEditedSet}
-                          disabled={isUpdatingSet || !editingSetLabel.trim()}
-                          className={styles.manageActionPrimary}
-                        >
-                          {isUpdatingSet ? "Saving..." : "Save"}
-                        </button>
-                        <button
-                          onClick={handleCancelEditSet}
-                          disabled={isUpdatingSet}
-                          className={styles.manageActionGhost}
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => startEditingSet(set)}
-                          className={styles.manageActionGhost}
-                          disabled={isSaving || isUpdatingSet || isAddingNewSet}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSet(set.setId)}
-                          className={styles.manageActionDanger}
-                          disabled={isSaving || isUpdatingSet || isAddingNewSet}
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      )}
       <div className={`${styles.gridShell} custom-scrollbar`}>
         {isLoading ? (
           <p className={styles.empty}>Loading saved images...</p>
@@ -527,9 +442,70 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                       </svg>
                     </button>
-                    <p className={styles.caption}>
-                      {formatImageCaption(set)}
-                    </p>
+                    <div className={styles.captionRow}>
+                      {editingSetId === set.setId ? (
+                        <>
+                          <input
+                            type="text"
+                            className={styles.captionInput}
+                            placeholder="Set name"
+                            value={editingSetLabel}
+                            onChange={(event) =>
+                              setEditingSetLabel(event.target.value)
+                            }
+                            disabled={isUpdatingSet}
+                          />
+                          <div className={styles.captionActions}>
+                            <button
+                              type="button"
+                              className={styles.captionActionPrimary}
+                              onClick={handleSaveEditedSet}
+                              disabled={
+                                isUpdatingSet || !editingSetLabel.trim()
+                              }
+                            >
+                              {isUpdatingSet ? "Saving..." : "Save"}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.captionAction}
+                              onClick={handleCancelEditSet}
+                              disabled={isUpdatingSet}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className={styles.caption}>
+                            {formatImageCaption(set)}
+                          </p>
+                          <div className={styles.captionActions}>
+                            <button
+                              type="button"
+                              className={styles.captionAction}
+                              onClick={() => startEditingSet(set)}
+                              disabled={
+                                isSaving || isUpdatingSet || isAddingNewSet
+                              }
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.captionAction} ${styles.captionActionDelete}`}
+                              onClick={() => handleDeleteSet(set.setId)}
+                              disabled={
+                                isSaving || isUpdatingSet || isAddingNewSet
+                              }
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))
               )}
