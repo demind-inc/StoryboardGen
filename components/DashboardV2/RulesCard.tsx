@@ -52,9 +52,6 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, onRulesChange }) => {
           <div className={styles.cardTitleRow}>
             <h2 className={styles.cardTitle}>Platform Rules</h2>
           </div>
-          <p className={styles.cardDescription}>
-            Rule-locked generation active
-          </p>
         </div>
       </div>
       <div className={styles.cardBody}>

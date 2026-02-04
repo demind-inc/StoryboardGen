@@ -53,7 +53,6 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({
               </button>
             )}
           </div>
-          <p className={styles.cardDescription}>Brand-specific constraints</p>
         </div>
       </div>
       <div className={styles.cardBody}>

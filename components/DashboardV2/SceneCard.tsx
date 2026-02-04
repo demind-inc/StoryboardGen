@@ -90,25 +90,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
             visible emotion
           </p>
         </div>
-
-        <div className={styles.optionRow}>
-          <label>
-            <input
-              type="checkbox"
-              checked={useGlobalRef}
-              onChange={(event) => setUseGlobalRef(event.target.checked)}
-            />
-            Use global reference
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={transparentBg}
-              onChange={(event) => setTransparentBg(event.target.checked)}
-            />
-            Transparent background (title slide)
-          </label>
-        </div>
       </div>
     </section>
   );
