@@ -18,6 +18,7 @@ interface AuthContextType {
   authStatus: AuthStatus;
   authEmail: string;
   authPassword: string;
+  authName: string;
   authMessage: string | null;
   authError: string | null;
   isLoading: boolean;
@@ -25,6 +26,7 @@ interface AuthContextType {
   isSignUpMode: boolean;
   setAuthEmail: (email: string) => void;
   setAuthPassword: (password: string) => void;
+  setAuthName: (name: string) => void;
   toggleAuthMode: () => void;
   requestPasswordReset: () => Promise<void>;
   requestPasswordResetForEmail: (email: string) => Promise<void>;
@@ -48,6 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+  const [authName, setAuthName] = useState("");
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -235,6 +238,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { data, error } = await supabase.auth.signUp({
         email: authEmail.trim(),
         password: authPassword,
+        options: {
+          data: {
+            full_name: authName.trim() || undefined,
+          },
+        },
       });
 
       if (error) {
@@ -297,6 +305,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsSignUpMode(!isSignUpMode);
     setAuthMessage(null);
     setAuthError(null);
+    setAuthName("");
   };
 
   const requestPasswordResetForEmail = async (email: string) => {
@@ -373,6 +382,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     authStatus,
     authEmail,
     authPassword,
+    authName,
+    setAuthName,
     authMessage,
     authError,
     isLoading,

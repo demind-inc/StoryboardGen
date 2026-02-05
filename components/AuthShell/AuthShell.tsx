@@ -5,6 +5,7 @@ import styles from "./AuthShell.module.scss";
 interface AuthShellProps {
   authEmail: string;
   authPassword: string;
+  authName: string;
   authMessage: string | null;
   authError: string | null;
   authStatus: AuthStatus;
@@ -13,6 +14,7 @@ interface AuthShellProps {
   isSignUpMode: boolean;
   onEmailChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
+  onNameChange: (value: string) => void;
   onToggleAuthMode: () => void;
   onRequestPasswordReset: () => void;
   onSignIn: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -22,6 +24,7 @@ interface AuthShellProps {
 const AuthShell: React.FC<AuthShellProps> = ({
   authEmail,
   authPassword,
+  authName,
   authMessage,
   authError,
   authStatus,
@@ -30,12 +33,12 @@ const AuthShell: React.FC<AuthShellProps> = ({
   isSignUpMode,
   onEmailChange,
   onPasswordChange,
+  onNameChange,
   onToggleAuthMode,
   onRequestPasswordReset,
   onSignIn,
   onSignUp,
 }) => {
-  const [fullName, setFullName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -65,7 +68,6 @@ const AuthShell: React.FC<AuthShellProps> = ({
 
   const handleToggleMode = () => {
     setLocalError(null);
-    setFullName("");
     setConfirmPassword("");
     onToggleAuthMode();
   };
@@ -98,8 +100,8 @@ const AuthShell: React.FC<AuthShellProps> = ({
               <input
                 id="auth-name"
                 type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={authName}
+                onChange={(e) => onNameChange(e.target.value)}
                 placeholder="Your name"
                 className={styles["auth-input"]}
                 autoComplete="name"

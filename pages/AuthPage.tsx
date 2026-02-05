@@ -9,6 +9,7 @@ const AuthPage: React.FC = () => {
     authStatus,
     authEmail,
     authPassword,
+    authName,
     authMessage,
     authError,
     isLoading,
@@ -16,6 +17,7 @@ const AuthPage: React.FC = () => {
     isSignUpMode,
     setAuthEmail,
     setAuthPassword,
+    setAuthName,
     toggleAuthMode,
     requestPasswordReset,
     signIn,
@@ -50,6 +52,7 @@ const AuthPage: React.FC = () => {
     <AuthShell
       authEmail={authEmail}
       authPassword={authPassword}
+      authName={authName}
       authMessage={authMessage}
       authError={authError}
       authStatus={authStatus}
@@ -58,6 +61,7 @@ const AuthPage: React.FC = () => {
       isSignUpMode={isSignUpMode}
       onEmailChange={setAuthEmail}
       onPasswordChange={setAuthPassword}
+      onNameChange={setAuthName}
       onToggleAuthMode={toggleAuthMode}
       onRequestPasswordReset={requestPasswordReset}
       onSignIn={signIn}

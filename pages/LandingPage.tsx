@@ -120,6 +120,7 @@ const LandingPage: React.FC = () => {
     authStatus,
     authEmail,
     authPassword,
+    authName,
     authMessage,
     authError,
     isLoading,
@@ -128,6 +129,7 @@ const LandingPage: React.FC = () => {
     requestPasswordReset,
     setAuthEmail,
     setAuthPassword,
+    setAuthName,
     toggleAuthMode,
     signIn,
     signUp,
@@ -511,6 +513,7 @@ const LandingPage: React.FC = () => {
               onRequestPasswordReset={requestPasswordReset}
               authEmail={authEmail}
               authPassword={authPassword}
+              authName={authName}
               authMessage={authMessage}
               authError={authError}
               authStatus={authStatus}
@@ -518,6 +521,7 @@ const LandingPage: React.FC = () => {
               isSignUpMode={isSignUpMode}
               onEmailChange={setAuthEmail}
               onPasswordChange={setAuthPassword}
+              onNameChange={setAuthName}
               onToggleAuthMode={toggleAuthMode}
               onSignIn={signIn}
               onSignUp={signUp}
