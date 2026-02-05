@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AppMode,
   CaptionRules,
@@ -84,6 +84,17 @@ export const useImageGeneration = ({
     tiktok: string[];
     instagram: string[];
   }>({ tiktok: [], instagram: [] });
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isGenerating) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isGenerating]);
 
   const updateCaptionDisplay = useCallback(
     (results: { tiktok: string[]; instagram: string[] }) => {
