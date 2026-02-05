@@ -9937,6 +9937,29 @@
             },
             {
               "type": "frame",
+              "id": "Zq2nM",
+              "x": 724,
+              "y": 901,
+              "name": "config_menu_btn",
+              "width": 120,
+              "height": 32,
+              "fill": "#202022",
+              "cornerRadius": 16
+            },
+            {
+              "type": "text",
+              "id": "tq3nD",
+              "x": 736,
+              "y": 909,
+              "name": "config_menu_text",
+              "fill": "#C2C2C7",
+              "content": "Other Config >",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
               "id": "QL0o8",
               "x": 520,
               "y": 494,
@@ -16044,6 +16067,67 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "R6y1B",
+      "x": 17816,
+      "y": 1006,
+      "name": "config_menu",
+      "width": 256,
+      "height": 76,
+      "fill": "#1F2022",
+      "cornerRadius": 12,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "L8cQz",
+          "x": 10,
+          "y": 30,
+          "name": "configTransparentLabel",
+          "fill": "#D5D5DA",
+          "content": "Transparent background",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "m5XQ1",
+          "x": 10,
+          "y": 5,
+          "name": "configMenuTitle",
+          "fill": "#EDEDED",
+          "content": "OTHER CONFIG",
+          "fontFamily": "Inter",
+          "fontSize": 11,
+          "fontWeight": "normal",
+          "letterSpacing": 1
+        },
+        {
+          "type": "frame",
+          "id": "c4R0p",
+          "x": 190,
+          "y": 28,
+          "name": "config_toggle_track",
+          "width": 48,
+          "height": 24,
+          "fill": "#F0A84B",
+          "cornerRadius": 999
+        },
+        {
+          "type": "frame",
+          "id": "u2VyK",
+          "x": 220,
+          "y": 32,
+          "name": "config_toggle_knob",
+          "width": 16,
+          "height": 16,
+          "fill": "#1A1204",
+          "cornerRadius": 999
         }
       ]
     }
