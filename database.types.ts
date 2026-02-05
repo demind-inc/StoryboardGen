@@ -214,25 +214,25 @@ export interface Database {
       caption_settings: {
         Row: {
           user_id: string; // uuid, primary key, FOREIGN KEY references auth.users(id)
-          tiktok_rules: string[]; // text[]
-          instagram_rules: string[]; // text[]
-          custom_guidelines: string[]; // text[]
+          tiktok_rules: Json; // jsonb
+          instagram_rules: Json; // jsonb
+          custom_guidelines: Json; // jsonb
           created_at: string; // timestamptz, default now()
           updated_at: string; // timestamptz, default now()
         };
         Insert: {
           user_id: string; // uuid, FOREIGN KEY references auth.users(id)
-          tiktok_rules?: string[]; // text[]
-          instagram_rules?: string[]; // text[]
-          custom_guidelines?: string[]; // text[]
+          tiktok_rules?: Json; // jsonb
+          instagram_rules?: Json; // jsonb
+          custom_guidelines?: Json; // jsonb
           created_at?: string; // timestamptz
           updated_at?: string; // timestamptz
         };
         Update: {
           user_id?: string; // uuid, FOREIGN KEY references auth.users(id)
-          tiktok_rules?: string[]; // text[]
-          instagram_rules?: string[]; // text[]
-          custom_guidelines?: string[]; // text[]
+          tiktok_rules?: Json; // jsonb
+          instagram_rules?: Json; // jsonb
+          custom_guidelines?: Json; // jsonb
           created_at?: string | null; // timestamptz
           updated_at?: string | null; // timestamptz
         };

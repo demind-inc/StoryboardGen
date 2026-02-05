@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import {
   AppMode,
   CaptionRules,
+  CustomGuidelines,
   ImageSize,
   MonthlyUsage,
   ReferenceImage,
@@ -28,7 +29,7 @@ interface UseImageGenerationProps {
   size: ImageSize;
   planType: string;
   captionRules: CaptionRules;
-  guidelines: string[];
+  guidelines: CustomGuidelines;
   hasGeneratedFreeImage: boolean;
   isPaymentUnlocked: boolean;
   usage: MonthlyUsage | null;

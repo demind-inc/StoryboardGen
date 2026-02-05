@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { AppMode, SubscriptionPlan } from "../../types";
+import { AppMode, RuleGroup, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -17,19 +17,30 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
+const DEFAULT_GUIDELINES = DEFAULT_CUSTOM_GUIDELINES;
+
+const getNextCustomIndex = (rules: RuleGroup[]) => {
+  const existing = rules
+    .map((rule) => rule.name)
+    .filter((name) => name.toLowerCase().startsWith("custom"))
+    .map((name) => Number(name.replace(/[^0-9]/g, "")))
+    .filter((value) => Number.isFinite(value));
+  const maxIndex = existing.length ? Math.max(...existing) : 0;
+  return maxIndex + 1;
+};
+
 const CustomGuidelinesPage: React.FC = () => {
   const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [guidelines, setGuidelines] = useState<string[]>(
-    DEFAULT_CUSTOM_GUIDELINES
-  );
+  const [guidelines, setGuidelines] =
+    useState<RuleGroup[]>(DEFAULT_GUIDELINES);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
-  const [isListDirty, setIsListDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const lastInputRef = useRef<HTMLInputElement>(null);
+  const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (authStatus !== "signed_in" || !session?.user?.id) return;
@@ -39,7 +50,7 @@ const CustomGuidelinesPage: React.FC = () => {
         if (!isMounted) return;
         setGuidelines(settings.guidelines);
         setDirtyIndices(new Set());
-        setIsListDirty(false);
+        setEditingIndex(null);
       })
       .catch((error) => {
         console.error("Failed to load custom guidelines:", error);
@@ -58,35 +69,45 @@ const CustomGuidelinesPage: React.FC = () => {
 
   const handleGuidelineChange = (index: number, value: string) => {
     setGuidelines((prev) =>
-      prev.map((rule, idx) => (idx === index ? value : rule))
+      prev.map((rule, idx) =>
+        idx === index ? { ...rule, rule: value } : rule
+      )
     );
     setDirtyIndices((prev) => new Set(prev).add(index));
   };
 
-  const persistGuidelines = async (nextGuidelines: string[]) => {
+  const handleGuidelineNameChange = (index: number, name: string) => {
+    setGuidelines((prev) =>
+      prev.map((rule, idx) => (idx === index ? { ...rule, name } : rule))
+    );
+    setDirtyIndices((prev) => new Set(prev).add(index));
+  };
+
+  const persistGuidelines = async (nextGuidelines: RuleGroup[]) => {
     if (!session?.user?.id) return;
-    const previousDirty = new Set(dirtyIndices);
-    const previousIsListDirty = isListDirty;
     setIsSaving(true);
-    setDirtyIndices(new Set());
-    setIsListDirty(false);
     try {
       await updateCustomGuidelines(
         session.user.id,
         nextGuidelines
-          .map((rule) => rule.trim())
-          .filter((rule) => rule.length > 0)
+          .map((rule) => ({
+            ...rule,
+            name: rule.name?.trim() ?? "",
+            rule: rule.rule.trim(),
+          }))
+          .filter((rule) => rule.rule.length > 0)
       );
+      setDirtyIndices(new Set());
+      setEditingIndex(null);
     } catch (error) {
       console.error("Failed to save custom guidelines:", error);
-      setDirtyIndices(previousDirty);
-      setIsListDirty(previousIsListDirty);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDeleteGuideline = (index: number) => {
+    if (guidelines[index]?.isDefault) return;
     const nextGuidelines = guidelines.filter((_, i) => i !== index);
     setGuidelines(nextGuidelines);
     setDirtyIndices((prev) => {
@@ -97,22 +118,37 @@ const CustomGuidelinesPage: React.FC = () => {
       });
       return next;
     });
+    setEditingIndex((current) => {
+      if (current === null) return null;
+      if (current === index) return null;
+      if (current > index) return current - 1;
+      return current;
+    });
     void persistGuidelines(nextGuidelines);
   };
 
   const handleAddGuideline = () => {
     setGuidelines((prev) => {
-      const next = [...prev, ""];
+      const nextIndex = getNextCustomIndex(prev);
+      const next = [
+        ...prev,
+        { name: `Custom ${nextIndex}`, rule: "", isDefault: false },
+      ];
       setDirtyIndices((current) => new Set(current).add(next.length - 1));
       return next;
     });
     shouldFocusLastRef.current = true;
-    setIsListDirty(true);
+    setEditingIndex(guidelines.length);
   };
 
-  const handleSaveGuidelines = async () => {
-    if (!session?.user?.id || (dirtyIndices.size === 0 && !isListDirty)) return;
+  const handleSaveGuideline = async (index: number) => {
+    if (!session?.user?.id || !dirtyIndices.has(index)) return;
     await persistGuidelines(guidelines);
+  };
+
+  const handleEditGuideline = (index: number) => {
+    if (guidelines[index]?.isDefault) return;
+    setEditingIndex(index);
   };
 
   if (authStatus === "checking") {
@@ -180,49 +216,97 @@ const CustomGuidelinesPage: React.FC = () => {
             <section className={styles.rulesCard}>
               <h2>Guidelines</h2>
               <div className={`${styles.rulesList} custom-scrollbar`}>
-                {guidelines.map((rule, index) => (
-                  <div key={index} className={styles.ruleRow}>
-                    <input
-                      ref={
-                        index === guidelines.length - 1
-                          ? lastInputRef
-                          : undefined
-                      }
-                      value={rule}
-                      onChange={(event) =>
-                        handleGuidelineChange(index, event.target.value)
-                      }
-                      readOnly={false}
-                      className={styles.ruleInput}
-                      aria-label={`Guideline ${index + 1}`}
-                    />
-                    {!isSaving && (
-                      <button
-                        type="button"
-                        className={styles.deleteRule}
-                        onClick={() => handleDeleteGuideline(index)}
-                        aria-label={`Delete guideline ${index + 1}`}
-                      >
-                        Delete
-                      </button>
-                    )}
-                    {dirtyIndices.has(index) && !isSaving && (
-                      <button
-                        type="button"
-                        className={styles.saveRule}
-                        onClick={handleSaveGuidelines}
-                        aria-label="Save guidelines"
-                      >
-                        Save
-                      </button>
-                    )}
-                  </div>
-                ))}
+                {guidelines.map((rule, index) => {
+                  const isDefault = !!rule.isDefault;
+                  const isEditing = editingIndex === index;
+                  return (
+                    <div key={index} className={styles.ruleRow}>
+                      <div className={styles.ruleContent}>
+                        {isDefault ? (
+                          <p className={styles.ruleName}>{rule.name}</p>
+                        ) : (
+                          <input
+                            type="text"
+                            className={styles.ruleNameInput}
+                            value={rule.name}
+                            onChange={(e) =>
+                              handleGuidelineNameChange(index, e.target.value)
+                            }
+                            aria-label={`Guideline ${index + 1} name`}
+                            placeholder="Guideline name"
+                          />
+                        )}
+                        <textarea
+                          ref={
+                            index === guidelines.length - 1
+                              ? lastInputRef
+                              : undefined
+                          }
+                          value={rule.rule}
+                          onChange={(event) =>
+                            handleGuidelineChange(index, event.target.value)
+                          }
+                          readOnly={!isEditing}
+                          className={`${styles.ruleInput} ${
+                            !isEditing ? styles.ruleInputReadonly : ""
+                          }`}
+                          aria-label={`Guideline ${index + 1}`}
+                          rows={4}
+                        />
+                      </div>
+                      {!isDefault && (
+                        <div className={styles.ruleActions}>
+                          {!isEditing && rule.rule.trim().length > 0 && (
+                            <>
+                              <button
+                                type="button"
+                                className={styles.editRule}
+                                onClick={() => handleEditGuideline(index)}
+                                aria-label={`Edit guideline ${index + 1}`}
+                                disabled={isSaving}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.deleteRule}
+                                onClick={() => handleDeleteGuideline(index)}
+                                aria-label={`Delete guideline ${index + 1}`}
+                                disabled={isSaving}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {isEditing && (
+                            <button
+                              type="button"
+                              className={styles.saveRule}
+                              onClick={() => handleSaveGuideline(index)}
+                              aria-label={isSaving ? "Saving guidelines" : "Save guidelines"}
+                              disabled={!dirtyIndices.has(index) || isSaving}
+                            >
+                              {isSaving ? (
+                                <>
+                                  <span className={styles.saveSpinner} aria-hidden />
+                                  Saving
+                                </>
+                              ) : (
+                                "Save"
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <button
                 type="button"
                 className={styles.addRule}
                 onClick={handleAddGuideline}
+                disabled={isSaving}
               >
                 Add Guideline
               </button>

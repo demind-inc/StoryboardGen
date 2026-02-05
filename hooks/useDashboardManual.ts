@@ -16,7 +16,7 @@ import {
   DEFAULT_CUSTOM_GUIDELINES,
   getCaptionSettings,
 } from "../services/captionSettingsService";
-import type { CaptionRules } from "../types";
+import type { CaptionRules, CustomGuidelines } from "../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -103,7 +103,8 @@ export const useDashboardManual = ({
     "tiktok"
   );
   const [projectName, setProjectName] = useState(getDefaultProjectName);
-  const [guidelines, setGuidelines] = useState(DEFAULT_CUSTOM_GUIDELINES);
+  const [guidelines, setGuidelines] =
+    useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
 

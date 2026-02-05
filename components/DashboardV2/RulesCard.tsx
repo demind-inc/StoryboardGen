@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import type { CaptionRules } from "../../types";
 import { SettingsIcon, TikTokIcon, InstagramIcon } from "./DashboardIcons";
@@ -10,13 +10,24 @@ export interface RulesCardProps {
 
 const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
   const router = useRouter();
-  const formatBullet = (rule: string) => {
-    const trimmed = rule.trim();
-    if (!trimmed) return "";
-    return trimmed.startsWith("・") ? trimmed : `・${trimmed}`;
-  };
-  const tiktokDisplay = rules.tiktok.map(formatBullet).join("\n");
-  const instagramDisplay = rules.instagram.map(formatBullet).join("\n");
+  const [selectedTiktokIndex, setSelectedTiktokIndex] = useState(0);
+  const [selectedInstagramIndex, setSelectedInstagramIndex] = useState(0);
+
+  const tiktokGroups = rules.tiktok;
+  const instagramGroups = rules.instagram;
+
+  useEffect(() => {
+    if (selectedTiktokIndex >= tiktokGroups.length)
+      setSelectedTiktokIndex(Math.max(0, tiktokGroups.length - 1));
+  }, [tiktokGroups.length, selectedTiktokIndex]);
+  useEffect(() => {
+    if (selectedInstagramIndex >= instagramGroups.length)
+      setSelectedInstagramIndex(Math.max(0, instagramGroups.length - 1));
+  }, [instagramGroups.length, selectedInstagramIndex]);
+  const selectedTiktok =
+    tiktokGroups[Math.min(selectedTiktokIndex, tiktokGroups.length - 1)];
+  const selectedInstagram =
+    instagramGroups[Math.min(selectedInstagramIndex, instagramGroups.length - 1)];
 
   return (
     <section className={styles.card}>
@@ -43,9 +54,34 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
               <SettingsIcon />
             </button>
           </div>
-          <div className={styles.ruleText} aria-label="TikTok caption rules">
-            {tiktokDisplay}
-          </div>
+          {tiktokGroups.length > 0 ? (
+            <>
+              <select
+                className={styles.ruleSelector}
+                value={Math.min(selectedTiktokIndex, tiktokGroups.length - 1)}
+                onChange={(e) =>
+                  setSelectedTiktokIndex(Number(e.target.value))
+                }
+                aria-label="Select TikTok rule group"
+              >
+                {tiktokGroups.map((group, i) => (
+                  <option key={i} value={i}>
+                    {group.name || `Rule ${i + 1}`}
+                  </option>
+                ))}
+              </select>
+              <div
+                className={styles.ruleText}
+                aria-label="TikTok caption rules"
+              >
+                {selectedTiktok?.rule?.trim() || "—"}
+              </div>
+            </>
+          ) : (
+            <div className={styles.ruleText} aria-label="TikTok caption rules">
+              —
+            </div>
+          )}
         </div>
         <div className={styles.ruleList}>
           <div className={styles.cardTitleRow}>
@@ -62,12 +98,40 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
               <SettingsIcon />
             </button>
           </div>
-          <div
-            className={`${styles.ruleText} ${styles.ruleTextareaInstagram}`}
-            aria-label="Instagram caption rules"
-          >
-            {instagramDisplay}
-          </div>
+          {instagramGroups.length > 0 ? (
+            <>
+              <select
+                className={styles.ruleSelector}
+                value={Math.min(
+                  selectedInstagramIndex,
+                  instagramGroups.length - 1
+                )}
+                onChange={(e) =>
+                  setSelectedInstagramIndex(Number(e.target.value))
+                }
+                aria-label="Select Instagram rule group"
+              >
+                {instagramGroups.map((group, i) => (
+                  <option key={i} value={i}>
+                    {group.name || `Rule ${i + 1}`}
+                  </option>
+                ))}
+              </select>
+              <div
+                className={styles.ruleText}
+                aria-label="Instagram caption rules"
+              >
+                {selectedInstagram?.rule?.trim() || "—"}
+              </div>
+            </>
+          ) : (
+            <div
+              className={styles.ruleText}
+              aria-label="Instagram caption rules"
+            >
+              —
+            </div>
+          )}
         </div>
       </div>
     </section>

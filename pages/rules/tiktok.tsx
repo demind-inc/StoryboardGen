@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { AppMode, SubscriptionPlan } from "../../types";
+import { AppMode, RuleGroup, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import {
+  DEFAULT_CAPTION_RULES,
   getCaptionSettings,
   updateCaptionRulesForPlatform,
 } from "../../services/captionSettingsService";
@@ -16,23 +17,29 @@ const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   business: "$79/mo",
 };
 
-const DEFAULT_RULES = [
-  "Slightly long captions with line breaks",
-  "Natural brand mention integration",
-  "Exactly 5 approved hashtags",
-];
+const DEFAULT_RULES = DEFAULT_CAPTION_RULES.tiktok;
+
+const getNextCustomIndex = (rules: RuleGroup[]) => {
+  const existing = rules
+    .map((rule) => rule.name)
+    .filter((name) => name.toLowerCase().startsWith("custom"))
+    .map((name) => Number(name.replace(/[^0-9]/g, "")))
+    .filter((value) => Number.isFinite(value));
+  const maxIndex = existing.length ? Math.max(...existing) : 0;
+  return maxIndex + 1;
+};
 
 const TikTokRulesPage: React.FC = () => {
   const { authStatus, displayEmail, signOut, session } = useAuth();
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [rules, setRules] = useState<string[]>(DEFAULT_RULES);
+  const [rules, setRules] = useState<RuleGroup[]>(DEFAULT_RULES);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
-  const [isListDirty, setIsListDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const lastInputRef = useRef<HTMLInputElement>(null);
+  const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (authStatus !== "signed_in" || !session?.user?.id) return;
@@ -42,7 +49,7 @@ const TikTokRulesPage: React.FC = () => {
         if (!isMounted) return;
         setRules(settings.rules.tiktok);
         setDirtyIndices(new Set());
-        setIsListDirty(false);
+        setEditingIndex(null);
       })
       .catch((error) => {
         console.error("Failed to load caption rules:", error);
@@ -60,21 +67,36 @@ const TikTokRulesPage: React.FC = () => {
   }, [rules]);
 
   const handleRuleChange = (index: number, value: string) => {
-    setRules((prev) => prev.map((rule, idx) => (idx === index ? value : rule)));
+    setRules((prev) =>
+      prev.map((rule, idx) => (idx === index ? { ...rule, rule: value } : rule))
+    );
     setDirtyIndices((prev) => new Set(prev).add(index));
   };
 
-  const persistRules = async (nextRules: string[]) => {
+  const handleRuleNameChange = (index: number, name: string) => {
+    setRules((prev) =>
+      prev.map((rule, idx) => (idx === index ? { ...rule, name } : rule))
+    );
+    setDirtyIndices((prev) => new Set(prev).add(index));
+  };
+
+  const persistRules = async (nextRules: RuleGroup[]) => {
     if (!session?.user?.id) return;
     setIsSaving(true);
     try {
       await updateCaptionRulesForPlatform(
         session.user.id,
         "tiktok",
-        nextRules.map((rule) => rule.trim()).filter((rule) => rule.length > 0)
+        nextRules
+          .map((rule) => ({
+            ...rule,
+            name: rule.name?.trim() ?? "",
+            rule: rule.rule.trim(),
+          }))
+          .filter((rule) => rule.rule.length > 0)
       );
       setDirtyIndices(new Set());
-      setIsListDirty(false);
+      setEditingIndex(null);
     } catch (error) {
       console.error("Failed to save caption rules:", error);
     } finally {
@@ -83,6 +105,7 @@ const TikTokRulesPage: React.FC = () => {
   };
 
   const handleDeleteRule = (index: number) => {
+    if (rules[index]?.isDefault) return;
     const nextRules = rules.filter((_, i) => i !== index);
     setRules(nextRules);
     setDirtyIndices((prev) => {
@@ -93,22 +116,37 @@ const TikTokRulesPage: React.FC = () => {
       });
       return next;
     });
+    setEditingIndex((current) => {
+      if (current === null) return null;
+      if (current === index) return null;
+      if (current > index) return current - 1;
+      return current;
+    });
     void persistRules(nextRules);
   };
 
   const handleAddRule = () => {
     setRules((prev) => {
-      const next = [...prev, ""];
+      const nextIndex = getNextCustomIndex(prev);
+      const next = [
+        ...prev,
+        { name: `Custom ${nextIndex}`, rule: "", isDefault: false },
+      ];
       setDirtyIndices((current) => new Set(current).add(next.length - 1));
       return next;
     });
     shouldFocusLastRef.current = true;
-    setIsListDirty(true);
+    setEditingIndex(rules.length);
   };
 
-  const handleSaveRules = async () => {
-    if (!session?.user?.id || (dirtyIndices.size === 0 && !isListDirty)) return;
+  const handleSaveRule = async (index: number) => {
+    if (!session?.user?.id || !dirtyIndices.has(index)) return;
     await persistRules(rules);
+  };
+
+  const handleEditRule = (index: number) => {
+    if (rules[index]?.isDefault) return;
+    setEditingIndex(index);
   };
 
   if (authStatus === "checking") {
@@ -174,49 +212,99 @@ const TikTokRulesPage: React.FC = () => {
             </header>
 
             <section className={styles.rulesCard}>
-              <h2>Caption Rules</h2>
+              <h2>Rules</h2>
               <div className={styles.rulesList}>
-                {rules.map((rule, index) => (
-                  <div key={index} className={styles.ruleRow}>
-                    <input
-                      ref={
-                        index === rules.length - 1 ? lastInputRef : undefined
-                      }
-                      value={rule}
-                      onChange={(event) =>
-                        handleRuleChange(index, event.target.value)
-                      }
-                      readOnly={false}
-                      className={styles.ruleInput}
-                      aria-label={`Rule ${index + 1}`}
-                    />
-                    {!isSaving && (
-                      <button
-                        type="button"
-                        className={styles.deleteRule}
-                        onClick={() => handleDeleteRule(index)}
-                        aria-label={`Delete rule ${index + 1}`}
-                      >
-                        Delete
-                      </button>
-                    )}
-                    {dirtyIndices.has(index) && !isSaving && (
-                      <button
-                        type="button"
-                        className={styles.saveRule}
-                        onClick={handleSaveRules}
-                        aria-label="Save rules"
-                      >
-                        Save
-                      </button>
-                    )}
-                  </div>
-                ))}
+                {rules.map((rule, index) => {
+                  const isDefault = !!rule.isDefault;
+                  const isEditing = editingIndex === index;
+                  return (
+                    <div key={index} className={styles.ruleRow}>
+                      <div className={styles.ruleContent}>
+                        {isDefault ? (
+                          <p className={styles.ruleName}>{rule.name}</p>
+                        ) : (
+                          <input
+                            type="text"
+                            className={styles.ruleNameInput}
+                            value={rule.name}
+                            onChange={(e) =>
+                              handleRuleNameChange(index, e.target.value)
+                            }
+                            aria-label={`Rule ${index + 1} name`}
+                            placeholder="Rule name"
+                          />
+                        )}
+                        <textarea
+                          ref={
+                            index === rules.length - 1
+                              ? lastInputRef
+                              : undefined
+                          }
+                          value={rule.rule}
+                          onChange={(event) =>
+                            handleRuleChange(index, event.target.value)
+                          }
+                          readOnly={!isEditing}
+                          className={`${styles.ruleInput} ${
+                            !isEditing ? styles.ruleInputReadonly : ""
+                          }`}
+                          aria-label={`Rule ${index + 1}`}
+                          rows={4}
+                        />
+                      </div>
+                      {!isDefault && (
+                        <div className={styles.ruleActions}>
+                          {!isEditing && rule.rule.trim().length > 0 && (
+                            <>
+                              <button
+                                type="button"
+                                className={styles.editRule}
+                                onClick={() => handleEditRule(index)}
+                                aria-label={`Edit rule ${index + 1}`}
+                                disabled={isSaving}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.deleteRule}
+                                onClick={() => handleDeleteRule(index)}
+                                aria-label={`Delete rule ${index + 1}`}
+                                disabled={isSaving}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {isEditing && (
+                            <button
+                              type="button"
+                              className={styles.saveRule}
+                              onClick={() => handleSaveRule(index)}
+                              aria-label={isSaving ? "Saving rules" : "Save rules"}
+                              disabled={!dirtyIndices.has(index) || isSaving}
+                            >
+                              {isSaving ? (
+                                <>
+                                  <span className={styles.saveSpinner} aria-hidden />
+                                  Saving
+                                </>
+                              ) : (
+                                "Save"
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <button
                 type="button"
                 className={styles.addRule}
                 onClick={handleAddRule}
+                disabled={isSaving}
               >
                 Add Rule
               </button>

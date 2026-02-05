@@ -1,8 +1,11 @@
+-- Caption settings table (create if not exists).
+-- If caption_settings already exists, run supabase-caption-settings-migration.sql instead to add missing columns.
+
 create table if not exists public.caption_settings (
   user_id uuid primary key references auth.users (id) on delete cascade,
-  tiktok_rules text[] not null default '{}',
-  instagram_rules text[] not null default '{}',
-  custom_guidelines text[] not null default '{}',
+  tiktok_rules jsonb not null default '[]'::jsonb,
+  instagram_rules jsonb not null default '[]'::jsonb,
+  custom_guidelines jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

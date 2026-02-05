@@ -57,10 +57,18 @@ export interface MonthlyUsage {
   remaining: number;
 }
 
-export interface CaptionRules {
-  tiktok: string[];
-  instagram: string[];
+export interface RuleGroup {
+  name: string;
+  rule: string;
+  isDefault?: boolean;
 }
+
+export interface CaptionRules {
+  tiktok: RuleGroup[];
+  instagram: RuleGroup[];
+}
+
+export type CustomGuidelines = RuleGroup[];
 
 export interface ProjectSummary {
   id: string;

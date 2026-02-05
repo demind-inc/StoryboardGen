@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import DashboardLayout from "../../components/DashboardV2/DashboardLayout";
+import {
+  DEFAULT_CAPTION_RULES,
+  DEFAULT_CUSTOM_GUIDELINES,
+} from "../../services/captionSettingsService";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import { generateCharacterScene } from "../../services/geminiService";
 import { saveProjectOutput } from "../../services/projectService";
@@ -249,8 +253,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         disableGenerate
         onGenerateAll={handleRegenerateAll}
         onRegenerateActive={() => {}}
-        rules={{ tiktok: [], instagram: [] }}
-        guidelines={[]}
+        rules={DEFAULT_CAPTION_RULES}
+        guidelines={DEFAULT_CUSTOM_GUIDELINES}
         onGuidelinesChange={() => {}}
         captions={captions}
         results={displayResults}

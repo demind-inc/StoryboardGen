@@ -1,5 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
-import type { CaptionRules, ReferenceImage, ImageSize } from "../types";
+import type {
+  CaptionRules,
+  CustomGuidelines,
+  ReferenceImage,
+  ImageSize,
+} from "../types";
 import {
   DEFAULT_CHARACTER_PROMPT,
   MODEL_NAME,
@@ -10,7 +15,7 @@ export async function generateCharacterScene(
   prompt: string,
   references: ReferenceImage[],
   size: ImageSize,
-  guidelines: string[] = []
+  guidelines: CustomGuidelines = []
 ): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -25,7 +30,9 @@ export async function generateCharacterScene(
     },
   }));
 
-  const guidelineList = guidelines.map((rule) => `- ${rule}`).join("\n");
+  const guidelineList = guidelines
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
   const fullPrompt = `
 ${DEFAULT_CHARACTER_PROMPT}
 
@@ -87,7 +94,7 @@ export async function generateSceneCaptions(
   prompts: string[],
   references: ReferenceImage[],
   rules: CaptionRules,
-  guidelines: string[]
+  guidelines: CustomGuidelines
 ): Promise<{ tiktok: string[]; instagram: string[] }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -105,9 +112,13 @@ export async function generateSceneCaptions(
   const sceneList = prompts
     .map((scene, idx) => `${idx + 1}. ${scene}`)
     .join("\n");
-  const tiktokRules = rules.tiktok.map((rule) => `- ${rule}`).join("\n");
-  const instagramRules = rules.instagram.map((rule) => `- ${rule}`).join("\n");
-  const guidelineList = guidelines.map((rule) => `- ${rule}`).join("\n");
+  const tiktokRules = rules.tiktok.map((group) => `- ${group.rule}`).join("\n");
+  const instagramRules = rules.instagram
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
+  const guidelineList = guidelines
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
 
   const captionPrompt = `
 You are a social media copywriter.

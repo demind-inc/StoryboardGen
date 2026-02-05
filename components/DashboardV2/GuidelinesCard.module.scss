@@ -55,6 +55,32 @@
   color: var(--muted);
 }
 
+.ruleSelector {
+  width: 100%;
+  max-width: 240px;
+  padding: 8px 12px;
+  font-size: var(--fs-13);
+  color: var(--text);
+  background: #2e2e2e;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.ruleSelector:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ruleSelector:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .editIcon {
   display: inline-flex;
   align-items: center;

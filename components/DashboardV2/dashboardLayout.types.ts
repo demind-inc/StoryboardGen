@@ -1,4 +1,9 @@
-import { CaptionRules, ReferenceImage, SceneResult } from "../../types";
+import {
+  CaptionRules,
+  CustomGuidelines,
+  ReferenceImage,
+  SceneResult,
+} from "../../types";
 
 export interface DashboardLayoutProps {
   projectName: string;
@@ -19,8 +24,8 @@ export interface DashboardLayoutProps {
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
   rules: CaptionRules;
-  guidelines: string[];
-  onGuidelinesChange?: (guidelines: string[]) => void;
+  guidelines: CustomGuidelines;
+  onGuidelinesChange?: (guidelines: CustomGuidelines) => void;
   captions: {
     tiktok: string;
     instagram: string;
