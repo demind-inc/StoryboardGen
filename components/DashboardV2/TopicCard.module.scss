@@ -1,0 +1,106 @@
+.card {
+  background: var(--card-bg);
+  border: none;
+  border-radius: var(--card-radius, 12px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: var(--fs-15);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardDescription {
+  margin: 4px 0 0;
+  font-size: var(--fs-14);
+  color: var(--muted);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.cardBody {
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.topicInput {
+  flex: 1;
+  min-width: 220px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #2a2a2a;
+  color: var(--text);
+  padding: 0 12px;
+  font-size: var(--fs-14);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.topicInput::placeholder {
+  color: var(--muted);
+}
+
+.topicInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.2);
+}
+
+.generateButton {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #111111;
+  font-weight: 700;
+  font-size: var(--fs-14);
+  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.generateButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.generateButton:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.error {
+  color: #ff7a7a;
+  font-size: var(--fs-13);
+  margin: 0;
+}
+
+.hint {
+  font-size: var(--fs-13);
+  color: var(--muted);
+  margin: 0;
+}

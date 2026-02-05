@@ -96,6 +96,70 @@ const extractJson = (rawText: string): string => {
   return cleaned.slice(start, end + 1);
 };
 
+const extractJsonArray = (rawText: string): string => {
+  const cleaned = rawText.replace(/```json|```/gi, "").trim();
+  const start = cleaned.indexOf("[");
+  const end = cleaned.lastIndexOf("]");
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error("SCENE_SUGGEST_PARSE_ERROR");
+  }
+  return cleaned.slice(start, end + 1);
+};
+
+export async function generateSceneSuggestions(
+  topic: string,
+  count = 4
+): Promise<string[]> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("KEY_NOT_FOUND");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
+  const prompt = `
+You are a storyboard assistant.
+Generate ${count} concise scene prompts based on the topic below.
+Each prompt should describe a clear, concrete visual moment with a setting, subject, and action.
+Keep each prompt to 1-2 sentences.
+Avoid repeating the same setting or action.
+
+Topic:
+${topic}
+
+Output JSON only as an array of strings, e.g.
+["Scene 1", "Scene 2", "Scene 3", "Scene 4"]
+`.trim();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: CAPTION_MODEL_NAME,
+      contents: {
+        parts: [{ text: prompt }],
+      },
+    });
+
+    const responseText =
+      response.candidates?.[0]?.content?.parts
+        ?.map((part) => (part as any).text || "")
+        .join("") || "";
+
+    const parsed = JSON.parse(extractJsonArray(responseText));
+    if (!Array.isArray(parsed)) {
+      throw new Error("SCENE_SUGGEST_PARSE_ERROR");
+    }
+
+    return parsed
+      .map((item) => String(item || "").trim())
+      .filter((item) => item.length > 0)
+      .slice(0, count);
+  } catch (error: any) {
+    if (error.message?.includes("Requested entity was not found")) {
+      throw new Error("KEY_NOT_FOUND");
+    }
+    throw error;
+  }
+}
+
 export async function generateSceneCaptions(
   prompts: string[],
   references: ReferenceImage[],

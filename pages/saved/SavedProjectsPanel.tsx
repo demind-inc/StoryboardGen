@@ -278,6 +278,11 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         onUpload={() => {}}
         onOpenLibrary={() => {}}
         onRemoveReference={() => {}}
+        topic=""
+        onTopicChange={() => {}}
+        onGenerateTopicScenes={() => {}}
+        isTopicGenerating={false}
+        topicError={null}
         promptList={selectedProject.prompts}
         activeSceneIndex={0}
         onSceneSelect={() => {}}

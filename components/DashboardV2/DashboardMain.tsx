@@ -42,6 +42,11 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     setManualResults,
     projectName,
     setProjectName,
+    topic,
+    setTopic,
+    generateTopicScenes,
+    isTopicGenerating,
+    topicError,
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
@@ -73,6 +78,11 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onUpload={triggerUpload}
         onOpenLibrary={() => setIsReferenceLibraryOpen(true)}
         onRemoveReference={removeReference}
+        topic={topic}
+        onTopicChange={setTopic}
+        onGenerateTopicScenes={generateTopicScenes}
+        isTopicGenerating={isTopicGenerating}
+        topicError={topicError}
         promptList={displayPromptList}
         activeSceneIndex={activeSceneIndex}
         onSceneSelect={setActiveSceneIndex}

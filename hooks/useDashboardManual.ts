@@ -17,6 +17,7 @@ import {
 import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
 import type { CaptionRules, CustomGuidelines } from "../types";
+import { generateSceneSuggestions } from "../services/geminiService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -109,6 +110,9 @@ export const useDashboardManual = ({
     "tiktok"
   );
   const [projectName, setProjectName] = useState(getDefaultProjectName);
+  const [topic, setTopic] = useState("");
+  const [isTopicGenerating, setIsTopicGenerating] = useState(false);
+  const [topicError, setTopicError] = useState<string | null>(null);
   const [guidelines, setGuidelines] =
     useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
@@ -252,6 +256,33 @@ export const useDashboardManual = ({
     [promptList.length, handleRemovePrompt]
   );
 
+  const handleTopicChange = useCallback((value: string) => {
+    setTopic(value);
+    setTopicError(null);
+  }, []);
+
+  const generateTopicScenes = useCallback(async () => {
+    const trimmed = topic.trim();
+    if (!trimmed || isTopicGenerating) return;
+
+    setIsTopicGenerating(true);
+    setTopicError(null);
+
+    try {
+      const suggestions = await generateSceneSuggestions(trimmed, 4);
+      if (!suggestions.length) {
+        throw new Error("No suggestions returned");
+      }
+      setManualPrompts(suggestions.join("\n"));
+      setActiveSceneIndex(0);
+    } catch (error) {
+      console.error("Failed to generate scene suggestions:", error);
+      setTopicError("Couldn't generate scenes. Please try again.");
+    } finally {
+      setIsTopicGenerating(false);
+    }
+  }, [topic, isTopicGenerating, setActiveSceneIndex, setManualPrompts]);
+
   return {
     usage,
     isUsageLoading,
@@ -286,6 +317,11 @@ export const useDashboardManual = ({
     setCaptionTab,
     projectName,
     setProjectName,
+    topic,
+    setTopic: handleTopicChange,
+    generateTopicScenes,
+    isTopicGenerating,
+    topicError,
     guidelines,
     setGuidelines,
     rules,
