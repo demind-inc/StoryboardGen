@@ -26,17 +26,16 @@
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
   font-size: var(--fs-14);
   color: var(--muted);
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardBody {
@@ -98,8 +97,7 @@
 .ruleTextarea {
   width: 100%;
   min-height: 110px;
-  max-height: 140px;
-  resize: vertical;
+  resize: none;
   background: #2e2e2e;
   border: 1px solid transparent;
   border-radius: 10px;
@@ -107,9 +105,10 @@
   color: var(--text);
   font-size: var(--fs-11);
   line-height: 1.6;
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   white-space: pre-wrap;
-  overflow-y: auto;
+  overflow: visible;
+  field-sizing: content;
 }
 
 .ruleTextarea:focus {

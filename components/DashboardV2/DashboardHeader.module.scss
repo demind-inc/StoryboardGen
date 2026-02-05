@@ -17,14 +17,14 @@
   text-transform: uppercase;
   font-weight: 600;
   color: var(--accent);
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .projectTitle {
   font-size: var(--fs-30);
   font-weight: 600;
   margin: 0;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .projectTitleInput {
@@ -36,7 +36,7 @@
   border: none;
   padding: 0;
   width: 100%;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .projectTitleInput:focus {

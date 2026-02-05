@@ -72,6 +72,7 @@ body {
     letter-spacing: 0.2em;
     margin: 0 0 12px;
     color: #94a3b8;
+    font-weight: 600;
   }
 
   &__title {
@@ -85,6 +86,11 @@ body {
     font-size: var(--fs-15);
     color: #cbd5f5;
   }
+}
+
+textarea,
+p {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @media (max-width: 768px) {
@@ -325,7 +331,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.22em;
     font-size: var(--fs-12);
-    font-weight: 900;
+    font-weight: 600;
     color: #a855f7;
   }
 
@@ -362,8 +368,8 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 20px;
-  font-size: var(--fs-17);
-  font-weight: 800;
+  font-size: var(--fs-15);
+  font-weight: 600;
   color: #ffffff;
   background: linear-gradient(135deg, #6366f1, #7c3aed);
   box-shadow: 0 12px 24px rgba(99, 102, 241, 0.24);

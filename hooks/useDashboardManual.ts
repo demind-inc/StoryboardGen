@@ -113,6 +113,7 @@ export const useDashboardManual = ({
   const [topic, setTopic] = useState("");
   const [isTopicGenerating, setIsTopicGenerating] = useState(false);
   const [topicError, setTopicError] = useState<string | null>(null);
+  const [transparentBackground, setTransparentBackground] = useState(true);
   const [guidelines, setGuidelines] =
     useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
@@ -160,6 +161,7 @@ export const useDashboardManual = ({
     planType,
     captionRules: rules,
     guidelines,
+    transparentBackground,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
     usage,
@@ -322,6 +324,8 @@ export const useDashboardManual = ({
     generateTopicScenes,
     isTopicGenerating,
     topicError,
+    transparentBackground,
+    setTransparentBackground,
     guidelines,
     setGuidelines,
     rules,

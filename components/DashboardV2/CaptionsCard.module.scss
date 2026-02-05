@@ -19,17 +19,16 @@
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   margin: 0;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
   font-size: var(--fs-14);
   color: var(--muted);
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardBody {

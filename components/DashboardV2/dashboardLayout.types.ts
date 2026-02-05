@@ -28,6 +28,8 @@ export interface DashboardLayoutProps {
   disableGenerate: boolean;
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
+  transparentBackground: boolean;
+  onTransparentBackgroundChange: (value: boolean) => void;
   rules: CaptionRules;
   guidelines: CustomGuidelines;
   onGuidelinesChange?: (guidelines: CustomGuidelines) => void;

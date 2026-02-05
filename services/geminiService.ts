@@ -6,7 +6,9 @@ import type {
   ImageSize,
 } from "../types";
 import {
-  DEFAULT_CHARACTER_PROMPT,
+  DEFAULT_CHARACTER_PROMPT_BASE,
+  DEFAULT_CHARACTER_BACKGROUND_SCENE,
+  DEFAULT_CHARACTER_BACKGROUND_TRANSPARENT,
   MODEL_NAME,
   CAPTION_MODEL_NAME,
 } from "./constants";
@@ -18,7 +20,8 @@ export async function generateCharacterScene(
   prompt: string,
   references: ReferenceImage[],
   size: ImageSize,
-  guidelines: CustomGuidelines = []
+  guidelines: CustomGuidelines = [],
+  options: { transparentBackground?: boolean } = {}
 ): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -36,8 +39,15 @@ export async function generateCharacterScene(
   const guidelineList = guidelines
     .map((group) => `- ${group.rule}`)
     .join("\n");
+  const transparentBackground = options.transparentBackground ?? true;
+  const backgroundPrompt = transparentBackground
+    ? DEFAULT_CHARACTER_BACKGROUND_TRANSPARENT
+    : DEFAULT_CHARACTER_BACKGROUND_SCENE;
+
   const fullPrompt = `
-${DEFAULT_CHARACTER_PROMPT}
+${DEFAULT_CHARACTER_PROMPT_BASE}
+
+${backgroundPrompt}
 
 ### Brand / Scene (default)
 ${BRAND_DEFAULT_CONTEXT}

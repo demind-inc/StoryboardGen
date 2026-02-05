@@ -47,6 +47,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     generateTopicScenes,
     isTopicGenerating,
     topicError,
+    transparentBackground,
+    setTransparentBackground,
   } = dashboard;
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
@@ -90,6 +92,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onRemoveScene={removeScene}
         onSavePrompt={handleSavePrompt}
         previewImageUrl={activePreviewUrl}
+        transparentBackground={transparentBackground}
+        onTransparentBackgroundChange={setTransparentBackground}
         isGenerating={isGenerating}
         disableGenerate={disableGenerate}
         onGenerateAll={startGeneration}
