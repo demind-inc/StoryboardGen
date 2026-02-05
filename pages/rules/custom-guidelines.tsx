@@ -42,6 +42,11 @@ const CustomGuidelinesPage: React.FC = () => {
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
   const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
+  const cancelSnapshotRef = useRef<{
+    isNew?: boolean;
+    name: string;
+    rule: string;
+  } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const isSaving = updateGuidelinesMutation.isPending;
 
@@ -118,6 +123,7 @@ const CustomGuidelinesPage: React.FC = () => {
   };
 
   const handleAddGuideline = () => {
+    cancelSnapshotRef.current = { isNew: true, name: "", rule: "" };
     setGuidelines((prev) => {
       const nextIndex = getNextCustomIndex(prev);
       const next = [
@@ -138,7 +144,39 @@ const CustomGuidelinesPage: React.FC = () => {
 
   const handleEditGuideline = (index: number) => {
     if (guidelines[index]?.isDefault) return;
+    cancelSnapshotRef.current = {
+      name: guidelines[index].name ?? "",
+      rule: guidelines[index].rule ?? "",
+    };
     setEditingIndex(index);
+  };
+
+  const handleCancelGuideline = (index: number) => {
+    const snap = cancelSnapshotRef.current;
+    if (snap?.isNew) {
+      setGuidelines((prev) => prev.filter((_, i) => i !== index));
+      setDirtyIndices((prev) => {
+        const next = new Set<number>();
+        prev.forEach((dirtyIndex) => {
+          if (dirtyIndex < index) next.add(dirtyIndex);
+          if (dirtyIndex > index) next.add(dirtyIndex - 1);
+        });
+        return next;
+      });
+    } else if (snap) {
+      setGuidelines((prev) =>
+        prev.map((rule, i) =>
+          i === index ? { ...rule, name: snap.name, rule: snap.rule } : rule
+        )
+      );
+      setDirtyIndices((prev) => {
+        const next = new Set(prev);
+        next.delete(index);
+        return next;
+      });
+    }
+    cancelSnapshotRef.current = null;
+    setEditingIndex(null);
   };
 
   if (authStatus === "checking") {
@@ -223,7 +261,7 @@ const CustomGuidelinesPage: React.FC = () => {
                       <div className={styles.ruleContent}>
                         {isDefault ? (
                           <p className={styles.ruleName}>{rule.name}</p>
-                        ) : (
+                        ) : isEditing ? (
                           <input
                             type="text"
                             className={styles.ruleNameInput}
@@ -234,6 +272,8 @@ const CustomGuidelinesPage: React.FC = () => {
                             aria-label={`Guideline ${index + 1} name`}
                             placeholder="Guideline name"
                           />
+                        ) : (
+                          <p className={styles.ruleName}>{rule.name}</p>
                         )}
                         <textarea
                           ref={
@@ -278,22 +318,33 @@ const CustomGuidelinesPage: React.FC = () => {
                             </>
                           )}
                           {isEditing && (
-                            <button
-                              type="button"
-                              className={styles.saveRule}
-                              onClick={() => handleSaveGuideline(index)}
-                              aria-label={isSaving ? "Saving guidelines" : "Save guidelines"}
-                              disabled={!dirtyIndices.has(index) || isSaving}
-                            >
-                              {isSaving ? (
-                                <>
-                                  <span className={styles.saveSpinner} aria-hidden />
-                                  Saving
-                                </>
-                              ) : (
-                                "Save"
-                              )}
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={styles.cancelRule}
+                                onClick={() => handleCancelGuideline(index)}
+                                aria-label="Cancel editing"
+                                disabled={isSaving}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.saveRule}
+                                onClick={() => handleSaveGuideline(index)}
+                                aria-label={isSaving ? "Saving guidelines" : "Save guidelines"}
+                                disabled={!dirtyIndices.has(index) || isSaving}
+                              >
+                                {isSaving ? (
+                                  <>
+                                    <span className={styles.saveSpinner} aria-hidden />
+                                    Saving
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </button>
+                            </>
                           )}
                         </div>
                       )}
