@@ -232,26 +232,17 @@ const Results: React.FC<ResultsProps> = ({
                 </div>
                 <div className={styles.resultMeta}>
                   <div className={styles.sceneHeader}>
-                    <div className={styles.sceneTitle}>Scene {idx + 1}</div>
-                    {result.title && (
-                      <>
-                        <span className={styles.sceneTitleDivider}>•</span>
-                        <span className={styles.sceneTitleText}>
-                          {result.title}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  {result.description && (
-                    <div className={styles.sceneDescription}>
-                      {result.description}
+                    <div className={styles.sceneHeaderTitle}>
+                      <span className={styles.sceneTitle}>Scene {idx + 1}</span>
+                      {result.title && (
+                        <>
+                          <span className={styles.sceneTitleDivider}>•</span>
+                          <span className={styles.sceneTitleText}>
+                            {result.title}
+                          </span>
+                        </>
+                      )}
                     </div>
-                  )}
-                  <div className={styles.promptBlock}>
-                    <div className={styles.promptLabel}>Prompt</div>
-                    <div className={styles.promptText}>{result.prompt}</div>
-                  </div>
-                  <div className={styles.downloadRow}>
                     <a
                       className={`${styles.downloadButton} ${
                         !hasImage || isGenerating
@@ -269,6 +260,15 @@ const Results: React.FC<ResultsProps> = ({
                     >
                       Download
                     </a>
+                  </div>
+                  {result.description && (
+                    <div className={styles.sceneDescription}>
+                      {result.description}
+                    </div>
+                  )}
+                  <div className={styles.promptBlock}>
+                    <div className={styles.promptLabel}>Prompt</div>
+                    <div className={styles.promptText}>{result.prompt}</div>
                   </div>
                 </div>
               </div>

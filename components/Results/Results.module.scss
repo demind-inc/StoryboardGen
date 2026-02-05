@@ -250,6 +250,13 @@
 
 .sceneHeader {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sceneHeaderTitle {
+  display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
@@ -289,13 +296,6 @@
   font-size: var(--fs-14);
   color: #d5d5da;
   line-height: 1.5;
-}
-
-.downloadRow {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .downloadButton {
