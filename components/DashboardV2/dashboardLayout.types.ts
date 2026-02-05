@@ -12,6 +12,11 @@ export interface DashboardLayoutProps {
   onUpload: () => void;
   onOpenLibrary: () => void;
   onRemoveReference?: (id: string) => void;
+  topic: string;
+  onTopicChange: (value: string) => void;
+  onGenerateTopicScenes: () => void;
+  isTopicGenerating: boolean;
+  topicError?: string | null;
   promptList: string[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;

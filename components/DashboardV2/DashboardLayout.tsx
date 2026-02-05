@@ -2,6 +2,7 @@ import React from "react";
 import type { DashboardLayoutProps } from "./dashboardLayout.types";
 import DashboardHeader from "./DashboardHeader";
 import ReferenceCard from "./ReferenceCard";
+import TopicCard from "./TopicCard";
 import SceneCard from "./SceneCard";
 import RulesCard from "./RulesCard";
 import GuidelinesCard from "./GuidelinesCard";
@@ -15,6 +16,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onUpload,
   onOpenLibrary,
   onRemoveReference,
+  topic,
+  onTopicChange,
+  onGenerateTopicScenes,
+  isTopicGenerating,
+  topicError,
   promptList,
   activeSceneIndex,
   onSceneSelect,
@@ -67,6 +73,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onUpload={onUpload}
               onOpenLibrary={onOpenLibrary}
               onRemoveReference={onRemoveReference}
+            />
+            <TopicCard
+              topic={topic}
+              onTopicChange={onTopicChange}
+              onGenerate={onGenerateTopicScenes}
+              isGenerating={isTopicGenerating}
+              error={topicError}
             />
             <SceneCard
               promptList={promptList}

@@ -40,7 +40,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <div>
-          <h2 className={styles.cardTitle}>2. Scene Prompts</h2>
+          <h2 className={styles.cardTitle}>3. Scene Prompts</h2>
           <p className={styles.cardDescription}>Describe the scene in detail</p>
         </div>
         <button className={styles.buttonGhost} onClick={onAddScene}>
