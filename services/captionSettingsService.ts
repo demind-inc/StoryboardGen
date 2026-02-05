@@ -5,6 +5,7 @@ import type {
   Json,
 } from "../database.types";
 import type { CaptionRules, CustomGuidelines, RuleGroup } from "../types";
+import { DEFAULT_CHARACTER_GUIDELINE } from "./constants";
 
 const DEFAULT_TIKTOK_RULE: RuleGroup = {
   name: "Default",
@@ -22,8 +23,7 @@ const DEFAULT_INSTAGRAM_RULE: RuleGroup = {
 
 const DEFAULT_GUIDELINE: RuleGroup = {
   name: "Default",
-  rule:
-    "Always show the product in natural use, maintain warm approachable lighting, include diverse representation, avoid cluttered backgrounds, and keep the scene clean so the brand story feels calm.",
+  rule: DEFAULT_CHARACTER_GUIDELINE,
   isDefault: true,
 };
 
