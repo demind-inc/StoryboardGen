@@ -4,11 +4,11 @@ import { AppMode, RuleGroup, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import { DEFAULT_CAPTION_RULES } from "../../services/captionSettingsService";
 import {
-  DEFAULT_CAPTION_RULES,
-  getCaptionSettings,
-  updateCaptionRulesForPlatform,
-} from "../../services/captionSettingsService";
+  useCaptionSettings,
+  useUpdateCaptionRulesForPlatform,
+} from "../../hooks/useCaptionSettingsService";
 import styles from "./InstagramRules.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -34,30 +34,23 @@ const InstagramRulesPage: React.FC = () => {
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
+  const userId = session?.user?.id;
+  const { data: captionSettings, isLoading: isCaptionSettingsLoading } = useCaptionSettings(userId);
+  const updateRulesMutation = useUpdateCaptionRulesForPlatform();
   const [rules, setRules] = useState<RuleGroup[]>(DEFAULT_RULES);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
-  const [isSaving, setIsSaving] = useState(false);
   const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const isSaving = updateRulesMutation.isPending;
 
   useEffect(() => {
-    if (authStatus !== "signed_in" || !session?.user?.id) return;
-    let isMounted = true;
-    getCaptionSettings(session.user.id)
-      .then((settings) => {
-        if (!isMounted) return;
-        setRules(settings.rules.instagram);
-        setDirtyIndices(new Set());
-        setEditingIndex(null);
-      })
-      .catch((error) => {
-        console.error("Failed to load caption rules:", error);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [authStatus, session?.user?.id]);
+    if (captionSettings) {
+      setRules(captionSettings.rules.instagram);
+      setDirtyIndices(new Set());
+      setEditingIndex(null);
+    }
+  }, [captionSettings]);
 
   useEffect(() => {
     if (shouldFocusLastRef.current && rules.length > 0) {
@@ -81,26 +74,23 @@ const InstagramRulesPage: React.FC = () => {
   };
 
   const persistRules = async (nextRules: RuleGroup[]) => {
-    if (!session?.user?.id) return;
-    setIsSaving(true);
+    if (!userId) return;
     try {
-      await updateCaptionRulesForPlatform(
-        session.user.id,
-        "instagram",
-        nextRules
+      await updateRulesMutation.mutateAsync({
+        userId,
+        platform: "instagram",
+        rules: nextRules
           .map((rule) => ({
             ...rule,
             name: rule.name?.trim() ?? "",
             rule: rule.rule.trim(),
           }))
-          .filter((rule) => rule.rule.length > 0)
-      );
+          .filter((rule) => rule.rule.length > 0),
+      });
       setDirtyIndices(new Set());
       setEditingIndex(null);
     } catch (error) {
       console.error("Failed to save caption rules:", error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -159,6 +149,15 @@ const InstagramRulesPage: React.FC = () => {
 
   if (authStatus !== "signed_in") {
     return null;
+  }
+
+  if (userId && isCaptionSettingsLoading && !captionSettings) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loading__spinner} aria-hidden />
+        <p>Loading rules...</p>
+      </div>
+    );
   }
 
   return (

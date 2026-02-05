@@ -1,5 +1,6 @@
 import React from "react";
 import { AppMode, ImageSize } from "../../types";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 import styles from "./Hero.module.scss";
 
 interface HeroProps {
@@ -74,7 +75,7 @@ const Hero: React.FC<HeroProps> = ({
           <div className={styles["metric-card"]}>
             <p className={styles["metric-card__value"]}>
               {isUsageLoading
-                ? "..."
+                ? <InlineSpinner />
                 : isSubscribed
                 ? usageLimit
                   ? `${usageRemaining ?? usageLimit}/${usageLimit}`

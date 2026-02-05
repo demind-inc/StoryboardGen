@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../../types";
 import { useAuth } from "../../../providers/AuthProvider";
 import { useSubscription } from "../../../providers/SubscriptionProvider";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import SavedProjectsPanel from "../SavedProjectsPanel";
-import { fetchProjectList } from "../../../services/projectService";
-import type { ProjectSummary } from "../../../types";
+import { useProjectList } from "../../../hooks/useProjectService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -19,21 +18,8 @@ const SavedProjectsListPage: React.FC = () => {
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [projects, setProjects] = useState<ProjectSummary[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const userId = session?.user?.id;
-    if (!userId) return;
-    setIsLoading(true);
-    fetchProjectList(userId)
-      .then(setProjects)
-      .catch((error) => {
-        console.error("Failed to load projects:", error);
-        setProjects([]);
-      })
-      .finally(() => setIsLoading(false));
-  }, [session?.user?.id]);
+  const userId = session?.user?.id;
+  const { data: projects = [], isLoading } = useProjectList(userId);
 
   if (authStatus === "checking") {
     return (

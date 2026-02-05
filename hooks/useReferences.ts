@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { ReferenceImage, ReferenceSet } from "../types";
 import {
-  saveReferenceImages,
-  updateReferenceSetLabel,
-} from "../services/libraryService";
+  useSaveReferenceImages,
+  useUpdateReferenceSetLabel,
+} from "./useLibraryService";
 
 interface UseReferencesReturn {
   references: ReferenceImage[];
@@ -28,8 +28,10 @@ export const useReferences = (
   refreshReferenceLibrary: (userId: string) => Promise<void>
 ): UseReferencesReturn => {
   const [references, setReferences] = useState<ReferenceImage[]>([]);
-  const [isSavingReferences, setIsSavingReferences] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const saveReferencesMutation = useSaveReferenceImages();
+  const updateReferenceSetLabelMutation = useUpdateReferenceSetLabel();
+  const isSavingReferences = saveReferencesMutation.isPending;
 
   const triggerUpload = () => fileInputRef.current?.click();
 
@@ -68,15 +70,15 @@ export const useReferences = (
       return;
     }
 
-    setIsSavingReferences(true);
     try {
-      await saveReferenceImages(userId, references, label);
-      await refreshReferenceLibrary(userId);
+      await saveReferencesMutation.mutateAsync({
+        userId,
+        references,
+        label,
+      });
     } catch (error) {
       console.error("Failed to save references:", error);
       alert("Could not save references. Please try again.");
-    } finally {
-      setIsSavingReferences(false);
     }
   };
 
@@ -131,7 +133,11 @@ export const useReferences = (
     }
 
     try {
-      await updateReferenceSetLabel(userId, setId, trimmedLabel);
+      await updateReferenceSetLabelMutation.mutateAsync({
+        userId,
+        setId,
+        label: trimmedLabel,
+      });
       if (setReferenceLibrary) {
         setReferenceLibrary((prev) =>
           prev.map((set) =>

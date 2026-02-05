@@ -7,7 +7,7 @@ import {
 } from "../../services/captionSettingsService";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import { generateCharacterScene } from "../../services/geminiService";
-import { saveProjectOutput } from "../../services/projectService";
+import { useSaveProjectOutput } from "../../hooks/useProjectService";
 import styles from "./SavedProjectsPanel.module.scss";
 
 const formatShortDate = (value?: string | null) => {
@@ -48,6 +48,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   userId,
 }) => {
   const router = useRouter();
+  const saveProjectOutputMutation = useSaveProjectOutput();
   const handleSelectProject =
     onSelectProject ?? ((id) => router.push("/saved/project/" + id));
   const [detailResults, setDetailResults] = useState<SceneResult[]>([]);
@@ -103,7 +104,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         )
       );
       if (userId) {
-        await saveProjectOutput({
+        await saveProjectOutputMutation.mutateAsync({
           userId,
           projectId: selectedProject.id,
           sceneIndex: index,
@@ -148,7 +149,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         nextResults[i] = { ...nextResults[i], imageUrl, isLoading: false };
         if (userId) {
           try {
-            await saveProjectOutput({
+            await saveProjectOutputMutation.mutateAsync({
               userId,
               projectId: selectedProject.id,
               sceneIndex: i,

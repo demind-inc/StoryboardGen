@@ -4,6 +4,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { SubscriptionPlan } from "../types";
 import { getMonthlyUsage } from "../services/usageService";
 import { trackSubscriptionCompleted } from "../lib/analytics";
+import { useSyncSubscription } from "../hooks/useSubscriptionApi";
 import styles from "./SubscriptionRedirectPage.module.scss";
 
 const SubscriptionRedirectPage: React.FC = () => {
@@ -15,9 +16,9 @@ const SubscriptionRedirectPage: React.FC = () => {
   >("processing");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [planType, setPlanType] = useState<SubscriptionPlan | null>(null);
+  const syncSubscriptionMutation = useSyncSubscription();
 
   useEffect(() => {
-    // Wait for auth check or router to be ready (signed_out redirect is handled by AuthProvider)
     if (
       authStatus === "checking" ||
       authStatus === "signed_out" ||
@@ -27,19 +28,15 @@ const SubscriptionRedirectPage: React.FC = () => {
       return;
     }
 
-    // Check for payment confirmation parameters
     const paidFlag = paid === "1" || paid === "true" || session_id;
 
     if (!paidFlag) {
       setStatus("error");
       setErrorMessage("No payment confirmation found.");
-      setTimeout(() => {
-        router.replace("/dashboard");
-      }, 3000);
+      setTimeout(() => router.replace("/dashboard"), 3000);
       return;
     }
 
-    // Get plan from URL if available (for display purposes)
     const plan: SubscriptionPlan | null =
       urlPlan &&
       typeof urlPlan === "string" &&
@@ -51,53 +48,25 @@ const SubscriptionRedirectPage: React.FC = () => {
       setPlanType(plan);
     }
 
-    // Sync subscription data from Stripe
-    const syncSubscription = async () => {
-      if (!session_id || typeof session_id !== "string") {
-        setStatus("error");
-        setErrorMessage("Invalid session ID.");
-        setTimeout(() => {
-          router.replace("/dashboard");
-        }, 3000);
-        return;
-      }
+    if (!session_id || typeof session_id !== "string") {
+      setStatus("error");
+      setErrorMessage("Invalid session ID.");
+      setTimeout(() => router.replace("/dashboard"), 3000);
+      return;
+    }
 
+    const runSync = async () => {
       try {
-        const response = await fetch("/api/subscription/sync", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sessionId: session_id,
-            userId: session.user.id,
-          }),
+        const result = await syncSubscriptionMutation.mutateAsync({
+          sessionId: session_id,
+          userId: session.user.id,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          setStatus("error");
-          setErrorMessage(
-            error.error ||
-              "Failed to sync subscription. Please contact support."
-          );
-          setTimeout(() => {
-            router.replace("/dashboard");
-          }, 5000);
-          return;
-        }
-
-        const result = await response.json();
         const syncedSubscription = result.subscription;
-
-        // Success! Subscription synced
         const finalPlan = syncedSubscription.plan_type || plan;
-        setPlanType(finalPlan);
+        setPlanType(finalPlan ?? null);
         setStatus("success");
 
-        // Track successful subscription completion
         if (finalPlan) {
-          // Map plan to price for tracking
           const planPrices: Record<SubscriptionPlan, number> = {
             basic: 15,
             pro: 29,
@@ -109,7 +78,6 @@ const SubscriptionRedirectPage: React.FC = () => {
           );
         }
 
-        // Refresh usage to reflect new subscription
         if (syncedSubscription.plan_type) {
           await getMonthlyUsage(
             session.user.id,
@@ -117,25 +85,19 @@ const SubscriptionRedirectPage: React.FC = () => {
           );
         }
 
-        // Redirect to dashboard after showing success message
-        setTimeout(() => {
-          router.replace("/dashboard");
-        }, 3000);
-      } catch (error: any) {
+        setTimeout(() => router.replace("/dashboard"), 3000);
+      } catch (error) {
         console.error("Error syncing subscription:", error);
         setStatus("error");
         setErrorMessage(
-          error.message ||
+          (error as Error)?.message ??
             "Failed to sync subscription. Please contact support."
         );
-        setTimeout(() => {
-          router.replace("/dashboard");
-        }, 5000);
+        setTimeout(() => router.replace("/dashboard"), 5000);
       }
     };
 
-    // Start syncing
-    syncSubscription();
+    runSync();
   }, [authStatus, session?.user?.id, router, paid, urlPlan, session_id]);
 
   // Show loading state while checking auth

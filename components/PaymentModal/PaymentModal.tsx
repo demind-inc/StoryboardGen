@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { SubscriptionPlan } from "../../types";
 import { trackSubscriptionInitiated } from "../../lib/analytics";
+import { useCreateCheckoutSession } from "../../hooks/useSubscriptionApi";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 import styles from "./PaymentModal.module.scss";
 
 interface PaymentModalProps {
@@ -51,49 +53,31 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   userId,
 }) => {
   const [loadingPlan, setLoadingPlan] = useState<SubscriptionPlan | null>(null);
+  const createCheckout = useCreateCheckoutSession({
+    onError: (error) => {
+      console.error("Failed to create checkout session:", error);
+      alert(`Failed to start checkout: ${error.message}`);
+      setLoadingPlan(null);
+    },
+  });
 
   if (!isOpen) return null;
 
   const handlePlanClick = async (plan: SubscriptionPlan) => {
     onPlanSelect?.(plan);
-
-    // Track subscription initiation
     trackSubscriptionInitiated(plan);
 
-    // If userId is provided, use the new Checkout Session API
     if (userId) {
       setLoadingPlan(plan);
       try {
-        const response = await fetch("/api/subscription/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            plan,
-          }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          console.error("Failed to create checkout session:", error);
-          alert(`Failed to start checkout: ${error.error || "Unknown error"}`);
-          setLoadingPlan(null);
-          return;
-        }
-
-        const { url } = await response.json();
+        const { url } = await createCheckout.mutateAsync({ userId, plan });
         if (url) {
           window.location.href = url;
         }
-      } catch (error) {
-        console.error("Error creating checkout session:", error);
-        alert("Failed to start checkout. Please try again.");
+      } catch {
         setLoadingPlan(null);
       }
     } else {
-      // Fallback to static payment URLs if userId is not provided
       const planUrl = paymentUrls?.[plan];
       if (planUrl) {
         window.location.href = planUrl;
@@ -188,7 +172,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                         onClick={() => handlePlanClick(planOption.plan)}
                         disabled={isLoading}
                       >
-                        {isLoading ? "Loading..." : `Choose ${planLabel}`}
+                        {isLoading ? <InlineSpinner /> : `Choose ${planLabel}`}
                       </button>
                     );
                   } else if (planUrl) {

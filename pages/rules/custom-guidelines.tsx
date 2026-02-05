@@ -4,11 +4,11 @@ import { AppMode, RuleGroup, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import { DEFAULT_CUSTOM_GUIDELINES } from "../../services/captionSettingsService";
 import {
-  DEFAULT_CUSTOM_GUIDELINES,
-  getCaptionSettings,
-  updateCustomGuidelines,
-} from "../../services/captionSettingsService";
+  useCaptionSettings,
+  useUpdateCustomGuidelines,
+} from "../../hooks/useCaptionSettingsService";
 import styles from "./CustomGuidelines.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -34,31 +34,24 @@ const CustomGuidelinesPage: React.FC = () => {
   const subscription = useSubscription();
   const router = useRouter();
   const mode: AppMode = "manual";
+  const userId = session?.user?.id;
+  const { data: captionSettings, isLoading: isCaptionSettingsLoading } = useCaptionSettings(userId);
+  const updateGuidelinesMutation = useUpdateCustomGuidelines();
   const [guidelines, setGuidelines] =
     useState<RuleGroup[]>(DEFAULT_GUIDELINES);
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
-  const [isSaving, setIsSaving] = useState(false);
   const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const isSaving = updateGuidelinesMutation.isPending;
 
   useEffect(() => {
-    if (authStatus !== "signed_in" || !session?.user?.id) return;
-    let isMounted = true;
-    getCaptionSettings(session.user.id)
-      .then((settings) => {
-        if (!isMounted) return;
-        setGuidelines(settings.guidelines);
-        setDirtyIndices(new Set());
-        setEditingIndex(null);
-      })
-      .catch((error) => {
-        console.error("Failed to load custom guidelines:", error);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [authStatus, session?.user?.id]);
+    if (captionSettings) {
+      setGuidelines(captionSettings.guidelines);
+      setDirtyIndices(new Set());
+      setEditingIndex(null);
+    }
+  }, [captionSettings]);
 
   useEffect(() => {
     if (shouldFocusLastRef.current && guidelines.length > 0) {
@@ -84,25 +77,22 @@ const CustomGuidelinesPage: React.FC = () => {
   };
 
   const persistGuidelines = async (nextGuidelines: RuleGroup[]) => {
-    if (!session?.user?.id) return;
-    setIsSaving(true);
+    if (!userId) return;
     try {
-      await updateCustomGuidelines(
-        session.user.id,
-        nextGuidelines
+      await updateGuidelinesMutation.mutateAsync({
+        userId,
+        guidelines: nextGuidelines
           .map((rule) => ({
             ...rule,
             name: rule.name?.trim() ?? "",
             rule: rule.rule.trim(),
           }))
-          .filter((rule) => rule.rule.length > 0)
-      );
+          .filter((rule) => rule.rule.length > 0),
+      });
       setDirtyIndices(new Set());
       setEditingIndex(null);
     } catch (error) {
       console.error("Failed to save custom guidelines:", error);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -161,6 +151,15 @@ const CustomGuidelinesPage: React.FC = () => {
 
   if (authStatus !== "signed_in") {
     return null;
+  }
+
+  if (userId && isCaptionSettingsLoading && !captionSettings) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loading__spinner} aria-hidden />
+        <p>Loading guidelines...</p>
+      </div>
+    );
   }
 
   return (

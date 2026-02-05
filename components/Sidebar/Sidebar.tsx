@@ -11,7 +11,7 @@ import {
 } from "../DashboardV2/DashboardIcons";
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
-import { fetchProjectList } from "../../services/projectService";
+import { useProjectList } from "../../hooks/useProjectService";
 
 export type PanelKey =
   | "saved"
@@ -121,14 +121,25 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     return "0/3 credits";
   }, [isSubscribed, remainingCredits, totalCredits]);
 
-  const [savedProjects, setSavedProjects] = useState<
-    { id: string; name: string; createdAt?: string | null }[]
-  >([]);
+  const userId = session?.user?.id;
+  const {
+    data: projectListData,
+    isLoading: isProjectsLoading,
+    error: projectListError,
+  } = useProjectList(userId);
+  const savedProjects = useMemo(
+    () =>
+      projectListData?.map((p) => ({
+        id: p.id,
+        name: p.name,
+        createdAt: p.createdAt,
+      })) ?? [],
+    [projectListData]
+  );
   const [activeSavedProjectId, setActiveSavedProjectId] = useState<
     string | null
   >(null);
   const [isSavedProjectsOpen, setIsSavedProjectsOpen] = useState(false);
-  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
 
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
@@ -153,26 +164,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
     return links;
   }, [session?.user?.id]);
 
-  useEffect(() => {
-    const userId = session?.user?.id;
-    if (!userId) return;
-    setIsProjectsLoading(true);
-    fetchProjectList(userId)
-      .then((list) =>
-        setSavedProjects(
-          list.map((project) => ({
-            id: project.id,
-            name: project.name,
-            createdAt: project.createdAt,
-          }))
-        )
-      )
-      .catch((error) => {
-        console.error("Failed to load projects:", error);
-        setSavedProjects([]);
-      })
-      .finally(() => setIsProjectsLoading(false));
-  }, [session?.user?.id]);
+  if (projectListError) {
+    console.error("Failed to load projects:", projectListError);
+  }
 
   // Keep projects subnav open on saved projects list or detail page; sync active project from route
   useEffect(() => {

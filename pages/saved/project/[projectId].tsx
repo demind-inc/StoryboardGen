@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../../types";
 import { useAuth } from "../../../providers/AuthProvider";
 import { useSubscription } from "../../../providers/SubscriptionProvider";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import SavedProjectsPanel from "../SavedProjectsPanel";
-import { fetchProjectDetail } from "../../../services/projectService";
-import type { ProjectDetail } from "../../../types";
+import { useProjectDetail } from "../../../hooks/useProjectService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -20,30 +19,12 @@ const SavedProjectDetailPage: React.FC = () => {
   const router = useRouter();
   const { projectId } = router.query;
   const mode: AppMode = "manual";
-  const [selectedProject, setSelectedProject] = useState<ProjectDetail | null>(
-    null
+  const userId = session?.user?.id;
+  const id = typeof projectId === "string" ? projectId : projectId?.[0];
+  const { data: selectedProject, isLoading: isLoadingDetail } = useProjectDetail(
+    userId,
+    id
   );
-  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
-
-  const loadProjectDetail = useCallback(async (userId: string, id: string) => {
-    setIsLoadingDetail(true);
-    try {
-      const detail = await fetchProjectDetail({ userId, projectId: id });
-      setSelectedProject(detail);
-    } catch (error) {
-      console.error("Failed to load project detail:", error);
-      setSelectedProject(null);
-    } finally {
-      setIsLoadingDetail(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const userId = session?.user?.id;
-    const id = typeof projectId === "string" ? projectId : projectId?.[0];
-    if (!userId || !id) return;
-    loadProjectDetail(userId, id);
-  }, [session?.user?.id, projectId, loadProjectDetail]);
 
   if (authStatus === "checking") {
     return (
@@ -106,9 +87,9 @@ const SavedProjectDetailPage: React.FC = () => {
 
           <SavedProjectsPanel
             projects={null}
-            selectedProject={selectedProject}
+            selectedProject={selectedProject ?? null}
             isLoadingDetail={isLoadingDetail}
-            onSelectProject={(id) => router.push("/saved/project/" + id)}
+            onSelectProject={(projectId) => router.push("/saved/project/" + projectId)}
             userId={session?.user?.id}
           />
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AppMode, ImageSize } from "../../types";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 import styles from "./AppHeader.module.scss";
 
 interface AppHeaderProps {
@@ -145,7 +146,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                   />
                 </svg>
                 {isUsageLoading
-                  ? "..."
+                  ? <InlineSpinner />
                   : usageLimit
                   ? `${usageRemaining ?? usageLimit}/${usageLimit}`
                   : "--/--"}
