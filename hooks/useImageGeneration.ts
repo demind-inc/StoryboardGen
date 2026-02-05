@@ -32,6 +32,7 @@ interface UseImageGenerationProps {
   planType: string;
   captionRules: CaptionRules;
   guidelines: CustomGuidelines;
+  transparentBackground: boolean;
   hasGeneratedFreeImage: boolean;
   isPaymentUnlocked: boolean;
   usage: MonthlyUsage | null;
@@ -66,6 +67,7 @@ export const useImageGeneration = ({
   planType,
   captionRules,
   guidelines,
+  transparentBackground,
   hasGeneratedFreeImage,
   isPaymentUnlocked,
   usage,
@@ -216,7 +218,8 @@ export const useImageGeneration = ({
         targetResult.prompt,
         references,
         size,
-        guidelines
+        guidelines,
+        { transparentBackground }
       );
       try {
         const summaryResponse = await generateSceneSummaries(
@@ -424,7 +427,8 @@ export const useImageGeneration = ({
           promptList[i],
           references,
           size,
-          guidelines
+          guidelines,
+          { transparentBackground }
         );
         const updatedUsage = await recordGenerationMutation.mutateAsync({
           userId,

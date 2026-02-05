@@ -18,11 +18,19 @@ export const DEFAULT_CHARACTER_GUIDELINE = `### Character Lock (must not change)
 * Very minimal shading
 * Children's book / educational illustration aesthetic`;
 
-export const DEFAULT_CHARACTER_PROMPT = `
+export const DEFAULT_CHARACTER_PROMPT_BASE = `
 Use the attached images as strict, non-negotiable visual references.
 
 Generate an illustration of the exact same recurring character, reused identically like a children's book series or sticker set character.
 
+### Hard Restrictions
+* Do NOT redesign or reinterpret the character
+* Do NOT change the illustration style
+* Do NOT add realism or semi-realism
+* Keep everything simple, symbolic, and emotionally clear
+`;
+
+export const DEFAULT_CHARACTER_BACKGROUND_TRANSPARENT = `
 ### Background (absolute, must follow)
 * Transparent background
 * No background color
@@ -30,12 +38,12 @@ Generate an illustration of the exact same recurring character, reused identical
 * No shadows
 * No surfaces
 * Character and props appear as a clean cut-out sticker (but don't add white glow around the illustration) with alpha transparency
+`;
 
-### Hard Restrictions
-* Do NOT redesign or reinterpret the character
-* Do NOT change the illustration style
-* Do NOT add realism or semi-realism
-* Keep everything simple, symbolic, and emotionally clear
+export const DEFAULT_CHARACTER_BACKGROUND_SCENE = `
+### Background
+* Scene-appropriate background that supports the prompt
+* Keep it simple and uncluttered
 `;
 
 export const MODEL_NAME = "gemini-3-pro-image-preview";

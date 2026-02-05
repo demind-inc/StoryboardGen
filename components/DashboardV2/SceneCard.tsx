@@ -23,8 +23,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
   const [draftPrompt, setDraftPrompt] = useState(
     promptList[activeSceneIndex] || ""
   );
-  const [useGlobalRef, setUseGlobalRef] = useState(true);
-  const [transparentBg, setTransparentBg] = useState(false);
 
   useEffect(() => {
     setDraftPrompt(promptList[activeSceneIndex] || "");

@@ -32,6 +32,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   disableGenerate,
   onGenerateAll,
   onRegenerateActive,
+  transparentBackground,
+  onTransparentBackgroundChange,
   rules,
   guidelines,
   onGuidelinesChange,
@@ -105,6 +107,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         isGenerating={isGenerating}
         onGenerateAll={onGenerateAll}
         projectName={projectName}
+        transparentBackground={transparentBackground}
+        onTransparentBackgroundChange={onTransparentBackgroundChange}
       />
     </div>
   );
