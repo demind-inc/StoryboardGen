@@ -30,14 +30,11 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
-
-
-// Injected content via Sentry wizard below
+// Injected content via Sentry wizard below (only applied in production)
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
-module.exports = withSentryConfig(module.exports, {
+const sentryWebpackPluginOptions = {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
@@ -72,4 +69,9 @@ module.exports = withSentryConfig(module.exports, {
       removeDebugLogging: true,
     },
   },
-});
+};
+
+module.exports =
+  process.env.NODE_ENV === "production"
+    ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+    : nextConfig;
