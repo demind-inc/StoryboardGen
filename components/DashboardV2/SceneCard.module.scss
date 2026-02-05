@@ -2,10 +2,9 @@
   background: var(--card-bg);
   border: none;
   border-radius: var(--card-radius, 12px);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  overflow-y: auto;
 }
 
 .cardHeader {
@@ -119,21 +118,33 @@
 }
 
 .promptBox {
-  border: none;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: #2e2e2e;
   padding: 10px 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.promptBox:focus-within {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.2);
 }
 
 .promptTextarea {
   width: 100%;
   min-height: 110px;
+  max-height: 140px;
   background: transparent;
   border: none;
   resize: vertical;
   color: var(--text);
   font-size: var(--fs-15);
   font-family: "Geist", "Inter", system-ui, sans-serif;
+}
+
+.promptTextarea:focus {
+  outline: none;
 }
 
 .promptTextarea::placeholder {
