@@ -40,6 +40,63 @@ body {
   color: #e2e8f0;
 }
 
+.app-shell {
+  min-height: 100vh;
+}
+
+.mobile-unsupported {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0a0f1c;
+  color: #e2e8f0;
+  padding: 24px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 999;
+
+  &__card {
+    max-width: 420px;
+    padding: 32px 28px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+  }
+
+  &__eyebrow {
+    font-size: var(--fs-11);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0 0 12px;
+    color: #94a3b8;
+  }
+
+  &__title {
+    font-size: var(--fs-26);
+    margin: 0 0 12px;
+    color: #f8fafc;
+  }
+
+  &__copy {
+    margin: 0;
+    font-size: var(--fs-15);
+    color: #cbd5f5;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    display: none;
+  }
+
+  .mobile-unsupported {
+    display: flex;
+  }
+}
+
 .app {
   height: 100vh;
   display: flex;

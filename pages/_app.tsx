@@ -10,7 +10,20 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
       <SubscriptionProvider>
-        <Component {...pageProps} />
+        <div className="app-shell">
+          <Component {...pageProps} />
+        </div>
+        <div className="mobile-unsupported" role="alert">
+          <div className="mobile-unsupported__card">
+            <p className="mobile-unsupported__eyebrow">Not supported</p>
+            <h1 className="mobile-unsupported__title">
+              This app is optimized for desktop
+            </h1>
+            <p className="mobile-unsupported__copy">
+              Open StoryboardGen on a larger screen to continue.
+            </p>
+          </div>
+        </div>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
