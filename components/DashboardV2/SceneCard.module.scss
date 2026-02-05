@@ -20,14 +20,14 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   margin: 0;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
   font-size: var(--fs-14);
   color: var(--muted);
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardBody {
@@ -48,7 +48,7 @@
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease,
     background 0.15s ease, color 0.15s ease;
-  font-family: "JetBrains Mono", "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   background: transparent;
   border-color: #31343a;
   color: var(--text);
@@ -139,7 +139,7 @@
   resize: vertical;
   color: var(--text);
   font-size: var(--fs-12);
-  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .promptTextarea:focus {

@@ -296,6 +296,13 @@
   background: #202022;
   color: #e0e0e3;
   cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.addRule:hover:not(:disabled) {
+  border-color: rgba(240, 168, 75, 0.5);
+  background: rgba(240, 168, 75, 0.12);
+  color: #f0a84b;
 }
 
 .addRule:disabled {

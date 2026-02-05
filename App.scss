@@ -88,6 +88,11 @@ body {
   }
 }
 
+textarea,
+p {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 @media (max-width: 768px) {
   .app-shell {
     display: none;
