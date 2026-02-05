@@ -187,6 +187,8 @@
   resize: none;
   line-height: 1.5;
   padding: 0;
+  overflow: visible;
+  field-sizing: content;
 }
 
 .ruleInputReadonly {
