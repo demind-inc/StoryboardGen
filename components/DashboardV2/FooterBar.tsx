@@ -27,7 +27,7 @@ const FooterBar: React.FC<FooterBarProps> = ({
         disabled={isDisabled}
       >
         <AIIcon />
-        <span>{isGenerating ? "Generating..." : "Generate All Scenes"}</span>
+        <span>{isGenerating ? "Generating..." : "Generate Storyboards"}</span>
       </button>
     </div>
   );
