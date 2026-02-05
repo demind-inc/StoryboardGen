@@ -37,7 +37,7 @@ const FooterBar: React.FC<FooterBarProps> = ({
 
   return (
     <div className={styles.footerBar}>
-      <div className={styles.configWrap} ref={menuRef}>
+      {/* <div className={styles.configWrap} ref={menuRef}>
         <button
           type="button"
           className={styles.configButton}
@@ -62,7 +62,7 @@ const FooterBar: React.FC<FooterBarProps> = ({
             </label>
           </div>
         )}
-      </div>
+      </div> */}
       <button
         className={`${styles.actionButton} ${styles.actionButtonPrimary} ${
           isReady ? styles.actionButtonReady : ""
