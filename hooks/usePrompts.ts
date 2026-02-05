@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { PromptPreset } from "../types";
 import {
-  savePromptPreset,
-  updatePromptPreset,
-} from "../services/libraryService";
+  useSavePromptPreset,
+  useUpdatePromptPreset,
+} from "./useLibraryService";
 
 interface UsePromptsReturn {
   manualPrompts: string;
@@ -37,9 +37,9 @@ export const usePrompts = (
   const [editingPromptIndex, setEditingPromptIndex] = useState<number | null>(
     null
   );
-  const [savingPromptIndex, setSavingPromptIndex] = useState<number | null>(
-    null
-  );
+  const [savingPromptIndex, setSavingPromptIndex] = useState<number | null>(null);
+  const savePromptPresetMutation = useSavePromptPreset();
+  const updatePromptPresetMutation = useUpdatePromptPreset();
 
   const handleAddPrompt = () => {
     setIsAddingNewPrompt(true);
@@ -114,7 +114,11 @@ export const usePrompts = (
 
     setSavingPromptIndex(index);
     try {
-      const saved = await savePromptPreset(userId, promptText, promptText);
+      const saved = await savePromptPresetMutation.mutateAsync({
+        userId,
+        promptText,
+        title: promptText,
+      });
       setPromptLibrary((prev) => [saved, ...prev]);
     } catch (error) {
       console.error("Failed to save prompt:", error);
@@ -138,7 +142,11 @@ export const usePrompts = (
     }
 
     try {
-      const saved = await savePromptPreset(userId, content, title);
+      const saved = await savePromptPresetMutation.mutateAsync({
+        userId,
+        promptText: content,
+        title,
+      });
       setPromptLibrary((prev) => [saved, ...prev]);
     } catch (error) {
       console.error("Failed to save prompt preset:", error);
@@ -165,12 +173,12 @@ export const usePrompts = (
     }
 
     try {
-      const updated = await updatePromptPreset(
+      const updated = await updatePromptPresetMutation.mutateAsync({
         userId,
         presetId,
-        trimmedTitle,
-        trimmedContent
-      );
+        title: trimmedTitle,
+        content: trimmedContent,
+      });
       setPromptLibrary((prev) =>
         prev.map((prompt) => (prompt.id === presetId ? updated : prompt))
       );

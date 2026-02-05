@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AppMode,
   CaptionRules,
+  CustomGuidelines,
   ImageSize,
   MonthlyUsage,
   ReferenceImage,
@@ -11,8 +12,9 @@ import {
   generateCharacterScene,
   generateSceneCaptions,
 } from "../services/geminiService";
-import { getMonthlyUsage, recordGeneration } from "../services/usageService";
-import { saveProjectWithOutputs } from "../services/projectService";
+import { getMonthlyUsage } from "../services/usageService";
+import { useRecordGeneration } from "./useUsageService";
+import { useSaveProjectWithOutputs } from "./useProjectService";
 import {
   getHasGeneratedFreeImage,
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
@@ -28,7 +30,7 @@ interface UseImageGenerationProps {
   size: ImageSize;
   planType: string;
   captionRules: CaptionRules;
-  guidelines: string[];
+  guidelines: CustomGuidelines;
   hasGeneratedFreeImage: boolean;
   isPaymentUnlocked: boolean;
   usage: MonthlyUsage | null;
@@ -73,6 +75,8 @@ export const useImageGeneration = ({
   openPaymentModal,
   refreshUsage,
 }: UseImageGenerationProps): UseImageGenerationReturn => {
+  const recordGenerationMutation = useRecordGeneration();
+  const saveProjectMutation = useSaveProjectWithOutputs();
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -80,6 +84,17 @@ export const useImageGeneration = ({
     tiktok: string[];
     instagram: string[];
   }>({ tiktok: [], instagram: [] });
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isGenerating) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isGenerating]);
 
   const updateCaptionDisplay = useCallback(
     (results: { tiktok: string[]; instagram: string[] }) => {
@@ -222,7 +237,11 @@ export const useImageGeneration = ({
       } catch (captionError) {
         console.error("Caption regeneration error:", captionError);
       }
-      const updatedUsage = await recordGeneration(userId, 1, planType as any);
+      const updatedUsage = await recordGenerationMutation.mutateAsync({
+        userId,
+        amount: 1,
+        planType: planType as any,
+      });
       setUsage(updatedUsage);
       markFirstGenerationComplete();
       setManualResults((prev) =>
@@ -354,7 +373,11 @@ export const useImageGeneration = ({
           size,
           guidelines
         );
-        const updatedUsage = await recordGeneration(userId, 1, planType as any);
+        const updatedUsage = await recordGenerationMutation.mutateAsync({
+          userId,
+          amount: 1,
+          planType: planType as any,
+        });
         setUsage(updatedUsage);
         markFirstGenerationComplete();
         generatedResults[i] = {
@@ -385,9 +408,9 @@ export const useImageGeneration = ({
     const hasAnyOutput = generatedResults.some((result) => result.imageUrl);
     if (isFinished && hasAnyOutput) {
       try {
-        const savedProjectId = await saveProjectWithOutputs({
+        const savedProjectId = await saveProjectMutation.mutateAsync({
           userId,
-          projectId,
+          projectId: projectId ?? undefined,
           projectName,
           prompts: promptList,
           captions: finalCaptions,

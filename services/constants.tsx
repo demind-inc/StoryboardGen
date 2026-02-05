@@ -1,9 +1,5 @@
-export const DEFAULT_CHARACTER_PROMPT = `
-Use the attached images as strict, non-negotiable visual references.
-
-Generate an illustration of the exact same recurring character, reused identically like a children’s book series or sticker set character.
-
-### Character Lock (must not change)
+/** Default custom guideline content (character + style lock). Exposed as default guideline only. */
+export const DEFAULT_CHARACTER_GUIDELINE = `### Character Lock (must not change)
 * Young illustrated boy
 * Round, soft face
 * Light peach skin
@@ -20,7 +16,12 @@ Generate an illustration of the exact same recurring character, reused identical
 * Rounded outlines only
 * Flat warm pastel colors
 * Very minimal shading
-* Children’s book / educational illustration aesthetic
+* Children's book / educational illustration aesthetic`;
+
+export const DEFAULT_CHARACTER_PROMPT = `
+Use the attached images as strict, non-negotiable visual references.
+
+Generate an illustration of the exact same recurring character, reused identically like a children's book series or sticker set character.
 
 ### Background (absolute, must follow)
 * Transparent background

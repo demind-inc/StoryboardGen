@@ -5,7 +5,6 @@ import { useReferences } from "./useReferences";
 import { usePrompts } from "./usePrompts";
 import { useImageGeneration } from "./useImageGeneration";
 import { useModals } from "./useModals";
-import { fetchReferenceLibrary } from "../services/libraryService";
 import {
   DEFAULT_MONTHLY_CREDITS,
   PLAN_CREDITS,
@@ -14,9 +13,10 @@ import {
   DEFAULT_CAPTION_RULES,
   DEFAULT_CAPTIONS,
   DEFAULT_CUSTOM_GUIDELINES,
-  getCaptionSettings,
 } from "../services/captionSettingsService";
-import type { CaptionRules } from "../types";
+import { useReferenceLibrary } from "./useLibraryService";
+import { useCaptionSettings } from "./useCaptionSettingsService";
+import type { CaptionRules, CustomGuidelines } from "../types";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -62,9 +62,15 @@ export const useDashboardManual = ({
     refreshHasGeneratedFreeImage,
   } = usageHook;
 
-  const refreshReferenceLibrary = useCallback(async (currentUserId: string) => {
-    await fetchReferenceLibrary(currentUserId);
-  }, []);
+  const referenceLibraryQuery = useReferenceLibrary(userId);
+  const refreshReferenceLibrary = useCallback(
+    async (currentUserId: string) => {
+      if (currentUserId === userId) {
+        await referenceLibraryQuery.refetch();
+      }
+    },
+    [userId, referenceLibraryQuery]
+  );
 
   const referencesHook = useReferences(userId, refreshReferenceLibrary);
   const {
@@ -103,22 +109,25 @@ export const useDashboardManual = ({
     "tiktok"
   );
   const [projectName, setProjectName] = useState(getDefaultProjectName);
-  const [guidelines, setGuidelines] = useState(DEFAULT_CUSTOM_GUIDELINES);
+  const [guidelines, setGuidelines] =
+    useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
 
-  const loadCaptionSettings = useCallback(async (currentUserId: string) => {
-    try {
-      const settings = await getCaptionSettings(currentUserId);
-      setRules(settings.rules);
-      setGuidelines(settings.guidelines);
-    } catch (error) {
-      console.error("Failed to load caption settings:", error);
+  const captionSettingsQuery = useCaptionSettings(userId);
+  useEffect(() => {
+    if (captionSettingsQuery.data) {
+      setRules(captionSettingsQuery.data.rules);
+      setGuidelines(captionSettingsQuery.data.guidelines);
+    }
+  }, [captionSettingsQuery.data]);
+  useEffect(() => {
+    if (captionSettingsQuery.isError) {
       setRules(DEFAULT_CAPTION_RULES);
       setCaptions(DEFAULT_CAPTIONS);
       setGuidelines(DEFAULT_CUSTOM_GUIDELINES);
     }
-  }, []);
+  }, [captionSettingsQuery.isError]);
 
   const promptList = useMemo(
     () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
@@ -173,7 +182,6 @@ export const useDashboardManual = ({
         refreshUsage(userId),
         refreshSubscription(userId),
         refreshHasGeneratedFreeImage(userId),
-        loadCaptionSettings(userId),
       ]);
     }
     // Only re-run when auth or user identity changes; refresh fns are stable via useCallback in useUsage

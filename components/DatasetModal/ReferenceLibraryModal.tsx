@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ReferenceSet } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
-import { fetchReferenceLibrary } from "../../services/libraryService";
+import { useReferenceLibrary } from "../../hooks/useLibraryService";
 import styles from "./DatasetModal.module.scss";
 
 interface ReferenceLibraryModalProps {
@@ -16,8 +16,8 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
   onSelect,
 }) => {
   const { session, authStatus } = useAuth();
-  const [items, setItems] = useState<ReferenceSet[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const userId = session?.user?.id;
+  const { data: items = [], isLoading, refetch } = useReferenceLibrary(userId);
   const [selectedSetIds, setSelectedSetIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -27,22 +27,10 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
-    const loadLibrary = async () => {
-      const userId = session?.user?.id;
-      if (isOpen && authStatus === "signed_in" && userId) {
-        setIsLoading(true);
-        try {
-          const refs = await fetchReferenceLibrary(userId);
-          setItems(refs);
-        } catch (error) {
-          console.error("Failed to load reference library:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-    loadLibrary();
-  }, [isOpen, authStatus, session?.user?.id]);
+    if (isOpen && authStatus === "signed_in" && userId) {
+      refetch();
+    }
+  }, [isOpen, authStatus, userId, refetch]);
 
   const toggleSelection = (setId: string) => {
     setSelectedSetIds((prev) => {

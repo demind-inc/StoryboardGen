@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { MonthlyUsage, SubscriptionPlan } from "../types";
-import { getMonthlyUsage } from "../services/usageService";
-import { getSubscription } from "../services/subscriptionService";
 import {
   getHasGeneratedFreeImage,
-  setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
 } from "../services/authService";
+import { useSubscriptionQuery } from "./useSubscriptionService";
+import { useMonthlyUsage } from "./useUsageService";
+import { queryKeys } from "../lib/queryKeys";
+import type { Subscription } from "../services/subscriptionService";
+
 export interface UseUsageReturn {
   usage: MonthlyUsage | null;
   isUsageLoading: boolean;
@@ -18,7 +21,7 @@ export interface UseUsageReturn {
   planLockedFromSubscription: boolean;
   stripeSubscriptionId: string | null | undefined;
   isSubscriptionLoading: boolean;
-  subscription: Awaited<ReturnType<typeof getSubscription>>;
+  subscription: Subscription | null;
   setUsage: React.Dispatch<React.SetStateAction<MonthlyUsage | null>>;
   setUsageError: React.Dispatch<React.SetStateAction<string | null>>;
   setHasGeneratedFreeImage: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,71 +37,46 @@ export const useUsage = (
   userId: string | undefined,
   authStatus: string
 ): UseUsageReturn => {
-  const [usage, setUsage] = useState<MonthlyUsage | null>(null);
-  const [isUsageLoading, setIsUsageLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const subscriptionQuery = useSubscriptionQuery(userId);
+  const [localPlanType, setLocalPlanType] = useState<SubscriptionPlan>("basic");
+  const subscription = subscriptionQuery.data ?? null;
+  const planLockedFromSubscription = !!subscription?.planType;
+  const planType = subscription?.planType ?? localPlanType;
+  const usageQuery = useMonthlyUsage(userId, planType);
+
   const [usageError, setUsageError] = useState<string | null>(null);
   const [hasGeneratedFreeImage, setHasGeneratedFreeImage] =
     useState<boolean>(false);
   const [isFreeImageLoading, setIsFreeImageLoading] = useState(false);
-  const [isPaymentUnlocked, setIsPaymentUnlocked] = useState<boolean>(false);
-  const [planType, setPlanType] = useState<SubscriptionPlan>("basic");
-  const [planLockedFromSubscription, setPlanLockedFromSubscription] =
-    useState(false);
-  const [stripeSubscriptionId, setStripeSubscriptionId] = useState<
-    string | null | undefined
-  >(null);
-  const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
-  const [subscription, setSubscription] =
-    useState<Awaited<ReturnType<typeof getSubscription>>>(null);
+
+  const usage = usageQuery.data ?? null;
+  const isUsageLoading = usageQuery.isLoading || usageQuery.isFetching;
+  const isSubscriptionLoading = subscriptionQuery.isLoading || subscriptionQuery.isFetching;
+  const isPaymentUnlocked = subscription?.isActive ?? false;
+  const stripeSubscriptionId = subscription?.stripeSubscriptionId;
 
   const refreshUsage = useCallback(
-    async (userId: string) => {
-      setIsUsageLoading(true);
+    async (uid: string) => {
       try {
-        const stats = await getMonthlyUsage(userId, planType);
-        setUsage(stats);
+        await usageQuery.refetch();
         setUsageError(null);
       } catch (error) {
         console.error("Usage fetch error:", error);
         setUsageError("Unable to load credits.");
-      } finally {
-        setIsUsageLoading(false);
       }
     },
-    [planType]
+    [usageQuery.refetch]
   );
 
-  const refreshSubscription = useCallback(async (userId: string) => {
-    setIsSubscriptionLoading(true);
-    try {
-      const subscription = await getSubscription(userId);
-      setSubscription(subscription);
-      // User has access if subscription is active OR unsubscribed (until period ends)
-      const hasAccess = subscription?.isActive ?? false;
-      setIsPaymentUnlocked(hasAccess);
-      // Keep plan type if subscription exists (even if unsubscribed, they still have access)
-      if (subscription?.planType) {
-        setPlanType(subscription.planType);
-        setPlanLockedFromSubscription(true);
-      } else {
-        setPlanLockedFromSubscription(false);
-      }
-      setStripeSubscriptionId(subscription?.stripeSubscriptionId);
-    } catch (error) {
-      console.error("Failed to fetch subscription:", error);
-      setSubscription(null);
-      setIsPaymentUnlocked(false);
-      setPlanLockedFromSubscription(false);
-      setStripeSubscriptionId(null);
-    } finally {
-      setIsSubscriptionLoading(false);
-    }
-  }, []);
+  const refreshSubscription = useCallback(async () => {
+    await subscriptionQuery.refetch();
+  }, [subscriptionQuery.refetch]);
 
-  const refreshHasGeneratedFreeImage = useCallback(async (userId: string) => {
+  const refreshHasGeneratedFreeImage = useCallback(async (uid: string) => {
     setIsFreeImageLoading(true);
     try {
-      const hasGenerated = await getHasGeneratedFreeImage(userId);
+      const hasGenerated = await getHasGeneratedFreeImage(uid);
       setHasGeneratedFreeImage(hasGenerated);
     } catch (error) {
       console.error("Failed to fetch has_generated_free_image:", error);
@@ -108,7 +86,28 @@ export const useUsage = (
     }
   }, []);
 
-  // Load plan type from URL or localStorage
+  const setUsage = useCallback(
+    (action: React.SetStateAction<MonthlyUsage | null>) => {
+      const key = queryKeys.usage(userId, planType);
+      if (typeof action === "function") {
+        queryClient.setQueryData<MonthlyUsage>(key, (prev) => {
+          const next = action(prev ?? null);
+          return next ?? undefined;
+        });
+      } else {
+        queryClient.setQueryData(key, action ?? undefined);
+      }
+    },
+    [queryClient, userId, planType]
+  );
+
+  const setPlanType = useCallback((action: React.SetStateAction<SubscriptionPlan>) => {
+    setLocalPlanType((prev) =>
+      typeof action === "function" ? action(prev) : action
+    );
+  }, []);
+
+  // Load plan type from URL or localStorage when not locked from subscription
   useEffect(() => {
     if (planLockedFromSubscription) return;
     if (typeof window === "undefined") return;
@@ -119,14 +118,21 @@ export const useUsage = (
     ) as SubscriptionPlan | null;
 
     if (urlPlan && ["basic", "pro", "business"].includes(urlPlan)) {
-      setPlanType(urlPlan as SubscriptionPlan);
+      setLocalPlanType(urlPlan as SubscriptionPlan);
     } else if (
       storedPlan &&
       ["basic", "pro", "business"].includes(storedPlan)
     ) {
-      setPlanType(storedPlan as SubscriptionPlan);
+      setLocalPlanType(storedPlan as SubscriptionPlan);
     }
   }, [authStatus, planLockedFromSubscription]);
+
+  // Sync local plan from subscription when it loads
+  useEffect(() => {
+    if (subscription?.planType) {
+      setLocalPlanType(subscription.planType);
+    }
+  }, [subscription?.planType]);
 
   // Save plan type to localStorage
   useEffect(() => {
@@ -150,10 +156,9 @@ export const useUsage = (
     setUsageError,
     setHasGeneratedFreeImage,
     setPlanType,
-    refreshUsage,
-    refreshSubscription,
+    refreshUsage: (uid: string) => refreshUsage(uid),
+    refreshSubscription: (uid: string) => refreshSubscription(),
     refreshHasGeneratedFreeImage,
-    // Payment modal state and openPaymentModal are provided by SubscriptionProvider
     isPaymentModalOpen: false,
     setIsPaymentModalOpen: () => {},
     openPaymentModal: () => {},

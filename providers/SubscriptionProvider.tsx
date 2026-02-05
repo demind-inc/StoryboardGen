@@ -11,6 +11,7 @@ import { useAuth } from "./AuthProvider";
 import { useUsage } from "../hooks/useUsage";
 import type { UseUsageReturn } from "../hooks/useUsage";
 import { trackButtonClick } from "../lib/analytics";
+import { normalizeUuid } from "../lib/uuid";
 
 const SubscriptionContext = createContext<UseUsageReturn | null>(null);
 
@@ -22,7 +23,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({
   children,
 }) => {
   const { session, authStatus } = useAuth();
-  const userId = session?.user?.id;
+  const userId = normalizeUuid(session?.user?.id);
   const usageValue = useUsage(userId, authStatus);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -43,17 +44,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({
 
   useEffect(() => {
     if (authStatus === "signed_in" && userId) {
-      usageValue.refreshSubscription(userId);
-      usageValue.refreshUsage(userId);
       usageValue.refreshHasGeneratedFreeImage(userId);
     }
-  }, [
-    authStatus,
-    userId,
-    usageValue.refreshSubscription,
-    usageValue.refreshUsage,
-    usageValue.refreshHasGeneratedFreeImage,
-  ]);
+  }, [authStatus, userId, usageValue.refreshHasGeneratedFreeImage]);
 
   return (
     <SubscriptionContext.Provider value={value}>

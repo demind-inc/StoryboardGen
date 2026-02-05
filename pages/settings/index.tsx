@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
+import { useCancelSubscription } from "../../hooks/useSubscriptionApi";
+import { InlineSpinner } from "../../components/Spinner/InlineSpinner";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import styles from "./SettingsPage.module.scss";
 
@@ -39,7 +41,6 @@ const SettingsPage: React.FC = () => {
   } = useAuth();
   const router = useRouter();
   const mode: AppMode = "manual";
-  const [isCanceling, setIsCanceling] = useState(false);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<{
     type: "success" | "error";
@@ -56,13 +57,7 @@ const SettingsPage: React.FC = () => {
     refreshUsage,
     refreshSubscription,
   } = useSubscription();
-
-  useEffect(() => {
-    if (authStatus === "signed_in" && userId) {
-      refreshSubscription(userId);
-      refreshUsage(userId);
-    }
-  }, [authStatus, userId, refreshSubscription, refreshUsage]);
+  const cancelSubscriptionMutation = useCancelSubscription();
 
   const displayName = useMemo(() => {
     const metadata = session?.user?.user_metadata ?? {};
@@ -73,21 +68,8 @@ const SettingsPage: React.FC = () => {
     if (!userId) return;
     setIsCancelConfirmOpen(false);
     setCancelMessage(null);
-    setIsCanceling(true);
     try {
-      const res = await fetch("/api/subscription/cancel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCancelMessage({
-          type: "error",
-          text: data?.error ?? "Failed to cancel subscription",
-        });
-        return;
-      }
+      const data = await cancelSubscriptionMutation.mutateAsync(userId);
       setCancelMessage({
         type: "success",
         text: data?.message ?? "Subscription canceled.",
@@ -97,12 +79,12 @@ const SettingsPage: React.FC = () => {
     } catch (e) {
       setCancelMessage({
         type: "error",
-        text: "Failed to cancel subscription. Please try again.",
+        text: (e as Error)?.message ?? "Failed to cancel subscription. Please try again.",
       });
-    } finally {
-      setIsCanceling(false);
     }
   };
+
+  const isCanceling = cancelSubscriptionMutation.isPending;
 
   if (authStatus === "checking") {
     return (
@@ -205,35 +187,41 @@ const SettingsPage: React.FC = () => {
                 <div>
                   <span className={styles.label}>Current Plan</span>
                   <span className={styles.value}>
-                    {isSubscriptionLoading
-                      ? "Loading..."
-                      : subscription?.planType
-                      ? `${subscription.planType
-                          .charAt(0)
-                          .toUpperCase()}${subscription.planType.slice(1)} Plan`
-                      : "Free Plan"}
+                    {isSubscriptionLoading ? (
+                      <InlineSpinner />
+                    ) : subscription?.planType ? (
+                      `${subscription.planType
+                        .charAt(0)
+                        .toUpperCase()}${subscription.planType.slice(1)} Plan`
+                    ) : (
+                      "Free Plan"
+                    )}
                   </span>
                 </div>
                 <div>
                   <span className={styles.label}>Renewal</span>
                   <span className={styles.value}>
-                    {isSubscriptionLoading
-                      ? "Loading..."
-                      : subscription?.currentPeriodEnd
-                      ? `Monthly · Renews ${formatRenewalDate(
-                          subscription.currentPeriodEnd
-                        )}`
-                      : "—"}
+                    {isSubscriptionLoading ? (
+                      <InlineSpinner />
+                    ) : subscription?.currentPeriodEnd ? (
+                      `Monthly · Renews ${formatRenewalDate(
+                        subscription.currentPeriodEnd
+                      )}`
+                    ) : (
+                      "—"
+                    )}
                   </span>
                 </div>
                 <div>
                   <span className={styles.label}>Usage</span>
                   <span className={styles.value}>
-                    {isUsageLoading
-                      ? "Loading..."
-                      : usage != null
-                      ? `${usage.used} / ${usage.monthlyLimit} credits used this month`
-                      : "—"}
+                    {isUsageLoading ? (
+                      <InlineSpinner />
+                    ) : usage != null ? (
+                      `${usage.used} / ${usage.monthlyLimit} credits used this month`
+                    ) : (
+                      "—"
+                    )}
                   </span>
                 </div>
               </div>

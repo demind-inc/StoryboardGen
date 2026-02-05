@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { PromptPreset } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
-import { fetchPromptLibrary } from "../../services/libraryService";
+import { usePromptLibrary } from "../../hooks/useLibraryService";
 import styles from "./DatasetModal.module.scss";
 
 interface PromptLibraryModalProps {
@@ -16,25 +16,14 @@ const PromptLibraryModal: React.FC<PromptLibraryModalProps> = ({
   onSelect,
 }) => {
   const { session, authStatus } = useAuth();
-  const [items, setItems] = useState<PromptPreset[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const userId = session?.user?.id;
+  const { data: items = [], isLoading, refetch } = usePromptLibrary(userId);
+
   useEffect(() => {
-    const loadLibrary = async () => {
-      const userId = session?.user?.id;
-      if (isOpen && authStatus === "signed_in" && userId) {
-        setIsLoading(true);
-        try {
-          const prompts = await fetchPromptLibrary(userId);
-          setItems(prompts);
-        } catch (error) {
-          console.error("Failed to load prompt library:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-    loadLibrary();
-  }, [isOpen, authStatus, session?.user?.id]);
+    if (isOpen && authStatus === "signed_in" && userId) {
+      refetch();
+    }
+  }, [isOpen, authStatus, userId, refetch]);
 
   if (!isOpen) return null;
 
