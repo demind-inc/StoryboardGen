@@ -116,8 +116,9 @@ export async function saveProjectOutput(params: {
   sceneIndex: number;
   prompt: string;
   imageUrl: string;
+  captions?: { tiktok?: string; instagram?: string };
 }): Promise<void> {
-  const { userId, projectId, sceneIndex, prompt, imageUrl } = params;
+  const { userId, projectId, sceneIndex, prompt, imageUrl, captions } = params;
   const supabase = getSupabaseClient();
 
   const blob = dataURLtoBlob(imageUrl);
@@ -145,8 +146,41 @@ export async function saveProjectOutput(params: {
   );
   if (upsertError) throw upsertError;
 
+  const updatePayload: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (captions && (captions.tiktok !== undefined || captions.instagram !== undefined)) {
+    const { data: projectData, error: projectFetchError } = await (
+      supabase.from("projects") as any
+    )
+      .select("tiktok_captions, instagram_captions")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .single();
+    if (projectFetchError) throw projectFetchError;
+
+    if (captions.tiktok !== undefined) {
+      const nextTiktok = Array.isArray(projectData?.tiktok_captions)
+        ? [...projectData.tiktok_captions]
+        : [];
+      while (nextTiktok.length <= sceneIndex) nextTiktok.push("");
+      nextTiktok[sceneIndex] = captions.tiktok;
+      updatePayload.tiktok_captions = nextTiktok;
+    }
+
+    if (captions.instagram !== undefined) {
+      const nextInstagram = Array.isArray(projectData?.instagram_captions)
+        ? [...projectData.instagram_captions]
+        : [];
+      while (nextInstagram.length <= sceneIndex) nextInstagram.push("");
+      nextInstagram[sceneIndex] = captions.instagram;
+      updatePayload.instagram_captions = nextInstagram;
+    }
+  }
+
   const { error: projectError } = await (supabase.from("projects") as any)
-    .update({ updated_at: new Date().toISOString() })
+    .update(updatePayload)
     .eq("id", projectId)
     .eq("user_id", userId);
   if (projectError) throw projectError;

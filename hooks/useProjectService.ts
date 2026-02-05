@@ -55,6 +55,7 @@ export function useSaveProjectOutput() {
       sceneIndex: number;
       prompt: string;
       imageUrl: string;
+      captions?: { tiktok?: string; instagram?: string };
     }) => saveProjectOutput(params),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

@@ -6,7 +6,10 @@ import {
   DEFAULT_CUSTOM_GUIDELINES,
 } from "../../services/captionSettingsService";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
-import { generateCharacterScene } from "../../services/geminiService";
+import {
+  generateCharacterScene,
+  generateSceneCaptions,
+} from "../../services/geminiService";
 import { useSaveProjectOutput } from "../../hooks/useProjectService";
 import styles from "./SavedProjectsPanel.module.scss";
 
@@ -98,6 +101,21 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
 
     try {
       const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+      let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
+      try {
+        const captionResponse = await generateSceneCaptions(
+          [prompt],
+          [],
+          DEFAULT_CAPTION_RULES,
+          DEFAULT_CUSTOM_GUIDELINES
+        );
+        captionsUpdate = {
+          tiktok: captionResponse.tiktok[0] || "",
+          instagram: captionResponse.instagram[0] || "",
+        };
+      } catch (captionError) {
+        console.error("Failed to regenerate captions:", captionError);
+      }
       setDetailResults((prev) =>
         prev.map((res, idx) =>
           idx === index ? { ...res, imageUrl, isLoading: false } : res
@@ -110,6 +128,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           sceneIndex: index,
           prompt,
           imageUrl,
+          captions: captionsUpdate,
         });
       }
     } catch (error: any) {
@@ -146,6 +165,21 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
       }
       try {
         const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+        let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
+        try {
+          const captionResponse = await generateSceneCaptions(
+            [prompt],
+            [],
+            DEFAULT_CAPTION_RULES,
+            DEFAULT_CUSTOM_GUIDELINES
+          );
+          captionsUpdate = {
+            tiktok: captionResponse.tiktok[0] || "",
+            instagram: captionResponse.instagram[0] || "",
+          };
+        } catch (captionError) {
+          console.error("Failed to regenerate captions:", captionError);
+        }
         nextResults[i] = { ...nextResults[i], imageUrl, isLoading: false };
         if (userId) {
           try {
@@ -155,6 +189,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
               sceneIndex: i,
               prompt,
               imageUrl,
+              captions: captionsUpdate,
             });
           } catch (error) {
             console.error("Failed to save regenerated output:", error);
