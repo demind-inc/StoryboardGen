@@ -6531,2603 +6531,6 @@
     },
     {
       "type": "frame",
-      "id": "KcMXe",
-      "x": 4229,
-      "y": 1164,
-      "name": "Screen",
-      "clip": true,
-      "width": 1440,
-      "height": 1024,
-      "fill": "#f9f8fcff",
-      "stroke": {
-        "align": "inside",
-        "thickness": 1
-      },
-      "layout": "none",
-      "children": [
-        {
-          "type": "frame",
-          "id": "Yu08x",
-          "x": 16,
-          "y": 16,
-          "name": "Card",
-          "stroke": {
-            "align": "inside",
-            "thickness": 1
-          },
-          "gap": 16,
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "frame",
-              "id": "HwDmX",
-              "name": "Card",
-              "width": 64,
-              "height": 992,
-              "fill": "#ffffffff",
-              "cornerRadius": 16,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#00000014",
-                "blur": 14
-              },
-              "layout": "vertical",
-              "gap": 16,
-              "padding": 16,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "rectangle",
-                  "id": "ZpxnL",
-                  "name": "Image",
-                  "fill": {
-                    "type": "image",
-                    "enabled": true,
-                    "url": "",
-                    "mode": "fill"
-                  },
-                  "width": 32,
-                  "height": 32,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 0.1666666716337204
-                  }
-                },
-                {
-                  "type": "frame",
-                  "id": "hJwh4",
-                  "name": "Card",
-                  "height": "fill_container",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "vertical",
-                  "gap": 16,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "LXLTB",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff52",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "e2GoA",
-                          "name": "calendar-check 4",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "p9RfT",
-                              "x": 5.5,
-                              "y": 1.5,
-                              "name": "Vector",
-                              "geometry": "M1.5 0.75c0-0.41421-0.33579-0.75-0.75-0.75-0.41421 0-0.75 0.33579-0.75 0.75l1.5 0z m6 0c0-0.41421-0.3358-0.75-0.75-0.75-0.4142 0-0.75 0.33579-0.75 0.75l1.5 0z m-6 2l0-2-1.5 0 0 2 1.5 0z m6 0l0-2-1.5 0 0 2 1.5 0z",
-                              "fill": "#680ddbff",
-                              "width": 5,
-                              "height": 1.8333333730697632,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 0.6666666865348816
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "CO8m3",
-                              "x": 1.5,
-                              "y": 2.8333332538604736,
-                              "name": "Vector",
-                              "geometry": "M19.5 6.5l0 2.25c0 3.5112 0 5.2667-0.8427 6.5279-0.3647 0.5459-0.8335 1.0147-1.3794 1.3794-1.2612 0.8427-3.0167 0.8427-6.5279 0.8427l-2 0c-3.51116 0-5.26673 0-6.52785-0.8427-0.54595-0.3647-1.01471-0.8335-1.3795-1.3794-0.84265-1.2612-0.84265-3.0167-0.84265-6.5279l0-2.25c0-1.39453 0-2.09179 0.13815-2.66723 0.43892-1.82824 1.86638-3.2557 3.69462-3.69462 0.57544-0.13815 1.2727-0.13815 2.66723-0.13815l6.5 0c1.3945 0 2.0918 0 2.6672 0.13815 1.8283 0.43892 3.2557 1.86638 3.6946 3.69462 0.1382 0.57544 0.1382 1.2727 0.1382 2.66723z m-5.7143 0.2749c0.2899-0.2958 0.2851-0.7706-0.0108-1.06056-0.2958-0.28992-0.7706-0.28512-1.0606 0.01071l-4.2059 4.29175c-0.0438 0.0447-0.0817 0.0833-0.1156 0.1175-0.0313-0.0367-0.0661-0.0781-0.1064-0.126l-1.46212-1.7407c-0.26642-0.3172-0.73951-0.3583-1.05667-0.0919-0.31717 0.2664-0.35831 0.7395-0.09189 1.0567l1.46217 1.7407 0.01873 0.0223c0.11504 0.137 0.23786 0.2833 0.35605 0.3957 0.13432 0.1278 0.33163 0.2811 0.61123 0.3393 0.1364 0.0283 0.2766 0.0337 0.4147 0.0159 0.2833-0.0366 0.4918-0.1744 0.6355-0.2915 0.1264-0.103 0.2601-0.2395 0.3853-0.3673l0.0204-0.0208 4.2059-4.2918z",
-                              "fillRule": "evenodd",
-                              "fill": "#680ddbff",
-                              "width": 13,
-                              "height": 11.666666984558105,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 0.6666666865348816
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "AC9tr",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "8jfHI",
-                          "name": "double-check-circle 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "NJlKL",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M14 1.51555c-1.4301-0.95728-3.1499-1.51555-5-1.51555-4.97056 0-9 4.02944-9 9 0 4.9706 4.02944 9 9 9 4.9706 0 9-4.0294 9-9 0-1.6393-0.4383-3.17622-1.204-4.5",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3333333730697632,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#000000ff"
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "Wm30u",
-                              "x": 4.588541507720947,
-                              "y": 6.333333492279053,
-                              "name": "Vector",
-                              "geometry": "M5.74999 0l-3.99999 4-1.75-1.75m10.24999-0.75l-4 4-1-1",
-                              "width": 6.833326816558838,
-                              "height": 3.6666667461395264,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3333333730697632,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#000000ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "P9wL9",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "9Z5ou",
-                          "name": "bar-chart-analysis 2",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "eMC1W",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M5 15l0-3m4-2l0 5m4 0l0-7m-9.5 0.5l1.4646-1.7087c0.95087-1.10935 2.4191-1.63063 3.8566-1.36926 1.9908 0.36197 4.0326-0.27582 5.4634-1.70662l0.2154-0.21542m3.5 3.5l0-0.1c0-2.71375 0-4.07063-0.6311-5.05655-0.3118-0.48698-0.7254-0.90059-1.2123-1.21232-0.986-0.63113-2.3428-0.63113-5.0566-0.63113l-3.9 0c-2.99979 0-4.49968 0-5.55114 0.76393-0.33958 0.24672-0.63821 0.54535-0.88493 0.88493-0.76393 1.05146-0.76393 2.55135-0.76393 5.55114l0 3.6c0 2.9998 0 4.4997 0.76393 5.5511 0.24672 0.3396 0.54535 0.6382 0.88493 0.885 1.05146 0.7639 2.55135 0.7639 5.55114 0.7639l3.8 0c2.8089 0 4.2134 0 5.2223-0.6741 0.4367-0.2919 0.8117-0.6669 1.1036-1.1036 0.6741-1.0089 0.6741-2.4134 0.6741-5.2223",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3333333730697632,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#000000ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "0HX7V",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "DI350",
-                          "name": "face-smart 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "IOVKJ",
-                              "x": 5.333333492279053,
-                              "y": 5,
-                              "name": "Vector",
-                              "geometry": "M3 1.5c0 0.82843-0.6716 1.5-1.5 1.5-0.82843 0-1.5-0.67157-1.5-1.5 0-0.82843 0.67157-1.5 1.5-1.5 0.8284 0 1.5 0.67157 1.5 1.5z",
-                              "fill": "#000000ff",
-                              "width": 2,
-                              "height": 2,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 0.6666666865348816
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "hOmbU",
-                              "x": 8.666666984558105,
-                              "y": 5,
-                              "name": "Vector",
-                              "geometry": "M3 1.5c0 0.82843-0.6716 1.5-1.5 1.5-0.8284 0-1.5-0.67157-1.5-1.5 0-0.82843 0.6716-1.5 1.5-1.5 0.8284 0 1.5 0.67157 1.5 1.5z",
-                              "fill": "#000000ff",
-                              "width": 2,
-                              "height": 2,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 0.6666666865348816
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "Cc0Pb",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M9.0019 13.5c2.0503 0 3.8124-1.2341 4.584-3m2.8986-6.5c0.9572 1.4301 1.5155 3.1499 1.5155 5 0 4.9706-4.0294 9-9 9-4.97056 0-9-4.0294-9-9 0-4.97056 4.02944-9 9-9 1.6393 0 3.1762 0.43827 4.5 1.20404",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3333333730697632,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#000000ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "group",
-                      "id": "cG6sG",
-                      "name": "Card",
-                      "children": [
-                        {
-                          "type": "rectangle",
-                          "cornerRadius": 50,
-                          "id": "3aT9z",
-                          "x": 0,
-                          "y": 8.000000953674316,
-                          "name": "Bg",
-                          "fill": {
-                            "type": "gradient",
-                            "gradientType": "linear",
-                            "enabled": true,
-                            "rotation": -180,
-                            "size": {
-                              "height": 0.9999999999999999
-                            },
-                            "colors": [
-                              {
-                                "color": "#853ce2ff",
-                                "position": 0
-                              },
-                              {
-                                "color": "#e01d5aff",
-                                "position": 1
-                              }
-                            ],
-                            "center": {
-                              "y": 0.49999999999999994
-                            }
-                          },
-                          "width": 32,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "effect": {
-                            "type": "blur",
-                            "radius": 7
-                          }
-                        },
-                        {
-                          "type": "rectangle",
-                          "cornerRadius": 50,
-                          "id": "hovrh",
-                          "x": 24,
-                          "y": 6.993795977905393e-07,
-                          "name": "Bg",
-                          "rotation": -90.00000250447808,
-                          "fill": {
-                            "type": "gradient",
-                            "gradientType": "linear",
-                            "enabled": true,
-                            "rotation": -180,
-                            "size": {
-                              "height": 0.9999999999999999
-                            },
-                            "colors": [
-                              {
-                                "color": "#853ce2ff",
-                                "position": 0
-                              },
-                              {
-                                "color": "#e01d5aff",
-                                "position": 1
-                              }
-                            ],
-                            "center": {
-                              "y": 0.49999999999999994
-                            }
-                          },
-                          "width": 32,
-                          "height": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "effect": {
-                            "type": "blur",
-                            "radius": 7
-                          }
-                        },
-                        {
-                          "type": "frame",
-                          "id": "UxiFa",
-                          "x": 7.999999046325684,
-                          "y": 8,
-                          "name": "sparkles",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "PMC8H",
-                              "x": 0,
-                              "y": -0.0009765625,
-                              "name": "Vector",
-                              "geometry": "M0 0l24 0 0 24-24 0 0-24z",
-                              "width": 16,
-                              "height": 16,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1.5
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "iI4g3",
-                              "x": 2,
-                              "y": 2.666015625,
-                              "name": "Vector",
-                              "geometry": "M13 14c0.53043 0 1.03914 0.21071 1.41421 0.58579 0.37507 0.37507 0.58579 0.88378 0.58579 1.41421 0-0.53043 0.21071-1.03914 0.58579-1.41421 0.37507-0.37507 0.88378-0.58579 1.41421-0.58579-0.53043 0-1.03914-0.21071-1.41421-0.58579-0.37507-0.37507-0.58579-0.88378-0.58579-1.41421 0 0.53043-0.21071 1.03914-0.58579 1.41421-0.37507 0.37507-0.88378 0.58579-1.41421 0.58579z m0-12c0.53043 0 1.03914 0.21071 1.41421 0.58579 0.37507 0.37507 0.58579 0.88378 0.58579 1.41421 0-0.53043 0.21071-1.03914 0.58579-1.41421 0.37507-0.37507 0.88378-0.58579 1.41421-0.58579-0.53043 0-1.03914-0.21071-1.41421-0.58579-0.37507-0.37507-0.58579-0.88378-0.58579-1.41421 0 0.53043-0.21071 1.03914-0.58579 1.41421-0.37507 0.37507-0.88378 0.58579-1.41421 0.58579z m-7 12c0-1.5913 0.63214-3.11742 1.75736-4.24264 1.12522-1.12522 2.65134-1.75736 4.24264-1.75736-1.5913 0-3.11742-0.63214-4.24264-1.75736-1.12522-1.12522-1.75736-2.65134-1.75736-4.24264 0 1.5913-0.63214 3.11742-1.75736 4.24264-1.12522 1.12522-2.65134 1.75736-4.24264 1.75736 1.5913 0 3.11742 0.63214 4.24264 1.75736 1.12522 1.12522 1.75736 2.65134 1.75736 4.24264z",
-                              "fill": "#ffffffff",
-                              "width": 11.333333015441895,
-                              "height": 10.666666984558105,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.5,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#ffffffff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "262gD",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "DPijr",
-                          "name": "search-2 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "f0MGb",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M18 18l-5.3961-5.3961m0 0c1.3356-1.3361 2.1616-3.1817 2.1616-5.2202 0-1.2054-0.2888-2.3433-0.8009-3.34831m-1.3607 8.56851c-1.336 1.3367-3.1821 2.1634-5.2211 2.1634-4.07742 0-7.3828-3.3058-7.3828-7.3836 0-4.07792 3.30538-7.3837 7.3828-7.3837 1.418 0 2.7427 0.39984 3.8674 1.09294",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "cap": "round",
-                                "fill": "#292556ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "OX8SM",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "qNW5M",
-                          "name": "plus-square 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "fFibM",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M18 7l0-0.1c0-2.71375 0-4.07063-0.6311-5.05655-0.3118-0.48698-0.7254-0.90059-1.2123-1.21232-0.986-0.63113-2.3428-0.63113-5.0566-0.63113l-3.9 0c-2.99979 0-4.49968 0-5.55114 0.76393-0.33958 0.24672-0.63821 0.54535-0.88493 0.88493-0.76393 1.05146-0.76393 2.55135-0.76393 5.55114l0 3.6c0 2.9998 0 4.4997 0.76393 5.5511 0.24672 0.3396 0.54535 0.6382 0.88493 0.885 1.05146 0.7639 2.55135 0.7639 5.55114 0.7639l3.8 0c2.8089 0 4.2134 0 5.2223-0.6741 0.4367-0.2919 0.8117-0.6669 1.1036-1.1036 0.6741-1.0089 0.6741-2.4134 0.6741-5.2223",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#292556ff"
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "jg1Yl",
-                              "x": 5.666666507720947,
-                              "y": 5.666666507720947,
-                              "name": "Vector",
-                              "geometry": "M3.5 7l0-3.5m0 0l0-3.5m0 3.5l3.5 0m-3.5 0l-3.5 0",
-                              "width": 4.666666507720947,
-                              "height": 4.666666507720947,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#292556ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "1so4c",
-                      "name": "Card",
-                      "clip": true,
-                      "width": 32,
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "UokbH",
-                          "name": "moon 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "GhPWj",
-                              "x": 2,
-                              "y": 2.23828125,
-                              "name": "Vector",
-                              "geometry": "M5 4.64391c0-1.73153 0.55011-3.33458 1.48509-4.64391-3.74664 1.08819-6.48509 4.54625-6.48509 8.64395 0 4.9705 4.02944 9 9 9 4.0977 0 7.5557-2.7385 8.6439-6.4851-1.3093 0.935-2.9124 1.4851-4.6439 1.4851-2.9611 0-5.5465-1.6088-6.92974-4",
-                              "width": 11.76259994506836,
-                              "height": 11.76263427734375,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#292556ff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "A9KdH",
-                  "name": "Frame 48639",
-                  "width": 32,
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "vertical",
-                  "gap": 16,
-                  "justifyContent": "end",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "nVQBm",
-                      "name": "icon",
-                      "clip": true,
-                      "width": "fill_container",
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "iDpm3",
-                          "name": "arrow-rotate-right 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "uB3UE",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M18 9c0 4.2832-2.992 7.8675-7 8.777m6.3855-16.60903l0 3.53553-0.4753 0m0 0l-3.0602 0m3.0602 0c-1.5251-2.80193-4.4956-4.7035-7.9102-4.7035-4.97056 0-9 4.02944-9 9 0 4.2832 2.99202 7.8675 7 8.777",
-                              "width": 12,
-                              "height": 11.851333618164062,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#b5b5bcff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "5tW4a",
-                      "name": "icon",
-                      "clip": true,
-                      "width": "fill_container",
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "6CWOt",
-                          "name": "arrow-down-circle 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "6Yghj",
-                              "x": 6.333333492279053,
-                              "y": 5.833333492279053,
-                              "name": "Vector",
-                              "geometry": "M2.5 0l0 6.5m0 0l2.5-2.5m-2.5 2.5l-2.5-2.5",
-                              "width": 3.3333332538604736,
-                              "height": 4.333333492279053,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#b5b5bcff"
-                              }
-                            },
-                            {
-                              "type": "path",
-                              "id": "jOkfo",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M14 1.51555c-1.4301-0.95728-3.1499-1.51555-5-1.51555-4.97056 0-9 4.02944-9 9 0 4.9706 4.02944 9 9 9 4.9706 0 9-4.0294 9-9 0-1.6393-0.4383-3.17622-1.204-4.5",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#b5b5bcff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "omful",
-                      "name": "icon",
-                      "clip": true,
-                      "width": "fill_container",
-                      "fill": "#c9b8ff00",
-                      "cornerRadius": 8,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 10,
-                      "padding": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "hZIgq",
-                          "name": "browser-chrome 1",
-                          "clip": true,
-                          "width": 16,
-                          "height": 16,
-                          "fill": {
-                            "type": "color",
-                            "color": "#ffffffff",
-                            "enabled": false
-                          },
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "MCGoL",
-                              "x": 2,
-                              "y": 2,
-                              "name": "Vector",
-                              "geometry": "M9.0088 5l7.9912 0m-4.5352 6.0007l-0.0017 0.0024m0 0l-0.0034 0.0045-0.0303 0.0525m0.0337-0.057c0.3414-0.589 0.5369-1.2732 0.5369-2.0031 0-2.20914-1.7909-4-4-4-2.20914 0-4 1.79086-4 4 0 0.6983 0.17896 1.3549 0.49352 1.9263m6.96958 0.0768c-0.0111 0.0191-0.0223 0.0381-0.0337 0.057m0 0l-3.9653 6.8681m3.9653-6.8681c-0.6998 1.1624-1.9738 1.9399-3.4294 1.9399-1.5108 0-2.82596-0.8376-3.50648-2.0737m12.50648-1.9263c0-4.97056-4.0294-9-9-9-4.97056 0-9 4.02944-9 9 0 4.9706 4.02944 9 9 9 3.5337 0 6.5918-2.0366 8.0645-5m-11.57098-2.0737l0.04258 0.0737m-0.04258-0.0737l-3.95741-6.85447",
-                              "width": 12,
-                              "height": 12,
-                              "stroke": {
-                                "align": "center",
-                                "thickness": 1.3300000429153442,
-                                "join": "round",
-                                "cap": "round",
-                                "fill": "#b5b5bcff"
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "cornerRadius": 100,
-                      "id": "oAKxG",
-                      "name": "Bg",
-                      "fill": {
-                        "type": "image",
-                        "enabled": true,
-                        "url": "",
-                        "mode": "fill"
-                      },
-                      "width": 32,
-                      "height": 32,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "c3lJn",
-              "name": "Card",
-              "clip": true,
-              "width": 1328,
-              "height": 992,
-              "cornerRadius": 16,
-              "stroke": {
-                "align": "inside",
-                "thickness": 1
-              },
-              "effect": {
-                "type": "shadow",
-                "shadowType": "outer",
-                "color": "#00000014",
-                "blur": 14
-              },
-              "alignItems": "center",
-              "layoutIncludeStroke": true,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "Hbtm9",
-                  "name": "Card",
-                  "clip": true,
-                  "width": "fill_container",
-                  "height": "fill_container",
-                  "fill": "#ffffffff",
-                  "stroke": {
-                    "align": "inside",
-                    "thickness": 1
-                  },
-                  "layout": "vertical",
-                  "gap": 16,
-                  "padding": 16,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "8OZBh",
-                      "name": "Card",
-                      "width": "fill_container",
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "gap": 116,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "LcjzQ",
-                          "name": "Card",
-                          "fill": "#680ddbff",
-                          "cornerRadius": 100,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "gap": 8,
-                          "padding": [
-                            8,
-                            16
-                          ],
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "zYI5G",
-                              "name": "Card",
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "gap": 8,
-                              "justifyContent": "center",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "GpSNB",
-                                  "name": "CalendarCheck",
-                                  "clip": true,
-                                  "width": 16,
-                                  "height": 16,
-                                  "fill": {
-                                    "type": "color",
-                                    "color": "#ffffffff",
-                                    "enabled": false
-                                  },
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 0.0625
-                                  },
-                                  "layout": "none",
-                                  "children": [
-                                    {
-                                      "type": "path",
-                                      "id": "r6WxO",
-                                      "x": 0,
-                                      "y": 0,
-                                      "name": "Vector",
-                                      "geometry": "M0 0l256 0 0 256-256 0 0-256z",
-                                      "width": 16,
-                                      "height": 16,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "EeADf",
-                                      "x": 2,
-                                      "y": 1,
-                                      "name": "Vector",
-                                      "geometry": "M176 16l-24 0 0-8c0-2.12173-0.84285-4.15656-2.34314-5.65685-1.50029-1.50029-3.53513-2.34315-5.65686-2.34315-2.12173 0-4.15657 0.84285-5.65686 2.34315-1.50029 1.50029-2.34314 3.53512-2.34314 5.65685l0 8-80 0 0-8c0-2.12173-0.84286-4.15656-2.34315-5.65685-1.50029-1.50029-3.53512-2.34315-5.65685-2.34315-2.12173 0-4.15656 0.84285-5.65685 2.34315-1.50029 1.50029-2.34315 3.53512-2.34315 5.65685l0 8-24 0c-4.24346 0-8.31313 1.68571-11.31371 4.68629-3.00058 3.00058-4.68629 7.07024-4.68629 11.31371l0 160c0 4.24347 1.68571 8.31313 4.68629 11.31371 3.00058 3.00058 7.07025 4.68629 11.31371 4.68629l160 0c4.24347 0 8.31313-1.68571 11.31371-4.68629 3.00058-3.00058 4.68629-7.07024 4.68629-11.31371l0-160c0-4.24346-1.68571-8.31313-4.68629-11.31371-3.00058-3.00058-7.07024-4.68629-11.31371-4.68629z m-38.34 101.66l-48 48c-0.74298 0.74381-1.6253 1.3339-2.59648 1.73648-0.97118 0.40259-2.0122 0.60981-3.06352 0.60981-1.05132 0-2.09234-0.20722-3.06352-0.60981-0.97118-0.40258-1.8535-0.99267-2.59648-1.73648l-24-24c-1.50113-1.50113-2.34444-3.53709-2.34445-5.66 0-2.12291 0.84332-4.15887 2.34445-5.66 1.50113-1.50113 3.53709-2.34446 5.66-2.34446 2.12291 0 4.15887 0.84333 5.66 2.34446l18.34 18.35 42.34-42.35c0.74327-0.74328 1.62568-1.33289 2.59683-1.73515 0.97114-0.40226 2.01201-0.6093 3.06317-0.6093 1.05116 0 2.09203 0.20704 3.06317 0.6093 0.97115 0.40226 1.85355 0.99187 2.59683 1.73515 0.74329 0.74327 1.33287 1.62568 1.73514 2.59683 0.40227 0.97114 0.60932 2.01201 0.60932 3.06317 0 1.05116-0.20705 2.09203-0.60932 3.06317-0.40227 0.97115-0.99185 1.85356-1.73514 2.59683z m-121.66-53.66l0-32 24 0 0 8c0 2.12173 0.84286 4.15656 2.34315 5.65685 1.50029 1.50029 3.53512 2.34315 5.65685 2.34315 2.12173 0 4.15656-0.84286 5.65685-2.34315 1.50029-1.50029 2.34315-3.53512 2.34315-5.65685l0-8 80 0 0 8c0 2.12173 0.84285 4.15656 2.34314 5.65685 1.50029 1.50029 3.53513 2.34315 5.65686 2.34315 2.12173 0 4.15657-0.84286 5.65686-2.34315 1.50029-1.50029 2.34314-3.53512 2.34314-5.65685l0-8 24 0 0 32-160 0z",
-                                      "fill": "#ffffffff",
-                                      "width": 12,
-                                      "height": 13,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "HxOLk",
-                                  "name": "Today",
-                                  "fill": "#ffffffff",
-                                  "content": "Today",
-                                  "lineHeight": 1.100000023841858,
-                                  "textAlignVertical": "middle",
-                                  "fontFamily": "SF Pro Text",
-                                  "fontSize": 12,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "U5saP",
-                          "name": "Card",
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 0.6666666865348816
-                          },
-                          "gap": 16,
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "jXve5",
-                              "name": "icon",
-                              "clip": true,
-                              "width": 32,
-                              "fill": "#c9b8ff00",
-                              "cornerRadius": 8,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "gap": 10,
-                              "padding": 8,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "pVT1l",
-                                  "name": "ArrowsDownUp",
-                                  "clip": true,
-                                  "width": 16,
-                                  "height": 16,
-                                  "fill": {
-                                    "type": "color",
-                                    "color": "#ffffffff",
-                                    "enabled": false
-                                  },
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 0.0625
-                                  },
-                                  "layout": "none",
-                                  "children": [
-                                    {
-                                      "type": "path",
-                                      "id": "qCkBj",
-                                      "x": 0,
-                                      "y": 0,
-                                      "name": "Vector",
-                                      "geometry": "M0 0l256 0 0 256-256 0 0-256z",
-                                      "width": 16,
-                                      "height": 16,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "AFtxU",
-                                      "x": 2.9998371601104736,
-                                      "y": 11,
-                                      "name": "Vector",
-                                      "geometry": "M64 0l-32 32-32-32",
-                                      "width": 4,
-                                      "height": 2,
-                                      "stroke": {
-                                        "align": "center",
-                                        "thickness": 1,
-                                        "join": "round",
-                                        "cap": "round",
-                                        "fill": "#000000ff"
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "FJCc9",
-                                      "x": 4.999837398529053,
-                                      "y": 3,
-                                      "name": "Vector",
-                                      "geometry": "M0 0l0 160",
-                                      "width": 0,
-                                      "height": 10,
-                                      "stroke": {
-                                        "align": "center",
-                                        "thickness": 1,
-                                        "join": "round",
-                                        "cap": "round",
-                                        "fill": "#000000ff"
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "GviXf",
-                                      "x": 8.999836921691895,
-                                      "y": 3,
-                                      "name": "Vector",
-                                      "geometry": "M0 32l32-32 32 32",
-                                      "width": 4,
-                                      "height": 2,
-                                      "stroke": {
-                                        "align": "center",
-                                        "thickness": 1,
-                                        "join": "round",
-                                        "cap": "round",
-                                        "fill": "#000000ff"
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "gepn0",
-                                      "x": 10.999836921691895,
-                                      "y": 3,
-                                      "name": "Vector",
-                                      "geometry": "M0 160l0-160",
-                                      "width": 0,
-                                      "height": 10,
-                                      "stroke": {
-                                        "align": "center",
-                                        "thickness": 1,
-                                        "join": "round",
-                                        "cap": "round",
-                                        "fill": "#000000ff"
-                                      }
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Tx810",
-                              "name": "icon",
-                              "clip": true,
-                              "width": 32,
-                              "fill": "#c9b8ff00",
-                              "cornerRadius": 8,
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "gap": 10,
-                              "padding": 8,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "lpvDB",
-                                  "name": "DotsThree",
-                                  "clip": true,
-                                  "width": 16,
-                                  "height": 16,
-                                  "fill": {
-                                    "type": "color",
-                                    "color": "#ffffffff",
-                                    "enabled": false
-                                  },
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 0.0625
-                                  },
-                                  "layout": "none",
-                                  "children": [
-                                    {
-                                      "type": "path",
-                                      "id": "MLJY3",
-                                      "x": 0,
-                                      "y": 0,
-                                      "name": "Vector",
-                                      "geometry": "M0 0l256 0 0 256-256 0 0-256z",
-                                      "width": 16,
-                                      "height": 16,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "gLcNp",
-                                      "x": 7.250162601470947,
-                                      "y": 7.25,
-                                      "name": "Vector",
-                                      "geometry": "M24 12c0 6.62742-5.37258 12-12 12-6.62742 0-12-5.37258-12-12 0-6.62742 5.37258-12 12-12 6.62742 0 12 5.37258 12 12z",
-                                      "fill": "#000000ff",
-                                      "width": 1.5,
-                                      "height": 1.5,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "L3ui9",
-                                      "x": 11.500163078308105,
-                                      "y": 7.25,
-                                      "name": "Vector",
-                                      "geometry": "M24 12c0 6.62742-5.37258 12-12 12-6.62742 0-12-5.37258-12-12 0-6.62742 5.37258-12 12-12 6.62742 0 12 5.37258 12 12z",
-                                      "fill": "#000000ff",
-                                      "width": 1.5,
-                                      "height": 1.5,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    },
-                                    {
-                                      "type": "path",
-                                      "id": "EbS3d",
-                                      "x": 3.0001628398895264,
-                                      "y": 7.25,
-                                      "name": "Vector",
-                                      "geometry": "M24 12c0 6.62742-5.37258 12-12 12-6.62742 0-12-5.37258-12-12 0-6.62742 5.37258-12 12-12 6.62742 0 12 5.37258 12 12z",
-                                      "fill": "#000000ff",
-                                      "width": 1.5,
-                                      "height": 1.5,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.0625
-                                      }
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "KS87F",
-                      "name": "Rectangle 34625611",
-                      "fill": "#00000029",
-                      "width": "fill_container",
-                      "height": 1,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      }
-                    },
-                    {
-                      "type": "text",
-                      "id": "8aTFX",
-                      "name": "Routines",
-                      "fill": "#000000ff",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Routines",
-                      "lineHeight": 1.3333333333333333,
-                      "textAlignVertical": "middle",
-                      "fontFamily": "SF Pro Text",
-                      "fontSize": 24,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "0cfTn",
-                      "name": "Card",
-                      "width": "fill_container",
-                      "height": 256,
-                      "stroke": {
-                        "align": "inside",
-                        "thickness": 1
-                      },
-                      "layout": "none",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RuPVb",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Card",
-                          "width": 421.3333435058594,
-                          "height": 120,
-                          "fill": "#f9f8fcff",
-                          "cornerRadius": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "vertical",
-                          "gap": 16,
-                          "padding": 16,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "1Rh1F",
-                              "name": "Card",
-                              "width": "fill_container",
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "layout": "vertical",
-                              "gap": 16,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "GnMPJ",
-                                  "name": "Card",
-                                  "width": "fill_container",
-                                  "height": 16,
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "justifyContent": "space_between",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "vIXs5",
-                                      "name": "Make your bed",
-                                      "fill": "#000000ff",
-                                      "content": "Make your bed",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 16,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "NiSgi",
-                                      "name": "Card",
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 8,
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "UbvlS",
-                                          "name": "15m",
-                                          "fill": "#000000ff",
-                                          "content": "15m",
-                                          "lineHeight": 1.100000023841858,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "J3pga",
-                                          "name": "clock-2 1",
-                                          "clip": true,
-                                          "width": 16,
-                                          "height": 16,
-                                          "fill": {
-                                            "type": "color",
-                                            "color": "#ffffffff",
-                                            "enabled": false
-                                          },
-                                          "stroke": {
-                                            "align": "inside",
-                                            "thickness": 0.6666666865348816
-                                          },
-                                          "layout": "none",
-                                          "children": [
-                                            {
-                                              "type": "group",
-                                              "id": "gn9Rh",
-                                              "x": 0.6998697717790492,
-                                              "y": 0.7003580530436011,
-                                              "name": "Card",
-                                              "children": [
-                                                {
-                                                  "type": "path",
-                                                  "id": "JxmOI",
-                                                  "x": 0,
-                                                  "y": 0,
-                                                  "name": "Vector",
-                                                  "geometry": "M18.949 11.949l0-2 2.949 0c-0.478-5.268-4.681-9.472-9.949-9.949l0 2.949-2 0 0-2.949c-5.268 0.477-9.472 4.681-9.949 9.949l2.949 0 0 2-2.949 0c0.478 5.268 4.681 9.472 9.949 9.949l0-2.949 2 0 0 2.949c5.268-0.478 9.472-4.681 9.949-9.949l-2.949 0z m-3 0l-5.48 0-4.925-6.156 1.562-1.25 4.324 5.406 4.52 0-0.001 2z",
-                                                  "fill": "#000000ff",
-                                                  "width": 14.598666191101074,
-                                                  "height": 14.598666191101074,
-                                                  "stroke": {
-                                                    "align": "inside",
-                                                    "thickness": 0.6666666865348816
-                                                  }
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "xaS4W",
-                                  "name": "Card",
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "tI9fg",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "tUZsL",
-                                          "name": "7:45 AM",
-                                          "fill": "#131314ff",
-                                          "content": "7:45 AM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "PXIfy",
-                                      "name": ":",
-                                      "fill": "#000000ff",
-                                      "content": ":",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "3DcNM",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "UYubM",
-                                          "name": "8:00 AM",
-                                          "fill": "#131314ff",
-                                          "content": "8:00 AM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "HRFsz",
-                                      "name": "compose-2 1",
-                                      "clip": true,
-                                      "width": 16,
-                                      "height": 16,
-                                      "fill": {
-                                        "type": "color",
-                                        "color": "#ffffffff",
-                                        "enabled": false
-                                      },
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.6666666865348816
-                                      },
-                                      "layout": "none",
-                                      "children": [
-                                        {
-                                          "type": "group",
-                                          "id": "SrN1a",
-                                          "x": 1.3336588939127978,
-                                          "y": 0.9386393030436011,
-                                          "name": "Card",
-                                          "children": [
-                                            {
-                                              "type": "path",
-                                              "id": "UTbBr",
-                                              "x": 0,
-                                              "y": 1.0611979166715173,
-                                              "name": "Vector",
-                                              "geometry": "M16 19l-13 0c-1.654 0-3-1.346-3-3l0-13c0-1.654 1.346-3 3-3l6 0 0 2-6 0c-0.552 0-1 0.449-1 1l0 13c0 0.551 0.448 1 1 1l13 0c0.552 0 1-0.449 1-1l0-6 2 0 0 6c0 1.654-1.346 3-3 3z",
-                                              "fill": "#000000ff",
-                                              "width": 12.666666984558105,
-                                              "height": 12.666666984558105,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "id": "eYzs8",
-                                              "x": 3.083984295517439,
-                                              "y": 0,
-                                              "name": "Vector",
-                                              "geometry": "M15.081 0.885c-1.178-1.18-3.236-1.18-4.414 0l-9.196 9.196-1.471 5.886 5.886-1.472 9.195-9.196c1.217-1.217 1.217-3.197 0-4.414z m-1.414 3l-1.707 1.707-1.586-1.586 1.707-1.707c0.424-0.424 1.162-0.424 1.586 0 0.437 0.437 0.437 1.149 0 1.586z",
-                                              "fill": "#000000ff",
-                                              "width": 10.662500381469727,
-                                              "height": 10.64466667175293,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "4Cr3T",
-                                  "name": "Everyday",
-                                  "fill": "#000000ff",
-                                  "content": "Everyday",
-                                  "lineHeight": 1.4285714285714286,
-                                  "textAlignVertical": "middle",
-                                  "fontFamily": "SF Pro Text",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "KmfHk",
-                          "x": 437.3333435058594,
-                          "y": 0,
-                          "name": "Card",
-                          "width": 421.3333435058594,
-                          "height": 120,
-                          "fill": "#f9f8fcff",
-                          "cornerRadius": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "vertical",
-                          "gap": 16,
-                          "padding": 16,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "Wu0Te",
-                              "name": "Card",
-                              "width": "fill_container",
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "layout": "vertical",
-                              "gap": 16,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "DtaZj",
-                                  "name": "Card",
-                                  "width": "fill_container",
-                                  "height": 16,
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "justifyContent": "space_between",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "v0wZO",
-                                      "name": "Brush teeth",
-                                      "fill": "#000000ff",
-                                      "content": "Brush teeth",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 16,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "QtR73",
-                                      "name": "Card",
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 8,
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "t8Mij",
-                                          "name": "30m",
-                                          "fill": "#000000ff",
-                                          "content": "30m",
-                                          "lineHeight": 1.100000023841858,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "CKvVO",
-                                          "name": "clock-2 1",
-                                          "clip": true,
-                                          "width": 16,
-                                          "height": 16,
-                                          "fill": {
-                                            "type": "color",
-                                            "color": "#ffffffff",
-                                            "enabled": false
-                                          },
-                                          "stroke": {
-                                            "align": "inside",
-                                            "thickness": 0.6666666865348816
-                                          },
-                                          "layout": "none",
-                                          "children": [
-                                            {
-                                              "type": "group",
-                                              "id": "wiQak",
-                                              "x": 0.6998697717790492,
-                                              "y": 0.7003580530436011,
-                                              "name": "Card",
-                                              "children": [
-                                                {
-                                                  "type": "path",
-                                                  "id": "RfrFW",
-                                                  "x": 0,
-                                                  "y": 0,
-                                                  "name": "Vector",
-                                                  "geometry": "M18.949 11.949l0-2 2.949 0c-0.478-5.268-4.681-9.472-9.949-9.949l0 2.949-2 0 0-2.949c-5.268 0.477-9.472 4.681-9.949 9.949l2.949 0 0 2-2.949 0c0.478 5.268 4.681 9.472 9.949 9.949l0-2.949 2 0 0 2.949c5.268-0.478 9.472-4.681 9.949-9.949l-2.949 0z m-3 0l-5.48 0-4.925-6.156 1.562-1.25 4.324 5.406 4.52 0-0.001 2z",
-                                                  "fill": "#000000ff",
-                                                  "width": 14.598666191101074,
-                                                  "height": 14.598666191101074,
-                                                  "stroke": {
-                                                    "align": "inside",
-                                                    "thickness": 0.6666666865348816
-                                                  }
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "group",
-                                  "id": "DI46r",
-                                  "name": "Card",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "Ol0Qo",
-                                      "x": 0,
-                                      "y": 0,
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "zzn5C",
-                                          "name": "8:00 AM",
-                                          "fill": "#131314ff",
-                                          "content": "8:00 AM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "cq7tO",
-                                      "x": 73,
-                                      "y": 4,
-                                      "name": ":",
-                                      "fill": "#000000ff",
-                                      "content": ":",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "yWW4O",
-                                      "x": 85,
-                                      "y": 0,
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "pYIov",
-                                          "name": "8:30 AM",
-                                          "fill": "#131314ff",
-                                          "content": "8:30 AM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "mALct",
-                                      "x": 158,
-                                      "y": 2,
-                                      "name": "compose-2 1",
-                                      "clip": true,
-                                      "width": 16,
-                                      "height": 16,
-                                      "fill": {
-                                        "type": "color",
-                                        "color": "#ffffffff",
-                                        "enabled": false
-                                      },
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.6666666865348816
-                                      },
-                                      "layout": "none",
-                                      "children": [
-                                        {
-                                          "type": "group",
-                                          "id": "gpKwC",
-                                          "x": 1.3336588939127978,
-                                          "y": 0.9386393030436011,
-                                          "name": "Card",
-                                          "children": [
-                                            {
-                                              "type": "path",
-                                              "id": "uvixr",
-                                              "x": 0,
-                                              "y": 1.0611979166715173,
-                                              "name": "Vector",
-                                              "geometry": "M16 19l-13 0c-1.654 0-3-1.346-3-3l0-13c0-1.654 1.346-3 3-3l6 0 0 2-6 0c-0.552 0-1 0.449-1 1l0 13c0 0.551 0.448 1 1 1l13 0c0.552 0 1-0.449 1-1l0-6 2 0 0 6c0 1.654-1.346 3-3 3z",
-                                              "fill": "#000000ff",
-                                              "width": 12.666666984558105,
-                                              "height": 12.666666984558105,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "id": "ZvUDu",
-                                              "x": 3.083984295517439,
-                                              "y": 0,
-                                              "name": "Vector",
-                                              "geometry": "M15.081 0.885c-1.178-1.18-3.236-1.18-4.414 0l-9.196 9.196-1.471 5.886 5.886-1.472 9.195-9.196c1.217-1.217 1.217-3.197 0-4.414z m-1.414 3l-1.707 1.707-1.586-1.586 1.707-1.707c0.424-0.424 1.162-0.424 1.586 0 0.437 0.437 0.437 1.149 0 1.586z",
-                                              "fill": "#000000ff",
-                                              "width": 10.662500381469727,
-                                              "height": 10.64466667175293,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Fqyyl",
-                                  "name": "Mon, Tue, Wed, Thu, Fri, Sat, Sun",
-                                  "fill": "#000000ff",
-                                  "content": "Mon, Tue, Wed, Thu, Fri, Sat, Sun",
-                                  "lineHeight": 1.4285714285714286,
-                                  "textAlignVertical": "middle",
-                                  "fontFamily": "SF Pro Text",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "xPgvT",
-                          "x": 874.6666870117188,
-                          "y": 0,
-                          "name": "Card",
-                          "width": 421.3333435058594,
-                          "height": 120,
-                          "fill": "#f9f8fcff",
-                          "cornerRadius": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "vertical",
-                          "gap": 16,
-                          "padding": 16,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "gGlLm",
-                              "name": "Card",
-                              "width": "fill_container",
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "layout": "vertical",
-                              "gap": 16,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "nwIL5",
-                                  "name": "Card",
-                                  "width": "fill_container",
-                                  "height": 16,
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "justifyContent": "space_between",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "fkBsM",
-                                      "name": "Breakfast",
-                                      "fill": "#000000ff",
-                                      "content": "Breakfast",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 16,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "n4Pxk",
-                                      "name": "Card",
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 8,
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "oZDqD",
-                                          "name": "15m",
-                                          "fill": "#000000ff",
-                                          "content": "15m",
-                                          "lineHeight": 1.100000023841858,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "bKeXY",
-                                          "name": "clock-2 1",
-                                          "clip": true,
-                                          "width": 16,
-                                          "height": 16,
-                                          "fill": {
-                                            "type": "color",
-                                            "color": "#ffffffff",
-                                            "enabled": false
-                                          },
-                                          "stroke": {
-                                            "align": "inside",
-                                            "thickness": 0.6666666865348816
-                                          },
-                                          "layout": "none",
-                                          "children": [
-                                            {
-                                              "type": "group",
-                                              "id": "8bnmn",
-                                              "x": 0.6998697717790492,
-                                              "y": 0.7003580530436011,
-                                              "name": "Card",
-                                              "children": [
-                                                {
-                                                  "type": "path",
-                                                  "id": "aSSFn",
-                                                  "x": 0,
-                                                  "y": 0,
-                                                  "name": "Vector",
-                                                  "geometry": "M18.949 11.949l0-2 2.949 0c-0.478-5.268-4.681-9.472-9.949-9.949l0 2.949-2 0 0-2.949c-5.268 0.477-9.472 4.681-9.949 9.949l2.949 0 0 2-2.949 0c0.478 5.268 4.681 9.472 9.949 9.949l0-2.949 2 0 0 2.949c5.268-0.478 9.472-4.681 9.949-9.949l-2.949 0z m-3 0l-5.48 0-4.925-6.156 1.562-1.25 4.324 5.406 4.52 0-0.001 2z",
-                                                  "fill": "#000000ff",
-                                                  "width": 14.598666191101074,
-                                                  "height": 14.598666191101074,
-                                                  "stroke": {
-                                                    "align": "inside",
-                                                    "thickness": 0.6666666865348816
-                                                  }
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "UBg2a",
-                                  "name": "Card",
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "I8rvH",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "SZYLg",
-                                          "name": "12:00 PM",
-                                          "fill": "#131314ff",
-                                          "content": "12:00 PM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "E6xeJ",
-                                      "name": ":",
-                                      "fill": "#000000ff",
-                                      "content": ":",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "blqu1",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "X9cAr",
-                                          "name": "12:15 PM",
-                                          "fill": "#131314ff",
-                                          "content": "12:15 PM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "3uCBB",
-                                      "name": "compose-2 1",
-                                      "clip": true,
-                                      "width": 16,
-                                      "height": 16,
-                                      "fill": {
-                                        "type": "color",
-                                        "color": "#ffffffff",
-                                        "enabled": false
-                                      },
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.6666666865348816
-                                      },
-                                      "layout": "none",
-                                      "children": [
-                                        {
-                                          "type": "group",
-                                          "id": "Oidb2",
-                                          "x": 1.3336588939127978,
-                                          "y": 0.9386393030436011,
-                                          "name": "Card",
-                                          "children": [
-                                            {
-                                              "type": "path",
-                                              "id": "mlwYH",
-                                              "x": 0,
-                                              "y": 1.0611979166715173,
-                                              "name": "Vector",
-                                              "geometry": "M16 19l-13 0c-1.654 0-3-1.346-3-3l0-13c0-1.654 1.346-3 3-3l6 0 0 2-6 0c-0.552 0-1 0.449-1 1l0 13c0 0.551 0.448 1 1 1l13 0c0.552 0 1-0.449 1-1l0-6 2 0 0 6c0 1.654-1.346 3-3 3z",
-                                              "fill": "#000000ff",
-                                              "width": 12.666666984558105,
-                                              "height": 12.666666984558105,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "id": "8Z1Vf",
-                                              "x": 3.083984295517439,
-                                              "y": 0,
-                                              "name": "Vector",
-                                              "geometry": "M15.081 0.885c-1.178-1.18-3.236-1.18-4.414 0l-9.196 9.196-1.471 5.886 5.886-1.472 9.195-9.196c1.217-1.217 1.217-3.197 0-4.414z m-1.414 3l-1.707 1.707-1.586-1.586 1.707-1.707c0.424-0.424 1.162-0.424 1.586 0 0.437 0.437 0.437 1.149 0 1.586z",
-                                              "fill": "#000000ff",
-                                              "width": 10.662500381469727,
-                                              "height": 10.64466667175293,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "W7ty3",
-                                  "name": "Mon, Wed, Fri",
-                                  "fill": "#000000ff",
-                                  "content": "Mon, Wed, Fri",
-                                  "lineHeight": 1.4285714285714286,
-                                  "textAlignVertical": "middle",
-                                  "fontFamily": "SF Pro Text",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "cUNkG",
-                          "x": 0,
-                          "y": 136,
-                          "name": "Card",
-                          "width": 421.3333435058594,
-                          "height": 120,
-                          "fill": "#f9f8fcff",
-                          "cornerRadius": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1
-                          },
-                          "layout": "vertical",
-                          "gap": 16,
-                          "padding": 16,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "sdvGf",
-                              "name": "Card",
-                              "width": "fill_container",
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 1
-                              },
-                              "layout": "vertical",
-                              "gap": 16,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "NOvQe",
-                                  "name": "CArd",
-                                  "width": "fill_container",
-                                  "height": 16,
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "justifyContent": "space_between",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "T7pbG",
-                                      "name": "Workout",
-                                      "fill": "#000000ff",
-                                      "content": "Workout",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 16,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "WAIPs",
-                                      "name": "Card",
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 8,
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "olZNH",
-                                          "name": "1h 30m",
-                                          "fill": "#000000ff",
-                                          "content": "1h 30m",
-                                          "lineHeight": 1.100000023841858,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "5kKWx",
-                                          "name": "clock-2 1",
-                                          "clip": true,
-                                          "width": 16,
-                                          "height": 16,
-                                          "fill": {
-                                            "type": "color",
-                                            "color": "#ffffffff",
-                                            "enabled": false
-                                          },
-                                          "stroke": {
-                                            "align": "inside",
-                                            "thickness": 0.6666666865348816
-                                          },
-                                          "layout": "none",
-                                          "children": [
-                                            {
-                                              "type": "group",
-                                              "id": "PDOPO",
-                                              "x": 0.6998697717790492,
-                                              "y": 0.7003580530436011,
-                                              "name": "Card",
-                                              "children": [
-                                                {
-                                                  "type": "path",
-                                                  "id": "5raCl",
-                                                  "x": 0,
-                                                  "y": 0,
-                                                  "name": "Vector",
-                                                  "geometry": "M18.949 11.949l0-2 2.949 0c-0.478-5.268-4.681-9.472-9.949-9.949l0 2.949-2 0 0-2.949c-5.268 0.477-9.472 4.681-9.949 9.949l2.949 0 0 2-2.949 0c0.478 5.268 4.681 9.472 9.949 9.949l0-2.949 2 0 0 2.949c5.268-0.478 9.472-4.681 9.949-9.949l-2.949 0z m-3 0l-5.48 0-4.925-6.156 1.562-1.25 4.324 5.406 4.52 0-0.001 2z",
-                                                  "fill": "#000000ff",
-                                                  "width": 14.598666191101074,
-                                                  "height": 14.598666191101074,
-                                                  "stroke": {
-                                                    "align": "inside",
-                                                    "thickness": 0.6666666865348816
-                                                  }
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "dXlrN",
-                                  "name": "Card",
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 1
-                                  },
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "62KvF",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "PkKZl",
-                                          "name": "6:00 PM",
-                                          "fill": "#131314ff",
-                                          "content": "6:00 PM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "lkJqx",
-                                      "name": ":",
-                                      "fill": "#000000ff",
-                                      "content": ":",
-                                      "lineHeight": 1,
-                                      "textAlignVertical": "middle",
-                                      "fontFamily": "SF Pro Text",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "3GFRa",
-                                      "name": "Card",
-                                      "fill": "#ffffffff",
-                                      "cornerRadius": 8,
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 1
-                                      },
-                                      "gap": 4,
-                                      "padding": [
-                                        4,
-                                        8
-                                      ],
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "4xj4p",
-                                          "name": "7:30 PM",
-                                          "fill": "#131314ff",
-                                          "content": "7:30 PM",
-                                          "lineHeight": 1,
-                                          "textAlignVertical": "middle",
-                                          "fontFamily": "SF Pro Text",
-                                          "fontSize": 12,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "mkg24",
-                                      "name": "compose-2 1",
-                                      "clip": true,
-                                      "width": 16,
-                                      "height": 16,
-                                      "fill": {
-                                        "type": "color",
-                                        "color": "#ffffffff",
-                                        "enabled": false
-                                      },
-                                      "stroke": {
-                                        "align": "inside",
-                                        "thickness": 0.6666666865348816
-                                      },
-                                      "layout": "none",
-                                      "children": [
-                                        {
-                                          "type": "group",
-                                          "id": "g4nET",
-                                          "x": 1.3336588939127978,
-                                          "y": 0.9386393030436011,
-                                          "name": "Card",
-                                          "children": [
-                                            {
-                                              "type": "path",
-                                              "id": "W6lBz",
-                                              "x": 0,
-                                              "y": 1.0611979166715173,
-                                              "name": "Vector",
-                                              "geometry": "M16 19l-13 0c-1.654 0-3-1.346-3-3l0-13c0-1.654 1.346-3 3-3l6 0 0 2-6 0c-0.552 0-1 0.449-1 1l0 13c0 0.551 0.448 1 1 1l13 0c0.552 0 1-0.449 1-1l0-6 2 0 0 6c0 1.654-1.346 3-3 3z",
-                                              "fill": "#000000ff",
-                                              "width": 12.666666984558105,
-                                              "height": 12.666666984558105,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            },
-                                            {
-                                              "type": "path",
-                                              "id": "2wGAr",
-                                              "x": 3.083984295517439,
-                                              "y": 0,
-                                              "name": "Vector",
-                                              "geometry": "M15.081 0.885c-1.178-1.18-3.236-1.18-4.414 0l-9.196 9.196-1.471 5.886 5.886-1.472 9.195-9.196c1.217-1.217 1.217-3.197 0-4.414z m-1.414 3l-1.707 1.707-1.586-1.586 1.707-1.707c0.424-0.424 1.162-0.424 1.586 0 0.437 0.437 0.437 1.149 0 1.586z",
-                                              "fill": "#000000ff",
-                                              "width": 10.662500381469727,
-                                              "height": 10.64466667175293,
-                                              "stroke": {
-                                                "align": "inside",
-                                                "thickness": 0.6666666865348816
-                                              }
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "4UNfh",
-                                  "name": "Everyday",
-                                  "fill": "#000000ff",
-                                  "content": "Everyday",
-                                  "lineHeight": 1.4285714285714286,
-                                  "textAlignVertical": "middle",
-                                  "fontFamily": "SF Pro Text",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "ep71r",
-                          "x": 437.3333435058594,
-                          "y": 136,
-                          "name": "Card",
-                          "width": 421.3333435058594,
-                          "height": 120,
-                          "fill": "#ffffffff",
-                          "cornerRadius": 16,
-                          "stroke": {
-                            "align": "inside",
-                            "thickness": 1,
-                            "fill": "#00000029"
-                          },
-                          "gap": 8,
-                          "padding": 16,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "NsQwJ",
-                              "name": "Plus",
-                              "clip": true,
-                              "width": 16,
-                              "height": 16,
-                              "fill": {
-                                "type": "color",
-                                "color": "#ffffffff",
-                                "enabled": false
-                              },
-                              "stroke": {
-                                "align": "inside",
-                                "thickness": 0.0625
-                              },
-                              "layout": "none",
-                              "children": [
-                                {
-                                  "type": "path",
-                                  "id": "WHCab",
-                                  "x": 0,
-                                  "y": 0,
-                                  "name": "Vector",
-                                  "geometry": "M0 0l256 0 0 256-256 0 0-256z",
-                                  "width": 16,
-                                  "height": 16,
-                                  "stroke": {
-                                    "align": "inside",
-                                    "thickness": 0.0625
-                                  }
-                                },
-                                {
-                                  "type": "path",
-                                  "id": "t30x6",
-                                  "x": 2.5,
-                                  "y": 8,
-                                  "name": "Vector",
-                                  "geometry": "M0 0l176 0",
-                                  "width": 11,
-                                  "height": 0,
-                                  "stroke": {
-                                    "align": "center",
-                                    "thickness": 1,
-                                    "join": "round",
-                                    "cap": "round",
-                                    "fill": "#000000ff"
-                                  }
-                                },
-                                {
-                                  "type": "path",
-                                  "id": "grjUk",
-                                  "x": 8,
-                                  "y": 2.5,
-                                  "name": "Vector",
-                                  "geometry": "M0 0l0 176",
-                                  "width": 0,
-                                  "height": 11,
-                                  "stroke": {
-                                    "align": "center",
-                                    "thickness": 1,
-                                    "join": "round",
-                                    "cap": "round",
-                                    "fill": "#000000ff"
-                                  }
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "2BBpx",
-                              "name": "Add task",
-                              "fill": "#000000ff",
-                              "content": "Add task",
-                              "lineHeight": 1,
-                              "textAlignVertical": "middle",
-                              "fontFamily": "SF Pro Text",
-                              "fontSize": 16,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "frame",
       "id": "x9AXL",
       "x": 15430,
       "y": 53,
@@ -9814,593 +7217,1414 @@
       "name": "landing-page",
       "clip": true,
       "width": 1400,
-      "height": 900,
-      "fill": "#0F0F10",
+      "height": 2600,
+      "fill": "#FAF9F7",
       "layout": "none",
       "children": [
         {
           "type": "frame",
-          "id": "68HaJ",
-          "x": 40,
-          "y": 24,
-          "name": "logo",
-          "width": 36,
-          "height": 36,
-          "fill": "#232325",
-          "cornerRadius": 10
+          "id": "LpNav1",
+          "x": 0,
+          "y": 0,
+          "name": "nav-bar",
+          "width": 1400,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "LpLogo",
+              "x": 48,
+              "y": 18,
+              "name": "logo",
+              "width": 36,
+              "height": 36,
+              "fill": "#0D9488",
+              "cornerRadius": 8
+            },
+            {
+              "type": "text",
+              "id": "LpBrand",
+              "x": 94,
+              "y": 26,
+              "name": "brand",
+              "fill": "#1A1A1A",
+              "content": "StoryboardGen",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "LpN1",
+              "x": 380,
+              "y": 28,
+              "name": "navProduct",
+              "fill": "#6B7280",
+              "content": "Product",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpN2",
+              "x": 460,
+              "y": 28,
+              "name": "navTemplates",
+              "fill": "#6B7280",
+              "content": "Templates",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpN3",
+              "x": 560,
+              "y": 28,
+              "name": "navPricing",
+              "fill": "#6B7280",
+              "content": "Pricing",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpN4",
+              "x": 630,
+              "y": 28,
+              "name": "navBlog",
+              "fill": "#6B7280",
+              "content": "Blog",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "LpCta",
+              "x": 1200,
+              "y": 16,
+              "name": "cta",
+              "width": 140,
+              "height": 40,
+              "fill": "#0D9488",
+              "cornerRadius": 10
+            },
+            {
+              "type": "text",
+              "id": "LpCtaT",
+              "x": 1234,
+              "y": 26,
+              "name": "ctaText",
+              "fill": "#FFFFFF",
+              "content": "Get started",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "600"
+            }
+          ]
         },
         {
           "type": "text",
-          "id": "7POCs",
-          "x": 86,
-          "y": 30,
-          "name": "brand",
-          "fill": "#F1F1F1",
-          "content": "StoryboardGen",
+          "id": "LpH1",
+          "x": 48,
+          "y": 120,
+          "name": "hero-badge",
+          "fill": "#0D9488",
+          "content": "Scene-consistent illustration",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "text",
+          "id": "LpH2",
+          "x": 48,
+          "y": 152,
+          "name": "heroTitle",
+          "fill": "#1A1A1A",
+          "content": "Scene-Consistent Images in One Prompt",
+          "fontFamily": "Inter",
+          "fontSize": 42,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpH3",
+          "x": 48,
+          "y": 218,
+          "name": "heroSub",
+          "fill": "#4A4A4A",
+          "content": "Create multiple images with the same character across different scenes.\nNo prompt copying. No style drift. One textbox.",
           "fontFamily": "Inter",
           "fontSize": 18,
           "fontWeight": "normal"
         },
         {
           "type": "text",
-          "id": "S32mq",
-          "x": 360,
-          "y": 34,
-          "name": "navProduct",
-          "fill": "#A9A9AE",
-          "content": "Product",
-          "fontFamily": "Inter",
-          "fontSize": 14,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "text",
-          "id": "WOypp",
-          "x": 450,
-          "y": 34,
-          "name": "navTemplates",
-          "fill": "#A9A9AE",
-          "content": "Templates",
-          "fontFamily": "Inter",
-          "fontSize": 14,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "text",
-          "id": "i2Gre",
-          "x": 560,
-          "y": 34,
-          "name": "navPricing",
-          "fill": "#A9A9AE",
-          "content": "Pricing",
-          "fontFamily": "Inter",
-          "fontSize": 14,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "text",
-          "id": "thTOh",
-          "x": 640,
-          "y": 34,
-          "name": "navBlog",
-          "fill": "#A9A9AE",
-          "content": "Blog",
+          "id": "LpH4",
+          "x": 48,
+          "y": 288,
+          "name": "heroCta",
+          "fill": "#6B7280",
+          "content": "Start with your scene",
           "fontFamily": "Inter",
           "fontSize": 14,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
-          "id": "zH1Ew",
-          "x": 1180,
-          "y": 24,
-          "name": "cta",
-          "width": 180,
-          "height": 40,
-          "fill": "#2A221A",
+          "id": "LpV1",
+          "x": 48,
+          "y": 340,
+          "name": "value1",
+          "width": 312,
+          "height": 100,
+          "fill": "#FFFFFF",
           "cornerRadius": 12
         },
         {
           "type": "text",
-          "id": "8NoTQ",
-          "x": 1214,
-          "y": 34,
-          "name": "ctaText",
-          "fill": "#F2E6D6",
-          "content": "Get started",
+          "id": "LpV1t",
+          "x": 64,
+          "y": 358,
+          "name": "value1Title",
+          "fill": "#1A1A1A",
+          "content": "Scene-Consistent Images",
           "fontFamily": "Inter",
           "fontSize": 14,
-          "fontWeight": "normal"
+          "fontWeight": "600"
         },
         {
           "type": "text",
-          "id": "dJS83",
-          "x": 120,
-          "y": 150,
-          "name": "heroTitle",
-          "fill": "#F1F1F1",
-          "content": "Turn prompts into storyboards,\ncaptions, and ready-to-post visuals.",
+          "id": "LpV1b",
+          "x": 64,
+          "y": 382,
+          "name": "value1Body",
+          "fill": "#6B7280",
+          "content": "Generate multiple scenes with the same character and illustration style.",
           "fontFamily": "Inter",
-          "fontSize": 36,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "text",
-          "id": "KPg16",
-          "x": 120,
-          "y": 248,
-          "name": "heroSub",
-          "fill": "#A9A9AE",
-          "content": "Generate multi-platform creative bundles with frames, TikTok & Instagram captions,\nand image concepts that match your brand voice.",
-          "fontFamily": "Inter",
-          "fontSize": 16,
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
-          "id": "ARFpp",
-          "x": 120,
-          "y": 320,
-          "name": "promptInput",
-          "width": 620,
-          "height": 54,
-          "fill": "#161617",
-          "cornerRadius": 14
+          "id": "LpV2",
+          "x": 376,
+          "y": 340,
+          "name": "value2",
+          "width": 312,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
         },
         {
           "type": "text",
-          "id": "3USRp",
-          "x": 144,
-          "y": 336,
-          "name": "promptPlaceholder",
-          "fill": "#8B8B8F",
-          "content": "Paste a prompt or campaign brief...",
+          "id": "LpV2t",
+          "x": 392,
+          "y": 358,
+          "name": "value2Title",
+          "fill": "#1A1A1A",
+          "content": "Reference images, Once",
           "fontFamily": "Inter",
           "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpV2b",
+          "x": 392,
+          "y": 382,
+          "name": "value2Body",
+          "fill": "#6B7280",
+          "content": "Upload reference images once and reuse them across future generations.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
-          "id": "3XWTQ",
-          "x": 760,
-          "y": 320,
-          "name": "generateButton",
-          "width": 220,
-          "height": 54,
-          "fill": "#2A221A",
-          "cornerRadius": 14
+          "id": "LpV3",
+          "x": 704,
+          "y": 340,
+          "name": "value3",
+          "width": 312,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
         },
         {
           "type": "text",
-          "id": "6Zd5K",
-          "x": 796,
-          "y": 336,
-          "name": "generateText",
-          "fill": "#F2E6D6",
-          "content": "Generate bundle",
+          "id": "LpV3t",
+          "x": 720,
+          "y": 358,
+          "name": "value3Title",
+          "fill": "#1A1A1A",
+          "content": "One Textbox for All Scenes",
           "fontFamily": "Inter",
           "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpV3b",
+          "x": 720,
+          "y": 382,
+          "name": "value3Body",
+          "fill": "#6B7280",
+          "content": "Describe every scene in a single textbox. No copying or re-prompting.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
-          "id": "y1ZgL",
-          "x": 820,
-          "y": 150,
-          "name": "resultsPanel",
-          "width": 520,
-          "height": 700,
-          "fill": "#161617",
-          "cornerRadius": 20,
+          "id": "LpV4",
+          "x": 1032,
+          "y": 340,
+          "name": "value4",
+          "width": 320,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpV4t",
+          "x": 1048,
+          "y": 358,
+          "name": "value4Title",
+          "fill": "#1A1A1A",
+          "content": "3 Free Images",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpV4b",
+          "x": 1048,
+          "y": 382,
+          "name": "value4Body",
+          "fill": "#6B7280",
+          "content": "Try it instantly. No credit card required.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpDemo",
+          "x": 48,
+          "y": 480,
+          "name": "demo-section",
+          "width": 1304,
+          "height": 380,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
           "layout": "none",
           "children": [
             {
               "type": "text",
-              "id": "MpLN2",
+              "id": "LpDl1",
               "x": 24,
-              "y": 24,
-              "name": "resultsTitle",
-              "fill": "#F1F1F1",
-              "content": "Results",
-              "fontFamily": "Inter",
-              "fontSize": 16,
-              "fontWeight": "normal"
-            },
-            {
-              "type": "text",
-              "id": "Z3G8c",
-              "x": 24,
-              "y": 54,
-              "name": "resultsMeta",
-              "fill": "#8B8B8F",
-              "content": "3 storyboard frames \u2022 6 captions \u2022 4 image concepts",
+              "y": 20,
+              "name": "demoRefLabel",
+              "fill": "#6B7280",
+              "content": "Reference images",
               "fontFamily": "Inter",
               "fontSize": 12,
               "fontWeight": "normal"
             },
             {
               "type": "frame",
-              "id": "4SQQR",
+              "id": "LpDu1",
               "x": 24,
-              "y": 90,
-              "name": "storyboardCard",
-              "width": 472,
-              "height": 170,
-              "fill": "#0F0F10",
-              "cornerRadius": 16,
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "ibys4",
-                  "x": 16,
-                  "y": 14,
-                  "name": "storyboardLabel",
-                  "fill": "#F1F1F1",
-                  "content": "Storyboard frames",
-                  "fontFamily": "Inter",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "QzGSc",
-                  "x": 16,
-                  "y": 44,
-                  "name": "frame1",
-                  "width": 136,
-                  "height": 92,
-                  "fill": "#232325",
-                  "cornerRadius": 12
-                },
-                {
-                  "type": "frame",
-                  "id": "PGLI9",
-                  "x": 168,
-                  "y": 44,
-                  "name": "frame2",
-                  "width": 136,
-                  "height": 92,
-                  "fill": "#232325",
-                  "cornerRadius": 12
-                },
-                {
-                  "type": "frame",
-                  "id": "pHi83",
-                  "x": 320,
-                  "y": 44,
-                  "name": "frame3",
-                  "width": 136,
-                  "height": 92,
-                  "fill": "#232325",
-                  "cornerRadius": 12
-                }
-              ]
+              "y": 44,
+              "name": "upload-box",
+              "width": 160,
+              "height": 120,
+              "fill": "#F3F4F6",
+              "cornerRadius": 10
+            },
+            {
+              "type": "text",
+              "id": "LpDu2",
+              "x": 44,
+              "y": 92,
+              "name": "upload-plus",
+              "fill": "#9CA3AF",
+              "content": "+",
+              "fontFamily": "Inter",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDu3",
+              "x": 52,
+              "y": 128,
+              "name": "upload-hint",
+              "fill": "#9CA3AF",
+              "content": "Click to upload",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDp1",
+              "x": 208,
+              "y": 20,
+              "name": "demoPromptLabel",
+              "fill": "#6B7280",
+              "content": "Scene prompt (Each paragraph = one scene)",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
-              "id": "A0wqM",
-              "x": 24,
-              "y": 276,
-              "name": "tiktokCard",
-              "width": 472,
-              "height": 150,
-              "fill": "#0F0F10",
-              "cornerRadius": 16,
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "DEwyO",
-                  "x": 16,
-                  "y": 14,
-                  "name": "tiktokLabel",
-                  "fill": "#F1F1F1",
-                  "content": "TikTok captions",
-                  "fontFamily": "Inter",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "Gk0R4",
-                  "x": 16,
-                  "y": 44,
-                  "name": "tiktokCap1",
-                  "fill": "#A9A9AE",
-                  "content": "1. Hook your audience with the first frame.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "n4rS6",
-                  "x": 16,
-                  "y": 68,
-                  "name": "tiktokCap2",
-                  "fill": "#A9A9AE",
-                  "content": "2. Behind-the-scenes on how the shot was made.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "9OADP",
-                  "x": 16,
-                  "y": 92,
-                  "name": "tiktokCap3",
-                  "fill": "#A9A9AE",
-                  "content": "3. CTA: Save this template for your next launch.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
+              "id": "LpDp2",
+              "x": 208,
+              "y": 44,
+              "name": "prompt-box",
+              "width": 420,
+              "height": 120,
+              "fill": "#F3F4F6",
+              "cornerRadius": 10
+            },
+            {
+              "type": "text",
+              "id": "LpDp3",
+              "x": 224,
+              "y": 58,
+              "name": "promptLine1",
+              "fill": "#4A4A4A",
+              "content": "Boy with a question mark around him",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDp4",
+              "x": 224,
+              "y": 82,
+              "name": "promptLine2",
+              "fill": "#4A4A4A",
+              "content": "Boy writing in a notebook",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDp5",
+              "x": 224,
+              "y": 106,
+              "name": "promptLine3",
+              "fill": "#4A4A4A",
+              "content": "Boy feeling annoyed at a noisy cafe.",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
-              "id": "740kc",
-              "x": 24,
-              "y": 442,
-              "name": "instaCard",
-              "width": 472,
-              "height": 150,
-              "fill": "#0F0F10",
-              "cornerRadius": 16,
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "PTsaY",
-                  "x": 16,
-                  "y": 14,
-                  "name": "instaLabel",
-                  "fill": "#F1F1F1",
-                  "content": "Instagram captions",
-                  "fontFamily": "Inter",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "uw9Ax",
-                  "x": 16,
-                  "y": 44,
-                  "name": "instaCap1",
-                  "fill": "#A9A9AE",
-                  "content": "\u2022 Carousel ready: frame-by-frame story beats.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "mKIz3",
-                  "x": 16,
-                  "y": 68,
-                  "name": "instaCap2",
-                  "fill": "#A9A9AE",
-                  "content": "\u2022 Share the shot list and caption in one tap.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "text",
-                  "id": "ZiK48",
-                  "x": 16,
-                  "y": 92,
-                  "name": "instaCap3",
-                  "fill": "#A9A9AE",
-                  "content": "\u2022 Hashtags + CTA suggestions included.",
-                  "fontFamily": "Inter",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
+              "id": "LpDg1",
+              "x": 648,
+              "y": 88,
+              "name": "generate-btn",
+              "width": 140,
+              "height": 44,
+              "fill": "#0D9488",
+              "cornerRadius": 10
+            },
+            {
+              "type": "text",
+              "id": "LpDg2",
+              "x": 678,
+              "y": 98,
+              "name": "generate-label",
+              "fill": "#FFFFFF",
+              "content": "Generate",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "LpDr1",
+              "x": 820,
+              "y": 20,
+              "name": "demoRefLabel2",
+              "fill": "#6B7280",
+              "content": "Reference",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDr2",
+              "x": 820,
+              "y": 44,
+              "name": "refNote",
+              "fill": "#4A4A4A",
+              "content": "This character will be used for all scenes.",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
-              "id": "9tZFS",
-              "x": 24,
-              "y": 608,
-              "name": "imageCard",
-              "width": 472,
-              "height": 72,
-              "fill": "#0F0F10",
-              "cornerRadius": 16,
-              "layout": "none",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "y5s9d",
-                  "x": 16,
-                  "y": 16,
-                  "name": "imageLabel",
-                  "fill": "#F1F1F1",
-                  "content": "Image concepts",
-                  "fontFamily": "Inter",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "NcOG1",
-                  "x": 192,
-                  "y": 16,
-                  "name": "image1",
-                  "width": 48,
-                  "height": 40,
-                  "fill": "#232325",
-                  "cornerRadius": 10
-                },
-                {
-                  "type": "frame",
-                  "id": "5vmrF",
-                  "x": 250,
-                  "y": 16,
-                  "name": "image2",
-                  "width": 48,
-                  "height": 40,
-                  "fill": "#232325",
-                  "cornerRadius": 10
-                },
-                {
-                  "type": "frame",
-                  "id": "oDZA5",
-                  "x": 308,
-                  "y": 16,
-                  "name": "image3",
-                  "width": 48,
-                  "height": 40,
-                  "fill": "#232325",
-                  "cornerRadius": 10
-                },
-                {
-                  "type": "frame",
-                  "id": "V2U8p",
-                  "x": 366,
-                  "y": 16,
-                  "name": "image4",
-                  "width": 48,
-                  "height": 40,
-                  "fill": "#232325",
-                  "cornerRadius": 10
-                }
-              ]
+              "id": "LpDi1",
+              "x": 820,
+              "y": 72,
+              "name": "preview1",
+              "width": 100,
+              "height": 100,
+              "fill": "#E5E7EB",
+              "cornerRadius": 8
+            },
+            {
+              "type": "frame",
+              "id": "LpDi2",
+              "x": 936,
+              "y": 72,
+              "name": "preview2",
+              "width": 100,
+              "height": 100,
+              "fill": "#E5E7EB",
+              "cornerRadius": 8
+            },
+            {
+              "type": "frame",
+              "id": "LpDi3",
+              "x": 1052,
+              "y": 72,
+              "name": "preview3",
+              "width": 100,
+              "height": 100,
+              "fill": "#E5E7EB",
+              "cornerRadius": 8
+            },
+            {
+              "type": "text",
+              "id": "LpDc1",
+              "x": 820,
+              "y": 188,
+              "name": "cap1",
+              "fill": "#6B7280",
+              "content": "Boy with a question mark around him",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDc2",
+              "x": 936,
+              "y": 188,
+              "name": "cap2",
+              "fill": "#6B7280",
+              "content": "Boy writing in a notebook",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "LpDc3",
+              "x": 1052,
+              "y": 188,
+              "name": "cap3",
+              "fill": "#6B7280",
+              "content": "Boy feeling annoyed at a noisy cafe",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
             }
           ]
         },
         {
           "type": "text",
-          "id": "6GaTT",
-          "x": 120,
-          "y": 410,
-          "name": "trustTitle",
-          "fill": "#F1F1F1",
-          "content": "Everything you need for each campaign",
+          "id": "LpTp1",
+          "x": 48,
+          "y": 920,
+          "name": "problem-label",
+          "fill": "#0D9488",
+          "content": "The problem",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "text",
+          "id": "LpTp2",
+          "x": 48,
+          "y": 952,
+          "name": "problemTitle",
+          "fill": "#1A1A1A",
+          "content": "Creating Consistent Visuals Is Painful",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "LpT1",
+          "x": 48,
+          "y": 1012,
+          "name": "pain1",
+          "width": 412,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpT1t",
+          "x": 64,
+          "y": 1030,
+          "name": "pain1Title",
+          "fill": "#1A1A1A",
+          "content": "Style drifts without a reference",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpT1b",
+          "x": 64,
+          "y": 1054,
+          "name": "pain1Body",
+          "fill": "#6B7280",
+          "content": "Faces, outfits, and illustration style change between scenes.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpT2",
+          "x": 476,
+          "y": 1012,
+          "name": "pain2",
+          "width": 412,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpT2t",
+          "x": 492,
+          "y": 1030,
+          "name": "pain2Title",
+          "fill": "#1A1A1A",
+          "content": "You keep re-uploading the same images",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpT2b",
+          "x": 492,
+          "y": 1054,
+          "name": "pain2Body",
+          "fill": "#6B7280",
+          "content": "Uploading the same reference over and over slows everything down.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpT3",
+          "x": 904,
+          "y": 1012,
+          "name": "pain3",
+          "width": 448,
+          "height": 100,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpT3t",
+          "x": 920,
+          "y": 1030,
+          "name": "pain3Title",
+          "fill": "#1A1A1A",
+          "content": "You can only generate one image at a time",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpT3b",
+          "x": 920,
+          "y": 1054,
+          "name": "pain3Body",
+          "fill": "#6B7280",
+          "content": "Building a full carousel or storyboard takes multiple runs.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpHw1",
+          "x": 48,
+          "y": 1168,
+          "name": "how-label",
+          "fill": "#0D9488",
+          "content": "How it works",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "text",
+          "id": "LpHw2",
+          "x": 48,
+          "y": 1200,
+          "name": "howTitle",
+          "fill": "#1A1A1A",
+          "content": "Just 3 Steps",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "LpH1f",
+          "x": 48,
+          "y": 1264,
+          "name": "step1",
+          "width": 420,
+          "height": 120,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpH1n",
+          "x": 64,
+          "y": 1278,
+          "name": "step1Num",
+          "fill": "#0D9488",
+          "content": "01",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpH1t",
+          "x": 64,
+          "y": 1308,
+          "name": "step1Title",
+          "fill": "#1A1A1A",
+          "content": "Upload Once",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpH1b",
+          "x": 64,
+          "y": 1336,
+          "name": "step1Body",
+          "fill": "#6B7280",
+          "content": "Upload reference images once to lock the character and style.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpH2f",
+          "x": 488,
+          "y": 1264,
+          "name": "step2",
+          "width": 420,
+          "height": 120,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpH2n",
+          "x": 504,
+          "y": 1278,
+          "name": "step2Num",
+          "fill": "#0D9488",
+          "content": "02",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpH2t",
+          "x": 504,
+          "y": 1308,
+          "name": "step2Title",
+          "fill": "#1A1A1A",
+          "content": "List Scenes",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpH2b",
+          "x": 504,
+          "y": 1336,
+          "name": "step2Body",
+          "fill": "#6B7280",
+          "content": "Describe all scenes in a single textbox. Each paragraph becomes one image.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpH3f",
+          "x": 928,
+          "y": 1264,
+          "name": "step3",
+          "width": 424,
+          "height": 120,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpH3n",
+          "x": 944,
+          "y": 1278,
+          "name": "step3Num",
+          "fill": "#0D9488",
+          "content": "03",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpH3t",
+          "x": 944,
+          "y": 1308,
+          "name": "step3Title",
+          "fill": "#1A1A1A",
+          "content": "Generate a Set",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpH3b",
+          "x": 944,
+          "y": 1336,
+          "name": "step3Body",
+          "fill": "#6B7280",
+          "content": "We generate multiple images at once with the same character across every scene.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpPr1",
+          "x": 48,
+          "y": 1432,
+          "name": "pricing-label",
+          "fill": "#0D9488",
+          "content": "Pricing",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "text",
+          "id": "LpPr2",
+          "x": 48,
+          "y": 1464,
+          "name": "pricingTitle",
+          "fill": "#1A1A1A",
+          "content": "Pick a plan, get monthly credits",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "LpP1",
+          "x": 48,
+          "y": 1528,
+          "name": "plan-free",
+          "width": 320,
+          "height": 220,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpP1t",
+          "x": 64,
+          "y": 1548,
+          "name": "planFreeTitle",
+          "fill": "#1A1A1A",
+          "content": "Free",
           "fontFamily": "Inter",
           "fontSize": 18,
-          "fontWeight": "normal"
+          "fontWeight": "700"
         },
         {
           "type": "text",
-          "id": "R2tyl",
-          "x": 120,
-          "y": 444,
-          "name": "trustText",
-          "fill": "#8B8B8F",
-          "content": "Storyboard frames, platform-ready captions, and curated image packs delivered in one click.",
+          "id": "LpP1s",
+          "x": 64,
+          "y": 1580,
+          "name": "planFreeSub",
+          "fill": "#6B7280",
+          "content": "Try it out",
           "fontFamily": "Inter",
-          "fontSize": 14,
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
-          "type": "frame",
-          "id": "5rSSW",
-          "x": 120,
-          "y": 500,
-          "name": "feature1",
-          "width": 210,
-          "height": 120,
-          "fill": "#161617",
-          "cornerRadius": 16
-        },
-        {
           "type": "text",
-          "id": "dqdmE",
-          "x": 140,
-          "y": 520,
-          "name": "feature1Title",
-          "fill": "#F1F1F1",
-          "content": "Frame pacing",
+          "id": "LpP1p",
+          "x": 64,
+          "y": 1620,
+          "name": "planFreePrice",
+          "fill": "#1A1A1A",
+          "content": "$0",
           "fontFamily": "Inter",
-          "fontSize": 14,
-          "fontWeight": "normal"
+          "fontSize": 28,
+          "fontWeight": "700"
         },
         {
           "type": "text",
-          "id": "Hdmca",
-          "x": 140,
-          "y": 542,
-          "name": "feature1Text",
-          "fill": "#8B8B8F",
-          "content": "Auto-timed beats",
+          "id": "LpP1c",
+          "x": 64,
+          "y": 1660,
+          "name": "planFreeCredits",
+          "fill": "#6B7280",
+          "content": "3 credits",
           "fontFamily": "Inter",
-          "fontSize": 12,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "frame",
-          "id": "LSGAa",
-          "x": 350,
-          "y": 500,
-          "name": "feature2",
-          "width": 210,
-          "height": 120,
-          "fill": "#161617",
-          "cornerRadius": 16
-        },
-        {
-          "type": "text",
-          "id": "mBZbF",
-          "x": 370,
-          "y": 520,
-          "name": "feature2Title",
-          "fill": "#F1F1F1",
-          "content": "Dual captions",
-          "fontFamily": "Inter",
-          "fontSize": 14,
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
           "type": "text",
-          "id": "GEyGU",
-          "x": 370,
-          "y": 542,
-          "name": "feature2Text",
-          "fill": "#8B8B8F",
-          "content": "TikTok + Instagram",
+          "id": "LpP1f",
+          "x": 64,
+          "y": 1692,
+          "name": "planFreeFeat",
+          "fill": "#4A4A4A",
+          "content": "Generate 3 images for free.",
           "fontFamily": "Inter",
           "fontSize": 12,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
-          "id": "EDgEH",
-          "x": 580,
-          "y": 500,
-          "name": "feature3",
-          "width": 210,
-          "height": 120,
-          "fill": "#161617",
-          "cornerRadius": 16
+          "id": "LpP1b",
+          "x": 64,
+          "y": 1718,
+          "name": "planFreeBtn",
+          "width": 120,
+          "height": 36,
+          "fill": "#0D9488",
+          "cornerRadius": 8
         },
         {
           "type": "text",
-          "id": "144cw",
-          "x": 600,
-          "y": 520,
-          "name": "feature3Title",
-          "fill": "#F1F1F1",
-          "content": "Image packs",
+          "id": "LpP1bt",
+          "x": 84,
+          "y": 1726,
+          "name": "planFreeBtnT",
+          "fill": "#FFFFFF",
+          "content": "Start free",
           "fontFamily": "Inter",
-          "fontSize": 14,
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "LpP2",
+          "x": 384,
+          "y": 1528,
+          "name": "plan-basic",
+          "width": 320,
+          "height": 220,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpP2t",
+          "x": 400,
+          "y": 1548,
+          "name": "planBasicTitle",
+          "fill": "#1A1A1A",
+          "content": "Basic",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP2s",
+          "x": 400,
+          "y": 1580,
+          "name": "planBasicSub",
+          "fill": "#6B7280",
+          "content": "For trying the workflow",
+          "fontFamily": "Inter",
+          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
           "type": "text",
-          "id": "ajWtD",
-          "x": 600,
-          "y": 542,
-          "name": "feature3Text",
-          "fill": "#8B8B8F",
-          "content": "Concept-ready visuals",
+          "id": "LpP2p",
+          "x": 400,
+          "y": 1620,
+          "name": "planBasicPrice",
+          "fill": "#1A1A1A",
+          "content": "$15/mo",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP2c",
+          "x": 400,
+          "y": 1660,
+          "name": "planBasicCredits",
+          "fill": "#6B7280",
+          "content": "90 credits / month",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpP2f",
+          "x": 400,
+          "y": 1692,
+          "name": "planBasicFeat",
+          "fill": "#4A4A4A",
+          "content": "1 credit = 1 image. Credits reset monthly.",
           "fontFamily": "Inter",
           "fontSize": 12,
           "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpP2b",
+          "x": 400,
+          "y": 1718,
+          "name": "planBasicBtn",
+          "width": 140,
+          "height": 36,
+          "fill": "#E5E7EB",
+          "cornerRadius": 8
+        },
+        {
+          "type": "text",
+          "id": "LpP2bt",
+          "x": 428,
+          "y": 1726,
+          "name": "planBasicBtnT",
+          "fill": "#1A1A1A",
+          "content": "Choose Basic",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "LpP3",
+          "x": 720,
+          "y": 1528,
+          "name": "plan-pro",
+          "width": 320,
+          "height": 220,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpP3t",
+          "x": 736,
+          "y": 1548,
+          "name": "planProTitle",
+          "fill": "#1A1A1A",
+          "content": "Pro",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP3s",
+          "x": 736,
+          "y": 1580,
+          "name": "planProSub",
+          "fill": "#6B7280",
+          "content": "For weekly storytellers",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpP3p",
+          "x": 736,
+          "y": 1620,
+          "name": "planProPrice",
+          "fill": "#1A1A1A",
+          "content": "$29/mo",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP3c",
+          "x": 736,
+          "y": 1660,
+          "name": "planProCredits",
+          "fill": "#6B7280",
+          "content": "180 credits / month",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpP3f",
+          "x": 736,
+          "y": 1692,
+          "name": "planProFeat",
+          "fill": "#4A4A4A",
+          "content": "1 credit = 1 image. Credits reset monthly.",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpP3b",
+          "x": 736,
+          "y": 1718,
+          "name": "planProBtn",
+          "width": 120,
+          "height": 36,
+          "fill": "#E5E7EB",
+          "cornerRadius": 8
+        },
+        {
+          "type": "text",
+          "id": "LpP3bt",
+          "x": 764,
+          "y": 1726,
+          "name": "planProBtnT",
+          "fill": "#1A1A1A",
+          "content": "Choose Pro",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "LpP4",
+          "x": 1056,
+          "y": 1528,
+          "name": "plan-business",
+          "width": 296,
+          "height": 220,
+          "fill": "#FFFFFF",
+          "cornerRadius": 12
+        },
+        {
+          "type": "text",
+          "id": "LpP4t",
+          "x": 1072,
+          "y": 1548,
+          "name": "planBizTitle",
+          "fill": "#1A1A1A",
+          "content": "Business",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP4s",
+          "x": 1072,
+          "y": 1580,
+          "name": "planBizSub",
+          "fill": "#6B7280",
+          "content": "For teams and volume",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpP4p",
+          "x": 1072,
+          "y": 1620,
+          "name": "planBizPrice",
+          "fill": "#1A1A1A",
+          "content": "$79/mo",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "LpP4c",
+          "x": 1072,
+          "y": 1660,
+          "name": "planBizCredits",
+          "fill": "#6B7280",
+          "content": "600 credits / month",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "LpP4f",
+          "x": 1072,
+          "y": 1692,
+          "name": "planBizFeat",
+          "fill": "#4A4A4A",
+          "content": "1 credit = 1 image. Credits reset monthly.",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpP4b",
+          "x": 1072,
+          "y": 1718,
+          "name": "planBizBtn",
+          "width": 140,
+          "height": 36,
+          "fill": "#E5E7EB",
+          "cornerRadius": 8
+        },
+        {
+          "type": "text",
+          "id": "LpP4bt",
+          "x": 1096,
+          "y": 1726,
+          "name": "planBizBtnT",
+          "fill": "#1A1A1A",
+          "content": "Choose Business",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpFq1",
+          "x": 48,
+          "y": 1800,
+          "name": "faq-label",
+          "fill": "#0D9488",
+          "content": "FAQ",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "text",
+          "id": "LpFq2",
+          "x": 48,
+          "y": 1832,
+          "name": "faqTitle",
+          "fill": "#1A1A1A",
+          "content": "Quick Answers",
+          "fontFamily": "Inter",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "LpF1",
+          "x": 48,
+          "y": 1896,
+          "name": "faq1",
+          "width": 1304,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 10
+        },
+        {
+          "type": "text",
+          "id": "LpF1q",
+          "x": 64,
+          "y": 1916,
+          "name": "faq1Q",
+          "fill": "#1A1A1A",
+          "content": "Do I need to sign in to generate?",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpF1a",
+          "x": 64,
+          "y": 1944,
+          "name": "faq1A",
+          "fill": "#6B7280",
+          "content": "Yes. Sign in or create an account to unlock your free images.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpF2",
+          "x": 48,
+          "y": 1984,
+          "name": "faq2",
+          "width": 1304,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 10
+        },
+        {
+          "type": "text",
+          "id": "LpF2q",
+          "x": 64,
+          "y": 2004,
+          "name": "faq2Q",
+          "fill": "#1A1A1A",
+          "content": "How many images should I upload?",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpF2a",
+          "x": 64,
+          "y": 2032,
+          "name": "faq2A",
+          "fill": "#6B7280",
+          "content": "We recommend uploading 1\u20133 reference images to lock your character and style.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpF3",
+          "x": 48,
+          "y": 2072,
+          "name": "faq3",
+          "width": 1304,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 10
+        },
+        {
+          "type": "text",
+          "id": "LpF3q",
+          "x": 64,
+          "y": 2092,
+          "name": "faq3Q",
+          "fill": "#1A1A1A",
+          "content": "Are the outputs watermarked?",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpF3a",
+          "x": 64,
+          "y": 2120,
+          "name": "faq3A",
+          "fill": "#6B7280",
+          "content": "No. You can download your generated images without watermarks.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpF4",
+          "x": 48,
+          "y": 2160,
+          "name": "faq4",
+          "width": 1304,
+          "height": 72,
+          "fill": "#FFFFFF",
+          "cornerRadius": 10
+        },
+        {
+          "type": "text",
+          "id": "LpF4q",
+          "x": 64,
+          "y": 2180,
+          "name": "faq4Q",
+          "fill": "#1A1A1A",
+          "content": "Can I edit the prompt?",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "LpF4a",
+          "x": 64,
+          "y": 2208,
+          "name": "faq4A",
+          "fill": "#6B7280",
+          "content": "Yes. You can update your prompt and regenerate the images at any time.",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "LpFoot",
+          "x": 0,
+          "y": 2520,
+          "name": "footer",
+          "width": 1400,
+          "height": 80,
+          "fill": "#E5E7EB",
+          "layout": "none"
         }
       ]
     }
