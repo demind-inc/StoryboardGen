@@ -41,6 +41,11 @@ const TikTokRulesPage: React.FC = () => {
   const [dirtyIndices, setDirtyIndices] = useState<Set<number>>(new Set());
   const lastInputRef = useRef<HTMLTextAreaElement>(null);
   const shouldFocusLastRef = useRef(false);
+  const cancelSnapshotRef = useRef<{
+    isNew?: boolean;
+    name: string;
+    rule: string;
+  } | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const isSaving = updateRulesMutation.isPending;
 
@@ -116,6 +121,7 @@ const TikTokRulesPage: React.FC = () => {
   };
 
   const handleAddRule = () => {
+    cancelSnapshotRef.current = { isNew: true, name: "", rule: "" };
     setRules((prev) => {
       const nextIndex = getNextCustomIndex(prev);
       const next = [
@@ -136,7 +142,39 @@ const TikTokRulesPage: React.FC = () => {
 
   const handleEditRule = (index: number) => {
     if (rules[index]?.isDefault) return;
+    cancelSnapshotRef.current = {
+      name: rules[index].name ?? "",
+      rule: rules[index].rule ?? "",
+    };
     setEditingIndex(index);
+  };
+
+  const handleCancelRule = (index: number) => {
+    const snap = cancelSnapshotRef.current;
+    if (snap?.isNew) {
+      setRules((prev) => prev.filter((_, i) => i !== index));
+      setDirtyIndices((prev) => {
+        const next = new Set<number>();
+        prev.forEach((dirtyIndex) => {
+          if (dirtyIndex < index) next.add(dirtyIndex);
+          if (dirtyIndex > index) next.add(dirtyIndex - 1);
+        });
+        return next;
+      });
+    } else if (snap) {
+      setRules((prev) =>
+        prev.map((rule, i) =>
+          i === index ? { ...rule, name: snap.name, rule: snap.rule } : rule
+        )
+      );
+      setDirtyIndices((prev) => {
+        const next = new Set(prev);
+        next.delete(index);
+        return next;
+      });
+    }
+    cancelSnapshotRef.current = null;
+    setEditingIndex(null);
   };
 
   if (authStatus === "checking") {
@@ -221,7 +259,7 @@ const TikTokRulesPage: React.FC = () => {
                       <div className={styles.ruleContent}>
                         {isDefault ? (
                           <p className={styles.ruleName}>{rule.name}</p>
-                        ) : (
+                        ) : isEditing ? (
                           <input
                             type="text"
                             className={styles.ruleNameInput}
@@ -232,6 +270,8 @@ const TikTokRulesPage: React.FC = () => {
                             aria-label={`Rule ${index + 1} name`}
                             placeholder="Rule name"
                           />
+                        ) : (
+                          <p className={styles.ruleName}>{rule.name}</p>
                         )}
                         <textarea
                           ref={
@@ -276,22 +316,33 @@ const TikTokRulesPage: React.FC = () => {
                             </>
                           )}
                           {isEditing && (
-                            <button
-                              type="button"
-                              className={styles.saveRule}
-                              onClick={() => handleSaveRule(index)}
-                              aria-label={isSaving ? "Saving rules" : "Save rules"}
-                              disabled={!dirtyIndices.has(index) || isSaving}
-                            >
-                              {isSaving ? (
-                                <>
-                                  <span className={styles.saveSpinner} aria-hidden />
-                                  Saving
-                                </>
-                              ) : (
-                                "Save"
-                              )}
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={styles.cancelRule}
+                                onClick={() => handleCancelRule(index)}
+                                aria-label="Cancel editing"
+                                disabled={isSaving}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.saveRule}
+                                onClick={() => handleSaveRule(index)}
+                                aria-label={isSaving ? "Saving rules" : "Save rules"}
+                                disabled={!dirtyIndices.has(index) || isSaving}
+                              >
+                                {isSaving ? (
+                                  <>
+                                    <span className={styles.saveSpinner} aria-hidden />
+                                    Saving
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </button>
+                            </>
                           )}
                         </div>
                       )}

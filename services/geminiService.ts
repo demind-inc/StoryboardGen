@@ -11,6 +11,9 @@ import {
   CAPTION_MODEL_NAME,
 } from "./constants";
 
+/** Default brand/scene context — always applied in Gemini, not exposed to frontend. */
+const BRAND_DEFAULT_CONTEXT = `Always show the product in natural use, maintain warm approachable lighting, include diverse representation, avoid cluttered backgrounds, and keep the scene clean so the brand story feels calm.`;
+
 export async function generateCharacterScene(
   prompt: string,
   references: ReferenceImage[],
@@ -35,6 +38,9 @@ export async function generateCharacterScene(
     .join("\n");
   const fullPrompt = `
 ${DEFAULT_CHARACTER_PROMPT}
+
+### Brand / Scene (default)
+${BRAND_DEFAULT_CONTEXT}
 
 ### Custom Guidelines (must follow)
 ${guidelineList || "- (none)"}

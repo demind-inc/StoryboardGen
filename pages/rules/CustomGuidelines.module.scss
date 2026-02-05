@@ -137,10 +137,11 @@
   background: #202022;
   border-radius: 10px;
   padding: 12px 16px;
-  min-height: 55px;
+  min-height: 140px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .ruleContent {
@@ -153,7 +154,6 @@
 .ruleName {
   margin: 0;
   font-size: var(--fs-12);
-  text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #f0a84b;
 }
@@ -162,7 +162,6 @@
   margin: 0;
   padding: 2px 0;
   font-size: var(--fs-12);
-  text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #f0a84b;
   background: transparent;
@@ -229,6 +228,22 @@
 
 .deleteRule:hover {
   color: #e0e0e3;
+  border-color: #3a3a3c;
+}
+
+.cancelRule {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: var(--fs-13);
+  border-radius: 8px;
+  border: 1px solid #2a2a2c;
+  background: #1a1a1b;
+  color: #c7c7cc;
+  cursor: pointer;
+}
+
+.cancelRule:hover {
+  color: #ededed;
   border-color: #3a3a3c;
 }
 
