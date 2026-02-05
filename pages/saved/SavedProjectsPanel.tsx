@@ -9,6 +9,7 @@ import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import {
   generateCharacterScene,
   generateSceneCaptions,
+  generateSceneSummaries,
 } from "../../services/geminiService";
 import { useSaveProjectOutput } from "../../hooks/useProjectService";
 import styles from "./SavedProjectsPanel.module.scss";
@@ -61,6 +62,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     if (!selectedProject) return [];
     return selectedProject.outputs.map((output) => ({
       prompt: output.prompt,
+      title: output.title,
+      description: output.description,
       imageUrl: output.imageUrl,
       isLoading: false,
     }));
@@ -101,6 +104,16 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
 
     try {
       const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+      let summaryUpdate: { title?: string; description?: string } | undefined;
+      try {
+        const summaryResponse = await generateSceneSummaries([prompt], []);
+        summaryUpdate = {
+          title: summaryResponse.titles[0] || "",
+          description: summaryResponse.descriptions[0] || "",
+        };
+      } catch (summaryError) {
+        console.error("Failed to regenerate summary:", summaryError);
+      }
       let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
       try {
         const captionResponse = await generateSceneCaptions(
@@ -118,7 +131,15 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
       }
       setDetailResults((prev) =>
         prev.map((res, idx) =>
-          idx === index ? { ...res, imageUrl, isLoading: false } : res
+          idx === index
+            ? {
+                ...res,
+                imageUrl,
+                isLoading: false,
+                title: summaryUpdate?.title ?? res.title,
+                description: summaryUpdate?.description ?? res.description,
+              }
+            : res
         )
       );
       if (userId) {
@@ -128,6 +149,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           sceneIndex: index,
           prompt,
           imageUrl,
+          title: summaryUpdate?.title,
+          description: summaryUpdate?.description,
           captions: captionsUpdate,
         });
       }
@@ -165,6 +188,16 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
       }
       try {
         const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+        let summaryUpdate: { title?: string; description?: string } | undefined;
+        try {
+          const summaryResponse = await generateSceneSummaries([prompt], []);
+          summaryUpdate = {
+            title: summaryResponse.titles[0] || "",
+            description: summaryResponse.descriptions[0] || "",
+          };
+        } catch (summaryError) {
+          console.error("Failed to regenerate summary:", summaryError);
+        }
         let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
         try {
           const captionResponse = await generateSceneCaptions(
@@ -180,7 +213,13 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         } catch (captionError) {
           console.error("Failed to regenerate captions:", captionError);
         }
-        nextResults[i] = { ...nextResults[i], imageUrl, isLoading: false };
+        nextResults[i] = {
+          ...nextResults[i],
+          imageUrl,
+          isLoading: false,
+          title: summaryUpdate?.title ?? nextResults[i].title,
+          description: summaryUpdate?.description ?? nextResults[i].description,
+        };
         if (userId) {
           try {
             await saveProjectOutputMutation.mutateAsync({
@@ -189,6 +228,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
               sceneIndex: i,
               prompt,
               imageUrl,
+              title: summaryUpdate?.title,
+              description: summaryUpdate?.description,
               captions: captionsUpdate,
             });
           } catch (error) {

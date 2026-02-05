@@ -232,6 +232,28 @@
   color: #ededed;
 }
 
+.sceneHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sceneTitleDivider {
+  color: #9a9aa0;
+}
+
+.sceneTitleText {
+  font-size: var(--fs-15);
+  color: #f0a84b;
+}
+
+.sceneDescription {
+  font-size: var(--fs-13);
+  color: #b4b4ba;
+  line-height: 1.5;
+}
+
 .promptLabel,
 .downloadLabel {
   font-size: var(--fs-13);

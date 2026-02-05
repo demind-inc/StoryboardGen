@@ -89,6 +89,8 @@ export async function saveProjectWithOutputs(params: {
       project_id: finalProjectId,
       scene_index: i,
       prompt: scene.prompt,
+      title: scene.title ?? null,
+      description: scene.description ?? null,
       file_path: filePath,
       mime_type: mimeType,
     });
@@ -116,9 +118,20 @@ export async function saveProjectOutput(params: {
   sceneIndex: number;
   prompt: string;
   imageUrl: string;
+  title?: string;
+  description?: string;
   captions?: { tiktok?: string; instagram?: string };
 }): Promise<void> {
-  const { userId, projectId, sceneIndex, prompt, imageUrl, captions } = params;
+  const {
+    userId,
+    projectId,
+    sceneIndex,
+    prompt,
+    imageUrl,
+    title,
+    description,
+    captions,
+  } = params;
   const supabase = getSupabaseClient();
 
   const blob = dataURLtoBlob(imageUrl);
@@ -139,6 +152,8 @@ export async function saveProjectOutput(params: {
       project_id: projectId,
       scene_index: sceneIndex,
       prompt,
+      title: title ?? null,
+      description: description ?? null,
       file_path: filePath,
       mime_type: mimeType,
     } as any,
@@ -229,7 +244,9 @@ export async function fetchProjectDetail(params: {
 
   const { data: outputs, error: outputsError } = await supabase
     .from("project_outputs")
-    .select("id, scene_index, prompt, file_path, mime_type, created_at")
+    .select(
+      "id, scene_index, prompt, title, description, file_path, mime_type, created_at"
+    )
     .eq("project_id", projectId)
     .order("scene_index", { ascending: true });
   if (outputsError) throw outputsError;
@@ -261,6 +278,8 @@ export async function fetchProjectDetail(params: {
       id: item.id,
       sceneIndex: item.scene_index,
       prompt: item.prompt,
+      title: item.title ?? undefined,
+      description: item.description ?? undefined,
       imageUrl: item.signedUrl,
       mimeType: item.mime_type,
       createdAt: item.created_at,
