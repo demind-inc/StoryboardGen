@@ -50,9 +50,7 @@ const Results: React.FC<ResultsProps> = ({
       console.error("Failed to copy caption:", error);
     }
   };
-  const handleBackdropClick = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       closeExpandedImage();
     }
@@ -62,10 +60,7 @@ const Results: React.FC<ResultsProps> = ({
       <div className={styles.resultsHeader}>
         <div className={styles.headerLeft}>
           {onBack && (
-            <button
-              className={styles.secondaryButton}
-              onClick={handleBack}
-            >
+            <button className={styles.secondaryButton} onClick={handleBack}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -139,7 +134,6 @@ const Results: React.FC<ResultsProps> = ({
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                 </svg>
-                {copiedTarget === "tiktok" ? "Copied" : "Copy"}
               </button>
             </div>
             <div className={styles.captionText}>
@@ -174,7 +168,6 @@ const Results: React.FC<ResultsProps> = ({
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                 </svg>
-                {copiedTarget === "instagram" ? "Copied" : "Copy"}
               </button>
             </div>
             <div className={styles.captionText}>
@@ -186,78 +179,117 @@ const Results: React.FC<ResultsProps> = ({
         </div>
       )}
 
-      {results.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>+</div>
-          <div>No results yet</div>
-        </div>
-      ) : (
-        <div className={styles.resultsGrid}>
-          {results.map((result, idx) => {
-            const hasImage = Boolean(result.imageUrl);
-            return (
-              <div key={idx} className={styles.resultCard}>
-                <div className={styles.resultImage}>
-                  {result.isLoading ? (
-                    <div className={styles.resultOverlay}>Rendering...</div>
-                  ) : result.error ? (
-                    <div className={styles.resultOverlayError}>
-                      <div>Error</div>
-                      {allowRegenerate && onRegenerate && (
-                        <button
-                          className={styles.retryButton}
-                          onClick={() => onRegenerate(idx)}
+      <div className={styles.resultsListScroll}>
+        {results.length === 0 ? (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>+</div>
+            <div>No results yet</div>
+          </div>
+        ) : (
+          <div className={styles.resultsGrid}>
+            {results.map((result, idx) => {
+              const hasImage = Boolean(result.imageUrl);
+              return (
+                <div key={idx} className={styles.resultCard}>
+                  <div className={styles.resultImage}>
+                    {result.isLoading ? (
+                      <div className={styles.resultOverlay}>Rendering...</div>
+                    ) : result.error ? (
+                      <div className={styles.resultOverlayError}>
+                        <div>Error</div>
+                        {allowRegenerate && onRegenerate && (
+                          <button
+                            className={styles.retryButton}
+                            onClick={() => onRegenerate(idx)}
+                          >
+                            Retry
+                          </button>
+                        )}
+                      </div>
+                    ) : hasImage ? (
+                      <button
+                        className={styles.imageButton}
+                        onClick={() => setExpandedImage(result.imageUrl!)}
+                        aria-label={`Expand scene ${idx + 1}`}
+                      >
+                        <img
+                          src={result.imageUrl}
+                          alt={`Scene ${idx + 1}`}
+                          loading="lazy"
+                        />
+                        <span className={styles.imageHint}>
+                          Click to expand
+                        </span>
+                      </button>
+                    ) : (
+                      <div className={styles.resultOverlay}>Awaiting...</div>
+                    )}
+                  </div>
+                  <div className={styles.resultMeta}>
+                    <div className={styles.sceneHeader}>
+                      <div className={styles.sceneHeaderTitle}>
+                        <span className={styles.sceneTitle}>
+                          Scene {idx + 1}
+                        </span>
+                        {result.title && (
+                          <>
+                            <span className={styles.sceneTitleDivider}>•</span>
+                            <span className={styles.sceneTitleText}>
+                              {result.title}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      <a
+                        className={`${styles.downloadButton} ${
+                          !hasImage || isGenerating
+                            ? styles.downloadButtonDisabled
+                            : ""
+                        }`}
+                        href={result.imageUrl || "#"}
+                        download={`scene-${idx + 1}.png`}
+                        aria-disabled={!hasImage || isGenerating}
+                        aria-label={`Download scene ${idx + 1}`}
+                        onClick={(event) => {
+                          if (!hasImage || isGenerating) {
+                            event.preventDefault();
+                          }
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
                         >
-                          Retry
-                        </button>
-                      )}
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="7 10 12 15 17 10" />
+                          <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                      </a>
                     </div>
-                  ) : hasImage ? (
-                    <button
-                      className={styles.imageButton}
-                      onClick={() => setExpandedImage(result.imageUrl!)}
-                      aria-label={`Expand scene ${idx + 1}`}
-                    >
-                      <img
-                        src={result.imageUrl}
-                        alt={`Scene ${idx + 1}`}
-                        loading="lazy"
-                      />
-                      <span className={styles.imageHint}>Click to expand</span>
-                    </button>
-                  ) : (
-                    <div className={styles.resultOverlay}>Awaiting...</div>
-                  )}
-                </div>
-                <div className={styles.resultMeta}>
-                  <div className={styles.sceneTitle}>Scene {idx + 1}</div>
-                  <div className={styles.promptLabel}>Prompt</div>
-                  <div className={styles.promptText}>{result.prompt}</div>
-                  <div className={styles.downloadRow}>
-                    <a
-                      className={`${styles.downloadButton} ${
-                        !hasImage || isGenerating
-                          ? styles.downloadButtonDisabled
-                          : ""
-                      }`}
-                      href={result.imageUrl || "#"}
-                      download={`scene-${idx + 1}.png`}
-                      aria-disabled={!hasImage || isGenerating}
-                      onClick={(event) => {
-                        if (!hasImage || isGenerating) {
-                          event.preventDefault();
-                        }
-                      }}
-                    >
-                      Download
-                    </a>
+                    {result.description && (
+                      <div className={styles.sceneDescription}>
+                        {result.description}
+                      </div>
+                    )}
+                    <div className={styles.promptBlock}>
+                      <div className={styles.promptLabel}>Prompt</div>
+                      <div className={styles.promptText}>{result.prompt}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {expandedImage && (
         <div

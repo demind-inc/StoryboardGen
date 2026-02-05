@@ -55,6 +55,8 @@ export function useSaveProjectOutput() {
       sceneIndex: number;
       prompt: string;
       imageUrl: string;
+      title?: string;
+      description?: string;
       captions?: { tiktok?: string; instagram?: string };
     }) => saveProjectOutput(params),
     onSuccess: (_, variables) => {

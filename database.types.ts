@@ -188,6 +188,8 @@ export interface Database {
           project_id: string; // uuid, FOREIGN KEY references projects(id)
           scene_index: number; // integer
           prompt: string; // text
+          title: string | null; // text
+          description: string | null; // text
           file_path: string; // text
           mime_type: string; // text
           created_at: string; // timestamptz, default now()
@@ -197,6 +199,8 @@ export interface Database {
           project_id: string; // uuid, FOREIGN KEY references projects(id)
           scene_index: number; // integer
           prompt: string; // text
+          title?: string | null; // text
+          description?: string | null; // text
           file_path: string; // text
           mime_type: string; // text
           created_at?: string; // timestamptz
@@ -206,6 +210,8 @@ export interface Database {
           project_id?: string; // uuid, FOREIGN KEY references projects(id)
           scene_index?: number; // integer
           prompt?: string; // text
+          title?: string | null; // text
+          description?: string | null; // text
           file_path?: string; // text
           mime_type?: string; // text
           created_at?: string | null; // timestamptz

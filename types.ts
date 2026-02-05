@@ -82,6 +82,8 @@ export interface ProjectOutput {
   id: string;
   sceneIndex: number;
   prompt: string;
+  title?: string;
+  description?: string;
   imageUrl: string;
   mimeType: string;
   createdAt?: string | null;

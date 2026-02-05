@@ -19,10 +19,16 @@ create table if not exists public.project_outputs (
   project_id uuid not null references public.projects(id) on delete cascade,
   scene_index integer not null,
   prompt text not null,
+  title text,
+  description text,
   file_path text not null,
   mime_type text not null,
   created_at timestamptz not null default now()
 );
+
+-- If the table already exists, add the new columns:
+alter table public.project_outputs add column if not exists title text;
+alter table public.project_outputs add column if not exists description text;
 
 create index if not exists project_outputs_project_id_idx
   on public.project_outputs(project_id);

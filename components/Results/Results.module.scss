@@ -4,6 +4,8 @@
   gap: 20px;
   color: #edeef1;
   border-radius: var(--card-radius, 0);
+  min-height: 0;
+  flex: 1;
 }
 
 .resultsHeader {
@@ -83,9 +85,17 @@
   border-radius: 10px;
   padding: 14px;
   min-height: 70px;
+  max-height: 200px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: hidden;
+
+  .captionText {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
 }
 
 .captionTitle {
@@ -136,9 +146,15 @@
   color: #c7c7cc;
 }
 
+.resultsListScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .resultsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
 
@@ -232,6 +248,44 @@
   color: #ededed;
 }
 
+.sceneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sceneHeaderTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sceneTitleDivider {
+  color: #9a9aa0;
+}
+
+.sceneTitleText {
+  font-size: var(--fs-15);
+  color: #f0a84b;
+}
+
+.sceneDescription {
+  font-size: var(--fs-13);
+  color: #b4b4ba;
+  line-height: 1.5;
+}
+
+.promptBlock {
+  background: #252527;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .promptLabel,
 .downloadLabel {
   font-size: var(--fs-13);
@@ -244,37 +298,33 @@
   line-height: 1.5;
 }
 
-.downloadRow {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .downloadButton {
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 999px;
-  color: #f0a84b;
-  font-size: var(--fs-13);
-  font-weight: 600;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid #f0a84b;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 168, 75, 0.3);
   background: rgba(240, 168, 75, 0.12);
+  color: #f0a84b;
+  font-size: var(--fs-12);
+  text-decoration: none;
+  cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+  }
 }
 
 .downloadButtonDisabled {
   opacity: 0.5;
+  cursor: not-allowed;
   pointer-events: none;
 }
 
 .downloadButton:hover:not(.downloadButtonDisabled) {
-  border-color: #f0a84b;
-  color: #f0a84b;
+  border-color: rgba(240, 168, 75, 0.6);
   background: rgba(240, 168, 75, 0.18);
 }
 

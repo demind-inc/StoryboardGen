@@ -11,6 +11,7 @@ import {
 import {
   generateCharacterScene,
   generateSceneCaptions,
+  generateSceneSummaries,
 } from "../services/geminiService";
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
@@ -218,6 +219,26 @@ export const useImageGeneration = ({
         guidelines
       );
       try {
+        const summaryResponse = await generateSceneSummaries(
+          [targetResult.prompt],
+          guidelines
+        );
+        setManualResults((prev) =>
+          prev.map((res, idx) =>
+            idx === index
+              ? {
+                  ...res,
+                  title: summaryResponse.titles[0] || res.title,
+                  description:
+                    summaryResponse.descriptions[0] || res.description,
+                }
+              : res
+          )
+        );
+      } catch (summaryError) {
+        console.error("Summary regeneration error:", summaryError);
+      }
+      try {
         const captionResponse = await generateSceneCaptions(
           [targetResult.prompt],
           references,
@@ -348,6 +369,10 @@ export const useImageGeneration = ({
       tiktok: [],
       instagram: [],
     };
+    let latestSummaries: { titles: string[]; descriptions: string[] } = {
+      titles: [],
+      descriptions: [],
+    };
     const captionPromise = (async () => {
       try {
         const generatedCaptions = await generateSceneCaptions(
@@ -363,6 +388,34 @@ export const useImageGeneration = ({
         console.error("Caption generation error:", captionError);
       }
       return latestCaptions;
+    })();
+    const summaryPromise = (async () => {
+      try {
+        const generatedSummaries = await generateSceneSummaries(
+          promptList,
+          guidelines
+        );
+        latestSummaries = generatedSummaries;
+        generatedResults.forEach((res, idx) => {
+          generatedResults[idx] = {
+            ...res,
+            title: generatedSummaries.titles[idx] || res.title,
+            description:
+              generatedSummaries.descriptions[idx] || res.description,
+          };
+        });
+        setManualResults((prev) =>
+          prev.map((res, idx) => ({
+            ...res,
+            title: generatedSummaries.titles[idx] || res.title,
+            description:
+              generatedSummaries.descriptions[idx] || res.description,
+          }))
+        );
+      } catch (summaryError) {
+        console.error("Summary generation error:", summaryError);
+      }
+      return latestSummaries;
     })();
 
     for (let i = 0; i < initialManualResults.length; i++) {
@@ -403,6 +456,7 @@ export const useImageGeneration = ({
     }
 
     const finalCaptions = await captionPromise;
+    await summaryPromise;
 
     const isFinished = generatedResults.every((result) => !result.isLoading);
     const hasAnyOutput = generatedResults.some((result) => result.imageUrl);

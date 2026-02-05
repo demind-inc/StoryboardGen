@@ -250,3 +250,75 @@ Requirements:
     throw error;
   }
 }
+
+export async function generateSceneSummaries(
+  prompts: string[],
+  guidelines: CustomGuidelines
+): Promise<{ titles: string[]; descriptions: string[] }> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("KEY_NOT_FOUND");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
+  const sceneList = prompts
+    .map((scene, idx) => `${idx + 1}. ${scene}`)
+    .join("\n");
+  const guidelineList = guidelines
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
+
+  const summaryPrompt = `
+You are a storyboard assistant.
+Create a concise title and a short description for each scene.
+
+Scenes:
+${sceneList}
+
+Global brand guidelines:
+${guidelineList || "- (none)"}
+
+Requirements:
+- Title: 3-6 words.
+- Description: 1-2 sentences, focused on visible action and setting.
+- Output JSON only as an array of objects, e.g.
+[
+  { "title": "Scene 1 Title", "description": "Scene 1 description." },
+  { "title": "Scene 2 Title", "description": "Scene 2 description." }
+]
+- The array length must match the number of scenes.
+`.trim();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: CAPTION_MODEL_NAME,
+      contents: {
+        parts: [{ text: summaryPrompt }],
+      },
+    });
+
+    const responseText =
+      response.candidates?.[0]?.content?.parts
+        ?.map((part) => (part as any).text || "")
+        .join("") || "";
+
+    const parsed = JSON.parse(extractJsonArray(responseText));
+    if (!Array.isArray(parsed)) {
+      throw new Error("SUMMARY_PARSE_ERROR");
+    }
+
+    return {
+      titles: prompts.map((_, idx) =>
+        String(parsed[idx]?.title ?? "").trim()
+      ),
+      descriptions: prompts.map((_, idx) =>
+        String(parsed[idx]?.description ?? "").trim()
+      ),
+    };
+  } catch (error: any) {
+    if (error.message?.includes("Requested entity was not found")) {
+      throw new Error("KEY_NOT_FOUND");
+    }
+    throw error;
+  }
+}
