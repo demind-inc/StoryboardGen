@@ -41,11 +41,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
       <div className={styles.cardHeader}>
         <div>
           <h2 className={styles.cardTitle}>3. Scene Prompts</h2>
-          <p className={styles.cardDescription}>Describe the scene in detail</p>
         </div>
-        <button className={styles.buttonGhost} onClick={onAddScene}>
-          Add Scene
-        </button>
       </div>
       <div className={styles.cardBody}>
         <div className={styles.sceneTabs}>
@@ -95,10 +91,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
               onBlur={handleBlur}
             />
           </div>
-          <p className={styles.promptHint}>
-            Tips: One person, one concrete moment, one clear environment, one
-            visible emotion
-          </p>
         </div>
       </div>
     </section>

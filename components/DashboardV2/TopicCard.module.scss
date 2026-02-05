@@ -5,7 +5,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .cardHeader {
@@ -14,6 +13,13 @@
   justify-content: space-between;
   padding: 16px 20px;
   gap: 8px;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cardTitle {
@@ -26,8 +32,8 @@
 }
 
 .cardDescription {
-  margin: 4px 0 0;
-  font-size: var(--fs-14);
+  margin: 0;
+  font-size: var(--fs-12);
   color: var(--muted);
   font-family: "Geist", "Inter", system-ui, sans-serif;
 }

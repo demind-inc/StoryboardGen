@@ -2,10 +2,9 @@
   background: var(--card-bg);
   border: none;
   border-radius: var(--card-radius, 12px);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  overflow-y: auto;
 }
 
 .cardHeader {
@@ -128,6 +127,7 @@
 .promptTextarea {
   width: 100%;
   min-height: 110px;
+  max-height: 140px;
   background: transparent;
   border: none;
   resize: vertical;

@@ -21,7 +21,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
-        <div>
+        <div className={styles.cardTitleRow}>
           <h2 className={styles.cardTitle}>2. Topic</h2>
           <p className={styles.cardDescription}>Generate scene ideas with AI</p>
         </div>
