@@ -342,6 +342,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         results={displayResults}
         onRegenerateResult={handleRegenerateResult}
         allowRegenerate={false}
+        transparentBackground={true}
+        onTransparentBackgroundChange={() => {}}
       />
     );
   }
