@@ -186,13 +186,14 @@ const Results: React.FC<ResultsProps> = ({
         </div>
       )}
 
-      {results.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>+</div>
-          <div>No results yet</div>
-        </div>
-      ) : (
-        <div className={styles.resultsGrid}>
+      <div className={styles.resultsListScroll}>
+        {results.length === 0 ? (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>+</div>
+            <div>No results yet</div>
+          </div>
+        ) : (
+          <div className={styles.resultsGrid}>
           {results.map((result, idx) => {
             const hasImage = Boolean(result.imageUrl);
             return (
@@ -246,8 +247,10 @@ const Results: React.FC<ResultsProps> = ({
                       {result.description}
                     </div>
                   )}
-                  <div className={styles.promptLabel}>Prompt</div>
-                  <div className={styles.promptText}>{result.prompt}</div>
+                  <div className={styles.promptBlock}>
+                    <div className={styles.promptLabel}>Prompt</div>
+                    <div className={styles.promptText}>{result.prompt}</div>
+                  </div>
                   <div className={styles.downloadRow}>
                     <a
                       className={`${styles.downloadButton} ${
@@ -271,8 +274,9 @@ const Results: React.FC<ResultsProps> = ({
               </div>
             );
           })}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {expandedImage && (
         <div
