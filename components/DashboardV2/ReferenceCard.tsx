@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { ReferenceImage } from "../../types";
 import { LibraryIcon } from "./DashboardIcons";
 import styles from "./ReferenceCard.module.scss";
-
 export interface ReferenceCardProps {
   references: ReferenceImage[];
   onUpload: () => void;
@@ -54,14 +56,14 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
             aria-label="Upload reference images"
             title="Upload reference images"
           >
-            +
+            <FontAwesomeIcon icon={faPlus} style={{ width: 16, height: 16 }} />
           </button>
         </div>
       </div>
       <div className={styles.cardBody}>
         <div className={styles.referenceGrid}>
           <button className={styles.uploadTile} onClick={onUpload}>
-            <span>+</span>
+            <FontAwesomeIcon icon={faPlus} style={{ width: 16, height: 16 }} />
             <span>Add Image</span>
           </button>
           {references.map((ref) => (
