@@ -347,6 +347,9 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         allowRegenerate={false}
         transparentBackground={true}
         onTransparentBackgroundChange={() => {}}
+        hashtags={DEFAULT_HASHTAGS}
+        selectedHashtags={DEFAULT_HASHTAGS}
+        onSelectedHashtagsChange={() => {}}
       />
     );
   }
