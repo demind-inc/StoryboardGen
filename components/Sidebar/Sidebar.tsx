@@ -1,5 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faStar,
+  faFolder,
+  faClockRotateLeft,
+  faPlay,
+  faCamera,
+  faGear,
+  faCircle,
+  faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { AppMode, SubscriptionPlan } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useSubscription } from "../../providers/SubscriptionProvider";
@@ -14,6 +25,16 @@ import {
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
 import { useProjectList } from "../../hooks/useProjectService";
+
+const SIDEBAR_ICON_MAP = {
+  star: faStar,
+  folder: faFolder,
+  history: faClockRotateLeft,
+  play: faPlay,
+  camera: faCamera,
+  settings: faGear,
+  dot: faCircle,
+} as const;
 
 export type PanelKey =
   | "saved"
@@ -48,42 +69,16 @@ interface SidebarProps {
   onSavedProjectsClick?: () => void;
 }
 
-const SidebarIcon: React.FC<{ name: string }> = ({ name }) => {
-  const path = useMemo(() => {
-    switch (name) {
-      case "star":
-        return "M12 17.27l5.18 3.04-1.4-5.99L20 9.24l-6.09-.52L12 3 10.09 8.72 4 9.24l4.22 5.08-1.4 5.99L12 17.27z";
-      case "folder":
-        return "M10 4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h6z";
-      case "history":
-        return "M13 3a9 9 0 00-9 9H1l3.5 3.5L8 12H5a8 8 0 118 8 1 1 0 010 2 10 10 0 100-20z";
-      case "play":
-        return "M8 5v14l11-7z";
-      case "camera":
-        return "M7 7l2-2h6l2 2h3a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2h3zm5 4a4 4 0 100 8 4 4 0 000-8z";
-      case "settings":
-        return "M19.14 12.94a7.97 7.97 0 000-1.88l2.03-1.58-2-3.46-2.39.96a7.72 7.72 0 00-1.62-.94l-.36-2.54h-4l-.36 2.54a7.72 7.72 0 00-1.62.94l-2.39-.96-2 3.46 2.03 1.58a7.97 7.97 0 000 1.88l-2.03 1.58 2 3.46 2.39-.96c.5.38 1.05.7 1.62.94l.36 2.54h4l.36-2.54c.57-.24 1.12-.56 1.62-.94l2.39.96 2-3.46-2.03-1.58zM12 15a3 3 0 110-6 3 3 0 010 6z";
-      case "dot":
-        return "M12 7a5 5 0 100 10 5 5 0 000-10z";
-      default:
-        return "M12 2a10 10 0 100 20 10 10 0 000-20z";
-    }
-  }, [name]);
-
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={styles.sidebar__icon}
-      aria-hidden="true"
-    >
-      <path d={path} />
-    </svg>
-  );
-};
+const SidebarIcon: React.FC<{ name: keyof typeof SIDEBAR_ICON_MAP }> = ({
+  name,
+}) => (
+  <FontAwesomeIcon
+    icon={SIDEBAR_ICON_MAP[name] ?? faFolder}
+    className={styles.sidebar__icon}
+    style={{ width: 16, height: 16 }}
+    aria-hidden
+  />
+);
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
   const {
@@ -238,19 +233,10 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               <SidebarIcon name="folder" />
               <span className={styles.sidebar__navLabel}>Saved project</span>
               <span className={styles.sidebar__navCaret} aria-hidden>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  style={{ width: 12, height: 12 }}
+                />
               </span>
             </button>
             {isProjectsActive && isSavedProjectsOpen && (
