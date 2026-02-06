@@ -9,6 +9,7 @@ import {
   InstagramIcon,
   CustomGuidelinesIcon,
   HashtagIcon,
+  AIIcon,
 } from "../DashboardV2/DashboardIcons";
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
@@ -218,7 +219,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 router.push("/dashboard");
               }}
             >
-              <SidebarIcon name="star" />
+              <AIIcon className={styles.sidebar__icon} />
               Generate
             </button>
             <button

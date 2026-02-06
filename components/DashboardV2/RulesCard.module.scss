@@ -93,11 +93,14 @@
   border: 1px solid transparent;
   border-radius: 10px;
   color: var(--text);
-  padding: 8px 12px;
+  padding: 8px 36px 8px 12px;
   font-size: var(--fs-12);
   text-align: left;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 
 .listboxButton:hover {
@@ -142,8 +145,8 @@
 }
 
 .listboxOptionSelected {
-  background: rgba(96, 190, 255, 0.16);
-  color: #dff3ff;
+  background: rgba(251, 146, 60, 0.14);
+  color: #fb923c;
 }
 
 .listboxOptionInner {
