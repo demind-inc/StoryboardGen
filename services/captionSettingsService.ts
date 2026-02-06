@@ -4,7 +4,7 @@ import type {
   CaptionSettingsRow,
   Json,
 } from "../database.types";
-import type { CaptionRules, CustomGuidelines, RuleGroup } from "../types";
+import type { CaptionRules, CustomGuidelines, Hashtags, RuleGroup } from "../types";
 import { DEFAULT_CHARACTER_GUIDELINE } from "./constants";
 
 const DEFAULT_TIKTOK_RULE: RuleGroup = {
@@ -40,11 +40,13 @@ export const DEFAULT_CAPTIONS = {
 };
 
 export const DEFAULT_CUSTOM_GUIDELINES: CustomGuidelines = [DEFAULT_GUIDELINE];
+export const DEFAULT_HASHTAGS: Hashtags = [];
 
 /** Default rules and guidelines used when generating (creating) caption_settings for a new user. */
 export const DEFAULT_RULES = {
   rules: DEFAULT_CAPTION_RULES,
   guidelines: DEFAULT_CUSTOM_GUIDELINES,
+  hashtags: DEFAULT_HASHTAGS,
 } as const;
 
 const isRuleGroup = (value: unknown): value is RuleGroup => {
@@ -112,6 +114,27 @@ const coerceRuleGroups = (
   return normalizeRuleGroups(customGroups, defaultGroup);
 };
 
+const normalizeHashtags = (tags: Hashtags): Hashtags => {
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+  tags.forEach((tag) => {
+    const trimmed = String(tag ?? "").trim();
+    if (!trimmed) return;
+    const compact = trimmed.replace(/\s+/g, "");
+    const withHash = compact.startsWith("#") ? compact : `#${compact}`;
+    const key = withHash.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    normalized.push(withHash);
+  });
+  return normalized;
+};
+
+const coerceHashtags = (rawValue: unknown): Hashtags => {
+  if (!Array.isArray(rawValue)) return [];
+  return normalizeHashtags(rawValue.map((tag) => String(tag ?? "")));
+};
+
 export async function ensureCaptionSettings(userId: string): Promise<void> {
   const supabase = getSupabaseClient();
   const row: CaptionSettingsInsert = {
@@ -119,6 +142,7 @@ export async function ensureCaptionSettings(userId: string): Promise<void> {
     tiktok_rules: DEFAULT_RULES.rules.tiktok as unknown as Json,
     instagram_rules: DEFAULT_RULES.rules.instagram as unknown as Json,
     custom_guidelines: DEFAULT_RULES.guidelines as unknown as Json,
+    hashtags: DEFAULT_RULES.hashtags as unknown as Json,
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase infers caption_settings Insert as never
   const { error } = await (supabase.from("caption_settings") as any)
@@ -133,11 +157,12 @@ export async function ensureCaptionSettings(userId: string): Promise<void> {
 export async function getCaptionSettings(userId: string): Promise<{
   rules: CaptionRules;
   guidelines: CustomGuidelines;
+  hashtags: Hashtags;
 }> {
   const supabase = getSupabaseClient();
   const { data: rawData, error } = await supabase
     .from("caption_settings")
-    .select("tiktok_rules, instagram_rules, custom_guidelines")
+    .select("tiktok_rules, instagram_rules, custom_guidelines, hashtags")
     .eq("user_id", userId)
     .maybeSingle();
 
@@ -148,13 +173,14 @@ export async function getCaptionSettings(userId: string): Promise<{
 
   const data = rawData as Pick<
     CaptionSettingsRow,
-    "tiktok_rules" | "instagram_rules" | "custom_guidelines"
+    "tiktok_rules" | "instagram_rules" | "custom_guidelines" | "hashtags"
   > | null;
   if (!data) {
     await ensureCaptionSettings(userId);
     return {
       rules: DEFAULT_RULES.rules,
       guidelines: DEFAULT_RULES.guidelines,
+      hashtags: DEFAULT_RULES.hashtags,
     };
   }
 
@@ -164,6 +190,7 @@ export async function getCaptionSettings(userId: string): Promise<{
       instagram: coerceRuleGroups(data.instagram_rules, DEFAULT_INSTAGRAM_RULE),
     },
     guidelines: coerceRuleGroups(data.custom_guidelines, DEFAULT_GUIDELINE),
+    hashtags: coerceHashtags(data.hashtags),
   };
 }
 
@@ -234,6 +261,26 @@ export async function updateCustomGuidelines(
 
   if (error) {
     console.error("Failed to update custom guidelines:", error);
+    throw error;
+  }
+}
+
+export async function updateHashtags(
+  userId: string,
+  hashtags: Hashtags
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  await ensureCaptionSettings(userId);
+  const nextHashtags = normalizeHashtags(hashtags);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase infers caption_settings Update as never
+  const { error } = await (supabase.from("caption_settings") as any)
+    .update({ hashtags: nextHashtags as unknown as Json })
+    .eq("user_id", userId)
+    .select("user_id")
+    .single();
+
+  if (error) {
+    console.error("Failed to update hashtags:", error);
     throw error;
   }
 }

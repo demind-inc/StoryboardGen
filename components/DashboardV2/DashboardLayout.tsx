@@ -35,6 +35,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   transparentBackground,
   onTransparentBackgroundChange,
   rules,
+  hashtags,
   guidelines,
   onGuidelinesChange,
   captions,
@@ -94,7 +95,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
           </div>
           <div className={styles.rightColumn}>
-            <RulesCard rules={rules} />
+            <RulesCard rules={rules} hashtags={hashtags} />
             <GuidelinesCard
               guidelines={guidelines}
               onGuidelinesChange={onGuidelinesChange}

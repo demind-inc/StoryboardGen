@@ -141,3 +141,17 @@
   max-height: 140px;
   overflow-y: auto;
 }
+
+.hashtagText {
+  background: #2e2e2e;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: var(--fs-12);
+  line-height: 1.6;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+}

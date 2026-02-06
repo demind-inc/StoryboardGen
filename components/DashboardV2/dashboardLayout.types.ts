@@ -1,6 +1,7 @@
 import {
   CaptionRules,
   CustomGuidelines,
+  Hashtags,
   ReferenceImage,
   SceneResult,
 } from "../../types";
@@ -31,6 +32,7 @@ export interface DashboardLayoutProps {
   transparentBackground: boolean;
   onTransparentBackgroundChange: (value: boolean) => void;
   rules: CaptionRules;
+  hashtags: Hashtags;
   guidelines: CustomGuidelines;
   onGuidelinesChange?: (guidelines: CustomGuidelines) => void;
   captions: {

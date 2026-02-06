@@ -13,10 +13,11 @@ import {
   DEFAULT_CAPTION_RULES,
   DEFAULT_CAPTIONS,
   DEFAULT_CUSTOM_GUIDELINES,
+  DEFAULT_HASHTAGS,
 } from "../services/captionSettingsService";
 import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
-import type { CaptionRules, CustomGuidelines } from "../types";
+import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
 import { generateSceneSuggestions } from "../services/geminiService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -117,6 +118,7 @@ export const useDashboardManual = ({
   const [guidelines, setGuidelines] =
     useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
+  const [hashtags, setHashtags] = useState<Hashtags>(DEFAULT_HASHTAGS);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
 
   const captionSettingsQuery = useCaptionSettings(userId);
@@ -124,6 +126,7 @@ export const useDashboardManual = ({
     if (captionSettingsQuery.data) {
       setRules(captionSettingsQuery.data.rules);
       setGuidelines(captionSettingsQuery.data.guidelines);
+      setHashtags(captionSettingsQuery.data.hashtags);
     }
   }, [captionSettingsQuery.data]);
   useEffect(() => {
@@ -131,6 +134,7 @@ export const useDashboardManual = ({
       setRules(DEFAULT_CAPTION_RULES);
       setCaptions(DEFAULT_CAPTIONS);
       setGuidelines(DEFAULT_CUSTOM_GUIDELINES);
+      setHashtags(DEFAULT_HASHTAGS);
     }
   }, [captionSettingsQuery.isError]);
 
@@ -161,6 +165,7 @@ export const useDashboardManual = ({
     planType,
     captionRules: rules,
     guidelines,
+    hashtags,
     transparentBackground,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
@@ -329,6 +334,8 @@ export const useDashboardManual = ({
     guidelines,
     setGuidelines,
     rules,
+    hashtags,
+    setHashtags,
     captions,
     manualResults,
     isGenerating,

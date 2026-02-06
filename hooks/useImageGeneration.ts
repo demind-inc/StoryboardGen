@@ -3,6 +3,7 @@ import {
   AppMode,
   CaptionRules,
   CustomGuidelines,
+  Hashtags,
   ImageSize,
   MonthlyUsage,
   ReferenceImage,
@@ -32,6 +33,7 @@ interface UseImageGenerationProps {
   planType: string;
   captionRules: CaptionRules;
   guidelines: CustomGuidelines;
+  hashtags: Hashtags;
   transparentBackground: boolean;
   hasGeneratedFreeImage: boolean;
   isPaymentUnlocked: boolean;
@@ -67,6 +69,7 @@ export const useImageGeneration = ({
   planType,
   captionRules,
   guidelines,
+  hashtags,
   transparentBackground,
   hasGeneratedFreeImage,
   isPaymentUnlocked,
@@ -246,7 +249,8 @@ export const useImageGeneration = ({
           [targetResult.prompt],
           references,
           captionRules,
-          guidelines
+          guidelines,
+          hashtags
         );
         setCaptionResults((prev) => {
           const next = {
@@ -382,7 +386,8 @@ export const useImageGeneration = ({
           promptList,
           references,
           captionRules,
-          guidelines
+          guidelines,
+          hashtags
         );
         latestCaptions = generatedCaptions;
         setCaptionResults(generatedCaptions);

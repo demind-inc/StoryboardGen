@@ -4,6 +4,7 @@ import DashboardLayout from "../../components/DashboardV2/DashboardLayout";
 import {
   DEFAULT_CAPTION_RULES,
   DEFAULT_CUSTOM_GUIDELINES,
+  DEFAULT_HASHTAGS,
 } from "../../services/captionSettingsService";
 import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
 import {
@@ -120,7 +121,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           [prompt],
           [],
           DEFAULT_CAPTION_RULES,
-          DEFAULT_CUSTOM_GUIDELINES
+          DEFAULT_CUSTOM_GUIDELINES,
+          DEFAULT_HASHTAGS
         );
         captionsUpdate = {
           tiktok: captionResponse.tiktok[0] || "",
@@ -204,7 +206,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
             [prompt],
             [],
             DEFAULT_CAPTION_RULES,
-            DEFAULT_CUSTOM_GUIDELINES
+            DEFAULT_CUSTOM_GUIDELINES,
+            DEFAULT_HASHTAGS
           );
           captionsUpdate = {
             tiktok: captionResponse.tiktok[0] || "",

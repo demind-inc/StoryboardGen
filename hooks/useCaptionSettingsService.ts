@@ -1,11 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { RuleGroup } from "../types";
+import type { Hashtags, RuleGroup } from "../types";
 import type { CaptionRules } from "../types";
 import {
   getCaptionSettings,
   updateCaptionRules,
   updateCaptionRulesForPlatform,
   updateCustomGuidelines,
+  updateHashtags,
 } from "../services/captionSettingsService";
 import { queryKeys } from "../lib/queryKeys";
 
@@ -56,6 +57,19 @@ export function useUpdateCustomGuidelines() {
   return useMutation({
     mutationFn: (params: { userId: string; guidelines: RuleGroup[] }) =>
       updateCustomGuidelines(params.userId, params.guidelines),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.captionSettings(variables.userId),
+      });
+    },
+  });
+}
+
+export function useUpdateHashtags() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { userId: string; hashtags: Hashtags }) =>
+      updateHashtags(params.userId, params.hashtags),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.captionSettings(variables.userId),

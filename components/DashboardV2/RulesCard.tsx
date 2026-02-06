@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import type { CaptionRules } from "../../types";
-import { SettingsIcon, TikTokIcon, InstagramIcon } from "./DashboardIcons";
+import type { CaptionRules, Hashtags } from "../../types";
+import {
+  HashtagIcon,
+  SettingsIcon,
+  TikTokIcon,
+  InstagramIcon,
+} from "./DashboardIcons";
 import styles from "./RulesCard.module.scss";
 
 export interface RulesCardProps {
   rules: CaptionRules;
+  hashtags: Hashtags;
 }
 
-const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
+const RulesCard: React.FC<RulesCardProps> = ({ rules, hashtags }) => {
   const router = useRouter();
   const [selectedTiktokIndex, setSelectedTiktokIndex] = useState(0);
   const [selectedInstagramIndex, setSelectedInstagramIndex] = useState(0);
@@ -28,6 +34,8 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
     tiktokGroups[Math.min(selectedTiktokIndex, tiktokGroups.length - 1)];
   const selectedInstagram =
     instagramGroups[Math.min(selectedInstagramIndex, instagramGroups.length - 1)];
+  const hashtagText =
+    hashtags.length > 0 ? hashtags.join(" ") : "—";
 
   return (
     <section className={styles.card}>
@@ -132,6 +140,25 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules }) => {
               —
             </div>
           )}
+        </div>
+        <div className={styles.ruleList}>
+          <div className={styles.cardTitleRow}>
+            <span className={styles.platformLabel}>
+              <HashtagIcon />
+              <strong>Hashtags</strong>
+            </span>
+            <button
+              type="button"
+              className={styles.editIcon}
+              title="Open hashtags settings"
+              onClick={() => router.push("/rules/hashtags")}
+            >
+              <SettingsIcon />
+            </button>
+          </div>
+          <div className={styles.hashtagText} aria-label="Approved hashtags">
+            {hashtagText}
+          </div>
         </div>
       </div>
     </section>

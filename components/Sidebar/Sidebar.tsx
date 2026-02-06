@@ -8,6 +8,7 @@ import {
   TikTokIcon,
   InstagramIcon,
   CustomGuidelinesIcon,
+  HashtagIcon,
 } from "../DashboardV2/DashboardIcons";
 import PaymentModal from "../PaymentModal/PaymentModal";
 import styles from "./Sidebar.module.scss";
@@ -20,7 +21,8 @@ export type PanelKey =
   | "settings"
   | "tiktok"
   | "instagram"
-  | "customGuidelines";
+  | "customGuidelines"
+  | "hashtags";
 
 interface SidebarProps {
   mode: AppMode;
@@ -105,6 +107,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   const isTikTokActive = activePanel === "tiktok";
   const isInstagramActive = activePanel === "instagram";
   const isCustomGuidelinesActive = activePanel === "customGuidelines";
+  const isHashtagsActive = activePanel === "hashtags";
   const creditText = useMemo(() => {
     if (isSubscribed) {
       if (
@@ -321,6 +324,17 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 <InstagramIcon />
               </span>
               Instagram Rules
+            </button>
+            <button
+              className={`${styles.sidebar__navItem} ${
+                isHashtagsActive ? styles.isActive : ""
+              }`}
+              onClick={() => router.push("/rules/hashtags")}
+            >
+              <span className={styles.sidebar__iconWrap} aria-hidden>
+                <HashtagIcon />
+              </span>
+              Hashtags
             </button>
             <button
               className={`${styles.sidebar__navItem} ${
