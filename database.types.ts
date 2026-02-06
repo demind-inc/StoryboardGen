@@ -223,6 +223,7 @@ export interface Database {
           tiktok_rules: Json; // jsonb
           instagram_rules: Json; // jsonb
           custom_guidelines: Json; // jsonb
+          hashtags: Json; // jsonb
           created_at: string; // timestamptz, default now()
           updated_at: string; // timestamptz, default now()
         };
@@ -231,6 +232,7 @@ export interface Database {
           tiktok_rules?: Json; // jsonb
           instagram_rules?: Json; // jsonb
           custom_guidelines?: Json; // jsonb
+          hashtags?: Json; // jsonb
           created_at?: string; // timestamptz
           updated_at?: string; // timestamptz
         };
@@ -239,6 +241,7 @@ export interface Database {
           tiktok_rules?: Json; // jsonb
           instagram_rules?: Json; // jsonb
           custom_guidelines?: Json; // jsonb
+          hashtags?: Json; // jsonb
           created_at?: string | null; // timestamptz
           updated_at?: string | null; // timestamptz
         };

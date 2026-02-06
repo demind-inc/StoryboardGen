@@ -69,6 +69,7 @@ export interface CaptionRules {
 }
 
 export type CustomGuidelines = RuleGroup[];
+export type Hashtags = string[];
 
 export interface ProjectSummary {
   id: string;

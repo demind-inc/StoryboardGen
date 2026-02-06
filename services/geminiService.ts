@@ -2,6 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import type {
   CaptionRules,
   CustomGuidelines,
+  Hashtags,
   ReferenceImage,
   ImageSize,
 } from "../types";
@@ -174,7 +175,8 @@ export async function generateSceneCaptions(
   prompts: string[],
   references: ReferenceImage[],
   rules: CaptionRules,
-  guidelines: CustomGuidelines
+  guidelines: CustomGuidelines,
+  hashtags: Hashtags = []
 ): Promise<{ tiktok: string[]; instagram: string[] }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -199,6 +201,7 @@ export async function generateSceneCaptions(
   const guidelineList = guidelines
     .map((group) => `- ${group.rule}`)
     .join("\n");
+  const hashtagList = hashtags.length ? hashtags.join(" ") : "(none)";
 
   const captionPrompt = `
 You are a social media copywriter.
@@ -215,6 +218,9 @@ ${tiktokRules || "- (none)"}
 
 Instagram rules:
 ${instagramRules || "- (none)"}
+
+Approved hashtags:
+${hashtagList}
 
 Requirements:
 - Provide one TikTok and one Instagram caption per scene.

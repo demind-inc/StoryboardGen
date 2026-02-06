@@ -1,8 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { ReferenceImage } from "../../types";
 import { LibraryIcon } from "./DashboardIcons";
 import styles from "./ReferenceCard.module.scss";
-
 export interface ReferenceCardProps {
   references: ReferenceImage[];
   onUpload: () => void;
@@ -19,15 +22,6 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const closeExpanded = useCallback(() => setExpandedId(null), []);
-
-  useEffect(() => {
-    if (!expandedId) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeExpanded();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [expandedId, closeExpanded]);
 
   const expandedRef = expandedId
     ? references.find((r) => r.id === expandedId)
@@ -54,14 +48,14 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
             aria-label="Upload reference images"
             title="Upload reference images"
           >
-            +
+            <FontAwesomeIcon icon={faPlus} style={{ width: 16, height: 16 }} />
           </button>
         </div>
       </div>
       <div className={styles.cardBody}>
         <div className={styles.referenceGrid}>
           <button className={styles.uploadTile} onClick={onUpload}>
-            <span>+</span>
+            <FontAwesomeIcon icon={faPlus} style={{ width: 16, height: 16 }} />
             <span>Add Image</span>
           </button>
           {references.map((ref) => (
@@ -97,30 +91,40 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
           ))}
         </div>
       </div>
-      {expandedRef && (
+      <Dialog
+        open={!!expandedRef}
+        onClose={closeExpanded}
+        className="relative z-[1000]"
+      >
         <div
           className={styles.expandedOverlay}
+          aria-hidden="true"
           onClick={closeExpanded}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Expanded reference image"
-        >
-          <button
-            type="button"
-            className={styles.expandedClose}
-            onClick={closeExpanded}
-            aria-label="Close"
-          >
-            ×
-          </button>
-          <img
-            src={expandedRef.data}
-            alt="Reference (expanded)"
-            className={styles.expandedImage}
+        />
+        <div className="fixed inset-0 flex items-center justify-center p-12 pointer-events-none">
+          <DialogPanel
+            className={`pointer-events-auto ${styles.expandedPanel}`}
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <DialogTitle className={styles.srOnly}>Expanded reference image</DialogTitle>
+            <button
+              type="button"
+              className={styles.expandedClose}
+              onClick={closeExpanded}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            {expandedRef && (
+              <img
+                src={expandedRef.data}
+                alt="Reference (expanded)"
+                className={styles.expandedImage}
+              />
+            )}
+          </DialogPanel>
         </div>
-      )}
+      </Dialog>
     </section>
   );
 };
