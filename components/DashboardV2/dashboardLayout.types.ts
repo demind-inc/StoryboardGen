@@ -33,6 +33,8 @@ export interface DashboardLayoutProps {
   onTransparentBackgroundChange: (value: boolean) => void;
   rules: CaptionRules;
   hashtags: Hashtags;
+  selectedHashtags: Hashtags;
+  onSelectedHashtagsChange: (next: Hashtags) => void;
   guidelines: CustomGuidelines;
   onGuidelinesChange?: (guidelines: CustomGuidelines) => void;
   captions: {

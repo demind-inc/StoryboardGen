@@ -119,6 +119,7 @@ export const useDashboardManual = ({
     useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [hashtags, setHashtags] = useState<Hashtags>(DEFAULT_HASHTAGS);
+  const [selectedHashtags, setSelectedHashtags] = useState<Hashtags>([]);
   const [captions, setCaptions] = useState(DEFAULT_CAPTIONS);
 
   const captionSettingsQuery = useCaptionSettings(userId);
@@ -138,6 +139,12 @@ export const useDashboardManual = ({
     }
   }, [captionSettingsQuery.isError]);
 
+  useEffect(() => {
+    setSelectedHashtags((prev) =>
+      prev.filter((tag) => hashtags.includes(tag))
+    );
+  }, [hashtags]);
+
   const promptList = useMemo(
     () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
     [manualPrompts]
@@ -155,6 +162,9 @@ export const useDashboardManual = ({
     }
   }, [activeSceneIndex, displayPromptList.length]);
 
+  const effectiveHashtags =
+    selectedHashtags.length > 0 ? selectedHashtags : hashtags;
+
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
@@ -165,7 +175,7 @@ export const useDashboardManual = ({
     planType,
     captionRules: rules,
     guidelines,
-    hashtags,
+    hashtags: effectiveHashtags,
     transparentBackground,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
@@ -336,6 +346,8 @@ export const useDashboardManual = ({
     rules,
     hashtags,
     setHashtags,
+    selectedHashtags,
+    setSelectedHashtags,
     captions,
     manualResults,
     isGenerating,

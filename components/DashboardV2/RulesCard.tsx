@@ -13,13 +13,19 @@ import styles from "./RulesCard.module.scss";
 export interface RulesCardProps {
   rules: CaptionRules;
   hashtags: Hashtags;
+  selectedHashtags: Hashtags;
+  onSelectedHashtagsChange: (next: Hashtags) => void;
 }
 
-const RulesCard: React.FC<RulesCardProps> = ({ rules, hashtags }) => {
+const RulesCard: React.FC<RulesCardProps> = ({
+  rules,
+  hashtags,
+  selectedHashtags,
+  onSelectedHashtagsChange,
+}) => {
   const router = useRouter();
   const [selectedTiktokIndex, setSelectedTiktokIndex] = useState(0);
   const [selectedInstagramIndex, setSelectedInstagramIndex] = useState(0);
-  const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
 
   const tiktokGroups = rules.tiktok;
   const instagramGroups = rules.instagram;
@@ -39,16 +45,9 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, hashtags }) => {
       Math.min(selectedInstagramIndex, instagramGroups.length - 1)
     ];
   const availableHashtags = hashtags;
-  const displayedHashtags =
-    selectedHashtags.length > 0 ? selectedHashtags : availableHashtags;
+  const displayedHashtags = selectedHashtags.length > 0 ? selectedHashtags : [];
   const hashtagText =
     displayedHashtags.length > 0 ? displayedHashtags.join(" ") : "—";
-
-  useEffect(() => {
-    setSelectedHashtags((prev) =>
-      prev.filter((tag) => availableHashtags.includes(tag))
-    );
-  }, [availableHashtags]);
 
   return (
     <section className={styles.card}>
@@ -197,7 +196,7 @@ const RulesCard: React.FC<RulesCardProps> = ({ rules, hashtags }) => {
           {availableHashtags.length > 0 ? (
             <Listbox
               value={selectedHashtags}
-              onChange={setSelectedHashtags}
+              onChange={onSelectedHashtagsChange}
               multiple
             >
               <div className={styles.listbox}>

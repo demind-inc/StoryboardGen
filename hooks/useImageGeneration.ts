@@ -91,6 +91,38 @@ export const useImageGeneration = ({
     instagram: string[];
   }>({ tiktok: [], instagram: [] });
 
+  const normalizeHashtags = (tags: Hashtags) =>
+    Array.from(new Set(tags.map((tag) => tag.trim()).filter(Boolean)));
+
+  const appendHashtags = (caption: string, tags: string[]) => {
+    if (tags.length === 0) return caption;
+    const existingTags = new Set(
+      caption
+        .split(/\s+/)
+        .filter((word) => word.startsWith("#"))
+        .map((word) => word.trim())
+    );
+    const missing = tags.filter((tag) => !existingTags.has(tag));
+    if (missing.length === 0) return caption;
+    const trimmed = caption.trim();
+    const separator = trimmed.length > 0 ? "\n\n" : "";
+    return `${trimmed}${separator}${missing.join(" ")}`;
+  };
+
+  const applyHashtagsToCaptions = (results: {
+    tiktok: string[];
+    instagram: string[];
+  }) => {
+    const tagList = normalizeHashtags(hashtags);
+    if (tagList.length === 0) return results;
+    return {
+      tiktok: results.tiktok.map((caption) => appendHashtags(caption, tagList)),
+      instagram: results.instagram.map((caption) =>
+        appendHashtags(caption, tagList)
+      ),
+    };
+  };
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isGenerating) {
@@ -252,13 +284,14 @@ export const useImageGeneration = ({
           guidelines,
           hashtags
         );
+        const captionWithHashtags = applyHashtagsToCaptions(captionResponse);
         setCaptionResults((prev) => {
           const next = {
             tiktok: [...prev.tiktok],
             instagram: [...prev.instagram],
           };
-          next.tiktok[index] = captionResponse.tiktok[0] || "";
-          next.instagram[index] = captionResponse.instagram[0] || "";
+          next.tiktok[index] = captionWithHashtags.tiktok[0] || "";
+          next.instagram[index] = captionWithHashtags.instagram[0] || "";
           updateCaptionDisplay(next);
           return next;
         });
@@ -389,9 +422,11 @@ export const useImageGeneration = ({
           guidelines,
           hashtags
         );
-        latestCaptions = generatedCaptions;
-        setCaptionResults(generatedCaptions);
-        updateCaptionDisplay(generatedCaptions);
+        const captionWithHashtags =
+          applyHashtagsToCaptions(generatedCaptions);
+        latestCaptions = captionWithHashtags;
+        setCaptionResults(captionWithHashtags);
+        updateCaptionDisplay(captionWithHashtags);
       } catch (captionError) {
         console.error("Caption generation error:", captionError);
       }

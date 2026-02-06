@@ -39,6 +39,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     setGuidelines,
     rules,
     hashtags,
+    selectedHashtags,
+    setSelectedHashtags,
     captions,
     setManualResults,
     projectName,
@@ -101,6 +103,8 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onRegenerateActive={() => handleRegenerate(activeSceneIndex)}
         rules={rules}
         hashtags={hashtags}
+        selectedHashtags={selectedHashtags}
+        onSelectedHashtagsChange={setSelectedHashtags}
         guidelines={guidelines}
         onGuidelinesChange={setGuidelines}
         captions={captions}
