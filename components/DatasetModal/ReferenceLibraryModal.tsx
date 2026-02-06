@@ -173,8 +173,7 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
             disabled={!selectedSets.length}
           >
             Use {totalSelectedImages || ""} image
-            {totalSelectedImages !== 1 ? "s" : ""} from {selectedSets.length}{" "}
-            set{selectedSets.length !== 1 ? "s" : ""}
+            {totalSelectedImages !== 1 ? "s" : ""}
           </button>
           <button
             className="primary-button primary-button--ghost"
