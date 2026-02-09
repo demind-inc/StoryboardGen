@@ -42,7 +42,7 @@ const quickSteps = [
   {
     title: "List Scenes",
     detail:
-      "Describe all scenes in a single textbox. Each paragraph becomes one image.",
+      "Describe all scenes in a single textbox on auto-generate scenes by entering a topic to start.",
   },
   {
     title: "Generate a Set",
@@ -58,14 +58,14 @@ const valuePoints = [
       "Generate multiple scenes with the same character and illustration style.",
   },
   {
-    title: "Reference images, Once",
+    title: "One Sentence → Scene Prompts",
     detail:
-      "Upload reference images once and reuse them across future generations.",
+      "Enter a topic in one sentence. We auto-generate scene prompts so you can refine and generate in one go.",
   },
   {
-    title: "One Textbox for All Scenes",
+    title: "Social Media Ready",
     detail:
-      "Describe every scene in a single textbox. No copying or re-prompting.",
+      "Get TikTok and Instagram captions with hashtags for every image. One click to copy and post.",
   },
 ];
 
@@ -337,9 +337,7 @@ const LandingPage: React.FC = () => {
               </div>
 
               <div className="landing__form-row">
-                <div className="landing__label">
-                  Scene prompt (Each paragraph = one scene)
-                </div>
+                <div className="landing__label">Scene prompt</div>
                 <div className="landing__prompt landing__prompt--textarea">
                   <p>Boy with a question mark around him</p>
                   <p>Boy writing in a notebook</p>
