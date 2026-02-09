@@ -7,6 +7,7 @@ import AuthShell from "../components/AuthShell/AuthShell";
 const referenceImage = {
   src: "/assets/showcase/reference.png",
   alt: "Reference upload",
+  topic: "ADHD behaviors",
 };
 
 const generatedImages = [
@@ -23,6 +24,15 @@ const generatedImages = [
     prompt: "Boy feeling annoyed at a noisy cafe",
   },
 ];
+
+const socialCaptions = {
+  tiktok:
+    "3 quick ADHD resets: name the distraction, do a 2-minute brain dump, then change your environment.",
+  instagram:
+    "ADHD tips to reset focus fast: name the distraction, brain dump for two minutes, then shift your environment.",
+  hashtags:
+    "#adhd #focus #productivity #mentalhealth #studyhacks #neurodivergent",
+};
 
 const quickSteps = [
   {
@@ -348,6 +358,9 @@ const LandingPage: React.FC = () => {
           id="gallery"
           className="landing__section landing__section--gallery"
         >
+          <div className="landing__section-head">
+            <p className="landing__eyebrow">Example</p>
+          </div>
           <div className="landing__mosaic">
             <div className="mosaic__reference">
               <div className="landing__card-label">Reference</div>
@@ -358,18 +371,48 @@ const LandingPage: React.FC = () => {
                   loading="lazy"
                 />
               </div>
+              <div className="mosaic__topic">Topic</div>
+              <div className="mosaic__topic-title">{referenceImage.topic}</div>
               <p className="landing__hint">
                 This character will be used for all scenes.
               </p>
             </div>
-            {generatedImages.map((image) => (
-              <div className="mosaic__tile" key={image.prompt}>
-                <div className="landing__image-frame landing__image-frame--glow">
-                  <img src={image.src} alt={image.prompt} loading="lazy" />
-                </div>
-                <div className="mosaic__label">{image.prompt}</div>
+            <div className="mosaic__arrow" aria-hidden="true">
+              <span className="mosaic__arrow-line" />
+              <span className="mosaic__arrow-head" />
+            </div>
+            <div className="mosaic__output">
+              <div className="mosaic__tiles">
+                {generatedImages.map((image) => (
+                  <div className="mosaic__tile" key={image.prompt}>
+                    <div className="landing__image-frame landing__image-frame--glow">
+                      <img src={image.src} alt={image.prompt} loading="lazy" />
+                    </div>
+                    <div className="mosaic__label">{image.prompt}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="mosaic__captions">
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">TikTok</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.tiktok}
+                  </span>
+                </div>
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">Instagram</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.instagram}
+                  </span>
+                </div>
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">Hashtags</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.hashtags}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
