@@ -7,6 +7,7 @@ import AuthShell from "../components/AuthShell/AuthShell";
 const referenceImage = {
   src: "/assets/showcase/reference.png",
   alt: "Reference upload",
+  topic: "ADHD behaviors",
 };
 
 const generatedImages = [
@@ -24,6 +25,15 @@ const generatedImages = [
   },
 ];
 
+const socialCaptions = {
+  tiktok:
+    "3 quick ADHD resets: name the distraction, do a 2-minute brain dump, then change your environment.",
+  instagram:
+    "ADHD tips to reset focus fast: name the distraction, brain dump for two minutes, then shift your environment.",
+  hashtags:
+    "#adhd #focus #productivity #mentalhealth #studyhacks #neurodivergent",
+};
+
 const quickSteps = [
   {
     title: "Upload Once",
@@ -32,7 +42,7 @@ const quickSteps = [
   {
     title: "List Scenes",
     detail:
-      "Describe all scenes in a single textbox. Each paragraph becomes one image.",
+      "Describe all scenes in a single textbox on auto-generate scenes by entering a topic to start.",
   },
   {
     title: "Generate a Set",
@@ -48,14 +58,14 @@ const valuePoints = [
       "Generate multiple scenes with the same character and illustration style.",
   },
   {
-    title: "Reference images, Once",
+    title: "One Sentence → Scene Prompts",
     detail:
-      "Upload reference images once and reuse them across future generations.",
+      "Enter a topic in one sentence. We auto-generate scene prompts so you can refine and generate in one go.",
   },
   {
-    title: "One Textbox for All Scenes",
+    title: "Social Media Ready",
     detail:
-      "Describe every scene in a single textbox. No copying or re-prompting.",
+      "Get TikTok and Instagram captions with hashtags for every image. One click to copy and post.",
   },
 ];
 
@@ -327,9 +337,7 @@ const LandingPage: React.FC = () => {
               </div>
 
               <div className="landing__form-row">
-                <div className="landing__label">
-                  Scene prompt (Each paragraph = one scene)
-                </div>
+                <div className="landing__label">Scene prompt</div>
                 <div className="landing__prompt landing__prompt--textarea">
                   <p>Boy with a question mark around him</p>
                   <p>Boy writing in a notebook</p>
@@ -348,6 +356,9 @@ const LandingPage: React.FC = () => {
           id="gallery"
           className="landing__section landing__section--gallery"
         >
+          <div className="landing__section-head">
+            <p className="landing__eyebrow">Example</p>
+          </div>
           <div className="landing__mosaic">
             <div className="mosaic__reference">
               <div className="landing__card-label">Reference</div>
@@ -358,18 +369,48 @@ const LandingPage: React.FC = () => {
                   loading="lazy"
                 />
               </div>
+              <div className="mosaic__topic">Topic</div>
+              <div className="mosaic__topic-title">{referenceImage.topic}</div>
               <p className="landing__hint">
                 This character will be used for all scenes.
               </p>
             </div>
-            {generatedImages.map((image) => (
-              <div className="mosaic__tile" key={image.prompt}>
-                <div className="landing__image-frame landing__image-frame--glow">
-                  <img src={image.src} alt={image.prompt} loading="lazy" />
-                </div>
-                <div className="mosaic__label">{image.prompt}</div>
+            <div className="mosaic__arrow" aria-hidden="true">
+              <span className="mosaic__arrow-line" />
+              <span className="mosaic__arrow-head" />
+            </div>
+            <div className="mosaic__output">
+              <div className="mosaic__tiles">
+                {generatedImages.map((image) => (
+                  <div className="mosaic__tile" key={image.prompt}>
+                    <div className="landing__image-frame landing__image-frame--glow">
+                      <img src={image.src} alt={image.prompt} loading="lazy" />
+                    </div>
+                    <div className="mosaic__label">{image.prompt}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="mosaic__captions">
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">TikTok</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.tiktok}
+                  </span>
+                </div>
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">Instagram</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.instagram}
+                  </span>
+                </div>
+                <div className="mosaic__caption">
+                  <span className="mosaic__caption-label">Hashtags</span>
+                  <span className="mosaic__caption-text">
+                    {socialCaptions.hashtags}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
