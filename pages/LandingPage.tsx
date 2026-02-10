@@ -146,6 +146,7 @@ const LandingPage: React.FC = () => {
   } = useAuth();
 
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -156,6 +157,7 @@ const LandingPage: React.FC = () => {
   }, [authStatus]);
 
   const handleStart = () => {
+    setIsMobileMenuOpen(false);
     if (authStatus === "signed_in") {
       router.push("/dashboard");
       return;
@@ -164,6 +166,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handlePlanStart = (plan: SubscriptionPlan) => {
+    setIsMobileMenuOpen(false);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("preferred_plan", plan);
       window.localStorage.setItem("start_payment_flow", "1");
@@ -187,10 +190,20 @@ const LandingPage: React.FC = () => {
   };
 
   const scrollToSection = (id: string) => {
+    setIsMobileMenuOpen(false);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const handleHeaderAccountClick = () => {
+    setIsMobileMenuOpen(false);
+    if (authStatus === "signed_in") {
+      router.replace("/dashboard");
+      return;
+    }
+    setShowAuthModal(true);
   };
 
   return (
@@ -229,7 +242,22 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        <nav className="landing__nav">
+        <button
+          className="landing__menu-toggle"
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <nav
+          className={`landing__nav${
+            isMobileMenuOpen ? " landing__nav--open" : ""
+          }`}
+        >
           <button onClick={() => scrollToSection("gallery")}>Examples</button>
           <button onClick={() => scrollToSection("problem")}>Problem</button>
           <button onClick={() => scrollToSection("flow")}>How it works</button>
@@ -237,14 +265,14 @@ const LandingPage: React.FC = () => {
           <button onClick={() => scrollToSection("faq")}>FAQ</button>
         </nav>
 
-        <div className="landing__actions">
+        <div
+          className={`landing__actions${
+            isMobileMenuOpen ? " landing__actions--open" : ""
+          }`}
+        >
           <button
             className="landing__link"
-            onClick={() =>
-              authStatus === "signed_in"
-                ? router.replace("/dashboard")
-                : setShowAuthModal(true)
-            }
+            onClick={handleHeaderAccountClick}
           >
             {authStatus === "signed_in" ? "Dashboard" : "Login"}
           </button>

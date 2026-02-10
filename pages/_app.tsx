@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { useRouter } from "next/router";
 import { AuthProvider } from "../providers/AuthProvider";
 import { SubscriptionProvider } from "../providers/SubscriptionProvider";
 import { createQueryClient } from "../lib/queryClient";
@@ -11,14 +12,26 @@ import "./LandingPage.scss";
 const queryClient = createQueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const isLandingPage = router.pathname === "/";
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SubscriptionProvider>
-          <div className="app-shell">
+          <div
+            className={`app-shell${
+              isLandingPage ? "" : " app-shell--mobile-blocked"
+            }`}
+          >
             <Component {...pageProps} />
           </div>
-          <div className="mobile-unsupported" role="alert">
+          <div
+            className={`mobile-unsupported${
+              isLandingPage ? "" : " mobile-unsupported--active"
+            }`}
+            role="alert"
+          >
             <div className="mobile-unsupported__card">
               <p className="mobile-unsupported__eyebrow">Not supported</p>
               <h1 className="mobile-unsupported__title">

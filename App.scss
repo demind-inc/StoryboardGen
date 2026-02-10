@@ -94,11 +94,11 @@ p {
 }
 
 @media (max-width: 768px) {
-  .app-shell {
+  .app-shell--mobile-blocked {
     display: none;
   }
 
-  .mobile-unsupported {
+  .mobile-unsupported--active {
     display: flex;
   }
 }
