@@ -104,6 +104,28 @@
     gap: 16px;
   }
 
+  &__menu-toggle {
+    display: none;
+    border: 1px solid rgba(226, 232, 240, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+
+    span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+  }
+
   &__link {
     border: 1px solid rgba(226, 232, 240, 0.14);
     background: rgba(255, 255, 255, 0.06);
@@ -1069,12 +1091,98 @@
   }
 
   @media (max-width: 768px) {
+    &__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      position: static;
+      margin: 0 12px;
+      border-radius: 14px;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    &__brand {
+      flex: 1;
+      min-width: 0;
+
+      .brand__text {
+        display: none;
+      }
+    }
+
+    &__menu-toggle {
+      display: inline-flex;
+      flex: 0 0 auto;
+    }
+
+    &__nav,
+    &__cta {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    &__nav,
+    &__actions {
+      display: none;
+    }
+
+    &__nav--open,
+    &__actions--open {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      width: 100%;
+    }
+
+    &__nav--open {
+      margin-top: 4px;
+      justify-content: flex-start;
+    }
+
+    &__actions--open {
+      margin-top: 2px;
+      justify-content: flex-start;
+    }
+
+    &__link,
+    .primary-button,
+    &__ghost-button {
+      width: 100%;
+      justify-content: center;
+    }
+
     &__main {
-      padding: 32px 16px 72px;
+      padding: 28px 14px 56px;
+    }
+
+    &__section {
+      padding: 18px;
+      margin-bottom: 28px;
+
+      &--gallery {
+        padding: 18px;
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    &__hero {
+      margin-top: 20px;
+      gap: 28px;
     }
 
     &__hero-copy h1 {
       font-size: clamp(28px, 7vw, 34px);
+    }
+
+    .mosaic__tiles {
+      grid-template-columns: 1fr;
     }
   }
 }
