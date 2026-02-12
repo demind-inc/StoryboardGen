@@ -12,6 +12,7 @@ import {
   faPlus,
   faTimes,
   faLightbulb,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTiktok, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
@@ -86,6 +87,14 @@ export const CloseIcon: React.FC<{ className?: string }> = ({ className }) => (
 export const TopicIcon: React.FC<{ className?: string }> = ({ className }) => (
   <FontAwesomeIcon
     icon={faLightbulb}
+    style={{ width: 16, height: 16 }}
+    className={className}
+  />
+);
+
+export const CheckIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faCheck}
     style={{ width: 16, height: 16 }}
     className={className}
   />

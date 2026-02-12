@@ -262,7 +262,6 @@ export const useDashboardManual = ({
 
   const removeScene = useCallback(
     (index: number) => {
-      if (promptList.length <= 1) return;
       handleRemovePrompt(index);
       setActiveSceneIndex((prev) => {
         if (prev === index) return Math.max(0, index - 1);
@@ -270,7 +269,7 @@ export const useDashboardManual = ({
         return prev;
       });
     },
-    [promptList.length, handleRemovePrompt]
+    [handleRemovePrompt]
   );
 
   const handleTopicChange = useCallback((value: string) => {
