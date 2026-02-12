@@ -315,7 +315,7 @@ export const useDashboardManual = ({
     setTopicError(null);
   }, []);
 
-  const generateTopicScenes = useCallback(async (topicOverride?: string) => {
+  const generateTopicScenes = useCallback(async (topicOverride?: string, count: number = 4) => {
     const topicToUse = topicOverride !== undefined ? topicOverride : topic;
     const trimmed = topicToUse.trim();
     if (!trimmed || isTopicGenerating) return;
@@ -324,7 +324,7 @@ export const useDashboardManual = ({
     setTopicError(null);
 
     try {
-      const suggestions = await generateSceneSuggestions(trimmed, 4);
+      const suggestions = await generateSceneSuggestions(trimmed, count);
       if (!suggestions.length) {
         throw new Error("No suggestions returned");
       }

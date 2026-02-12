@@ -6,6 +6,7 @@ import {
   CloseIcon,
   AIIcon,
   SpinnerIcon,
+  SceneIcon,
 } from "./DashboardIcons";
 import styles from "./DashboardLayout.module.scss";
 
@@ -13,7 +14,7 @@ interface AutoGenerateSceneModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialTopic?: string;
-  onGenerate: (topic: string, guideline?: string) => void;
+  onGenerate: (topic: string, count: number, guideline?: string) => void;
   isGenerating?: boolean;
   error?: string;
 }
@@ -28,6 +29,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
 }) => {
   const [topic, setTopic] = useState(initialTopic);
   const [guideline, setGuideline] = useState("");
+  const [sceneCount, setSceneCount] = useState(4);
 
   // Update topic when initialTopic changes
   useEffect(() => {
@@ -38,7 +40,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
 
   const handleGenerate = () => {
     if (topic.trim()) {
-      onGenerate(topic, guideline.trim() || undefined);
+      onGenerate(topic, sceneCount, guideline.trim() || undefined);
     }
   };
 
@@ -67,7 +69,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
             Auto-Generate Scenes
           </DialogTitle>
           <p className={styles.modalSubtitle}>
-            Enter a topic and optional guidelines to generate scenes
+            Enter a topic, number of scenes, and optional guidelines to generate scenes
             automatically.
           </p>
 
@@ -88,6 +90,30 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && topic.trim() && !isGenerating) {
                     handleGenerate();
+                  }
+                }}
+                disabled={isGenerating}
+              />
+            </div>
+
+            <div className={styles.modalField}>
+              <div className={styles.modalFieldHeader}>
+                <span className={styles.modalFieldIcon}>
+                  <SceneIcon />
+                </span>
+                <label className={styles.modalFieldLabel}>Number of Scenes</label>
+              </div>
+              <input
+                type="number"
+                className={styles.modalInput}
+                placeholder="4"
+                min="1"
+                max="10"
+                value={sceneCount}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  if (!isNaN(val) && val >= 1 && val <= 10) {
+                    setSceneCount(val);
                   }
                 }}
                 disabled={isGenerating}

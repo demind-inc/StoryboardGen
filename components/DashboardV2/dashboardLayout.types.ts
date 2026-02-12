@@ -16,7 +16,7 @@ export interface DashboardLayoutProps {
   onRemoveReference?: (id: string) => void;
   topic: string;
   onTopicChange: (value: string) => void;
-  onGenerateTopicScenes: (topicOverride?: string) => void;
+  onGenerateTopicScenes: (topicOverride?: string, count?: number) => void;
   isTopicGenerating: boolean;
   topicError?: string | null;
   scenes: Scene[];

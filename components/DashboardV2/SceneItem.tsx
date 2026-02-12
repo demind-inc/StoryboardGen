@@ -105,7 +105,9 @@ const SceneItem: React.FC<SceneItemProps> = ({
     debouncedSave();
   };
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     if (!isActive) {
       onSelect();
     }
@@ -140,14 +142,12 @@ const SceneItem: React.FC<SceneItemProps> = ({
           <textarea
             className={styles.sceneItemDescInput}
             placeholder="Scene description"
-            value={
-              isActive ? draftDescription : scene.description
-            }
+            value={isActive ? draftDescription : scene.description}
             onChange={handleDescriptionChange}
             onBlur={handleBlur}
             onFocus={handleFocus}
             onClick={(e) => e.stopPropagation()}
-            rows={1}
+            rows={2}
           />
         </div>
         <div className={styles.sceneItemActions}>
