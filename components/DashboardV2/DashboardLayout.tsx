@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import type { DashboardLayoutProps } from "./dashboardLayout.types";
 import DashboardHeader from "./DashboardHeader";
 import ReferenceCard from "./ReferenceCard";
@@ -7,7 +6,7 @@ import SceneCard from "./SceneCard";
 import GuidelinesCard from "./GuidelinesCard";
 import FooterBar from "./FooterBar";
 import ResultsCard from "./ResultsCard";
-import { TopicIcon, CustomGuidelinesIcon, CloseIcon, AIIcon } from "./DashboardIcons";
+import AutoGenerateSceneModal from "./AutoGenerateSceneModal";
 import styles from "./DashboardLayout.module.scss";
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -48,15 +47,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onBackToEditor,
 }) => {
   const [isAutoGenerateOpen, setIsAutoGenerateOpen] = useState(false);
-  const [autoTopic, setAutoTopic] = useState(topic || "");
-  const [autoGuideline, setAutoGuideline] = useState("");
 
-  const handleAutoGenerate = () => {
-    if (autoTopic.trim()) {
-      onTopicChange(autoTopic);
-      setIsAutoGenerateOpen(false);
-      onGenerateTopicScenes();
-    }
+  const handleAutoGenerate = (topic: string, guideline?: string) => {
+    onTopicChange(topic);
+    setIsAutoGenerateOpen(false);
+    onGenerateTopicScenes();
+    // TODO: Use guideline if needed in the future
   };
 
   if (results.length) {
@@ -120,93 +116,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       />
 
       {/* Auto-Generate Scenes Modal */}
-      <Dialog
-        open={isAutoGenerateOpen}
+      <AutoGenerateSceneModal
+        isOpen={isAutoGenerateOpen}
         onClose={() => setIsAutoGenerateOpen(false)}
-        className="relative z-[1000]"
-      >
-        <div className={styles.modalOverlay} aria-hidden="true" />
-        <div className={styles.modalContainer}>
-          <DialogPanel className={styles.modalPanel}>
-            <button
-              type="button"
-              className={styles.modalClose}
-              onClick={() => setIsAutoGenerateOpen(false)}
-              aria-label="Close"
-            >
-              <CloseIcon />
-            </button>
-
-            <DialogTitle className={styles.modalTitle}>
-              Auto-Generate Scenes
-            </DialogTitle>
-            <p className={styles.modalSubtitle}>
-              Enter a topic and optional guidelines to generate scenes automatically.
-            </p>
-
-            <div className={styles.modalBody}>
-              <div className={styles.modalField}>
-                <div className={styles.modalFieldHeader}>
-                  <span className={styles.modalFieldIcon}>
-                    <TopicIcon />
-                  </span>
-                  <label className={styles.modalFieldLabel}>Topic</label>
-                </div>
-                <input
-                  type="text"
-                  className={styles.modalInput}
-                  placeholder="e.g. Coffee morning routine for Gen Z"
-                  value={autoTopic}
-                  onChange={(e) => setAutoTopic(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && autoTopic.trim()) {
-                      handleAutoGenerate();
-                    }
-                  }}
-                />
-              </div>
-
-              <div className={styles.modalField}>
-                <div className={styles.modalFieldHeader}>
-                  <span className={styles.modalFieldIcon}>
-                    <CustomGuidelinesIcon />
-                  </span>
-                  <label className={styles.modalFieldLabel}>
-                    Custom Guideline (optional)
-                  </label>
-                </div>
-                <textarea
-                  className={styles.modalTextarea}
-                  placeholder="Add custom instructions for scene titles, descriptions, tone, or structure..."
-                  value={autoGuideline}
-                  onChange={(e) => setAutoGuideline(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.modalCancelBtn}
-                onClick={() => setIsAutoGenerateOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={styles.modalGenerateBtn}
-                onClick={handleAutoGenerate}
-                disabled={!autoTopic.trim() || isTopicGenerating}
-              >
-                <AIIcon />
-                <span>{isTopicGenerating ? "Generating..." : "Generate"}</span>
-              </button>
-            </div>
-
-            {topicError && <p className={styles.modalError}>{topicError}</p>}
-          </DialogPanel>
-        </div>
-      </Dialog>
+        initialTopic={topic}
+        onGenerate={handleAutoGenerate}
+        isGenerating={isTopicGenerating}
+        error={topicError ?? undefined}
+      />
     </div>
   );
 };

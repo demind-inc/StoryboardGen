@@ -113,8 +113,8 @@
   position: relative;
   width: 100%;
   max-width: 500px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: #111827;
+  border: 1px solid #1e293b;
   border-radius: 16px;
   padding: 32px;
   display: flex;
@@ -131,8 +131,8 @@
   height: 32px;
   border: none;
   border-radius: 50%;
-  background: var(--input-bg);
-  color: var(--muted-light);
+  background: #1e293b;
+  color: #94a3b8;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -140,22 +140,22 @@
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: var(--chip-border);
-    color: var(--text);
+    background: #334155;
+    color: #f8fafc;
   }
 }
 
 .modalTitle {
   font-size: var(--fs-20, 20px);
   font-weight: 600;
-  color: var(--text);
+  color: #f8fafc;
   margin: 0;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .modalSubtitle {
   font-size: var(--fs-13);
-  color: var(--muted-light);
+  color: #94a3b8;
   margin: 0;
   line-height: 1.5;
 }
@@ -185,15 +185,15 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--input-bg);
-  color: var(--accent);
+  background: #1e293b;
+  color: #f0a84b;
   flex-shrink: 0;
 }
 
 .modalFieldLabel {
   font-size: var(--fs-13);
   font-weight: 500;
-  color: var(--text);
+  color: #f8fafc;
 }
 
 .modalInput {
@@ -201,20 +201,20 @@
   height: 44px;
   padding: 0 16px;
   border-radius: 10px;
-  border: 1px solid var(--card-border);
-  background: var(--input-bg);
-  color: var(--text);
+  border: 1px solid #1e293b;
+  background: #1e293b;
+  color: #f8fafc;
   font-size: var(--fs-13);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &::placeholder {
-    color: var(--muted);
+    color: #64748b;
   }
 
   &:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #f0a84b;
     box-shadow: 0 0 0 3px rgba(240, 168, 75, 0.15);
   }
 }
@@ -224,9 +224,9 @@
   min-height: 120px;
   padding: 14px 16px;
   border-radius: 10px;
-  border: 1px solid var(--card-border);
-  background: var(--input-bg);
-  color: var(--text);
+  border: 1px solid #1e293b;
+  background: #1e293b;
+  color: #f8fafc;
   font-size: var(--fs-13);
   line-height: 1.5;
   resize: vertical;
@@ -234,12 +234,12 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &::placeholder {
-    color: var(--muted);
+    color: #64748b;
   }
 
   &:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #f0a84b;
     box-shadow: 0 0 0 3px rgba(240, 168, 75, 0.15);
   }
 }
@@ -254,17 +254,17 @@
 .modalCancelBtn {
   padding: 12px 24px;
   border-radius: 999px;
-  border: none;
-  background: var(--input-bg);
-  color: var(--text);
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #cbd5e1;
   font-size: var(--fs-13);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   &:hover {
-    background: var(--chip-border);
+    background: #334155;
   }
 }
 
@@ -275,16 +275,17 @@
   padding: 12px 24px;
   border-radius: 999px;
   border: none;
-  background: var(--accent);
+  background: #f0a84b;
   color: #111827;
   font-size: var(--fs-13);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(240, 168, 75, 0.4);
   }
 
   &:disabled {
