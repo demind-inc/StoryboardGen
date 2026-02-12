@@ -17,17 +17,17 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     handleFileUpload,
     removeReference,
     manualResults,
-    promptList,
-    displayPromptList,
+    scenes,
     activeSceneIndex,
     setActiveSceneIndex,
     addScene,
     removeScene,
-    handleSavePrompt,
+    saveScene,
     isGenerating,
     disableGenerate,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,
     handleAddReferencesFromLibrary,
@@ -88,12 +88,12 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onGenerateTopicScenes={generateTopicScenes}
         isTopicGenerating={isTopicGenerating}
         topicError={topicError}
-        promptList={displayPromptList}
+        scenes={scenes}
         activeSceneIndex={activeSceneIndex}
         onSceneSelect={setActiveSceneIndex}
         onAddScene={addScene}
         onRemoveScene={removeScene}
-        onSavePrompt={handleSavePrompt}
+        onSaveScene={saveScene}
         previewImageUrl={activePreviewUrl}
         transparentBackground={transparentBackground}
         onTransparentBackgroundChange={setTransparentBackground}
@@ -108,6 +108,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         guidelines={guidelines}
         onGuidelinesChange={setGuidelines}
         captions={captions}
+        onGenerateCaption={handleGenerateCaption}
         results={manualResults}
         onRegenerateResult={handleRegenerate}
         onBackToEditor={() => setManualResults([])}

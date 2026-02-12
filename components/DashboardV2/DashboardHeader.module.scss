@@ -3,16 +3,17 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding: 8px 0;
 }
 
 .titleArea {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .projectLabel {
-  font-size: var(--fs-13);
+  font-size: var(--fs-11);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 600;
@@ -21,14 +22,15 @@
 }
 
 .projectTitle {
-  font-size: var(--fs-30);
+  font-size: var(--fs-28, 28px);
   font-weight: 600;
   margin: 0;
+  color: var(--text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .projectTitleInput {
-  font-size: var(--fs-30);
+  font-size: var(--fs-28, 28px);
   font-weight: 600;
   margin: 0;
   color: var(--text);
@@ -37,30 +39,36 @@
   padding: 0;
   width: 100%;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
 
-.projectTitleInput:focus {
-  outline: 1px solid var(--accent);
-  outline-offset: 4px;
-  border-radius: 6px;
+  &:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 6px;
+    border-radius: 6px;
+  }
 }
 
 .projectRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .editIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
-  background: #2e2e2e;
-  color: var(--muted);
+  background: var(--input-bg);
+  color: var(--muted-light);
   border: none;
   padding: 0;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--chip-border);
+    color: var(--text);
+  }
 }

@@ -91,6 +91,7 @@ const SavedProjectDetailPage: React.FC = () => {
             isLoadingDetail={isLoadingDetail}
             onSelectProject={(projectId) => router.push("/saved/project/" + projectId)}
             userId={session?.user?.id}
+            planType={subscription.planType}
           />
         </div>
       </main>

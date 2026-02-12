@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { ReferenceImage } from "../../types";
-import { LibraryIcon } from "./DashboardIcons";
+import { LibraryIcon, ImageIcon } from "./DashboardIcons";
 import styles from "./ReferenceCard.module.scss";
 export interface ReferenceCardProps {
   references: ReferenceImage[];
@@ -30,8 +30,13 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
-        <div>
-          <h2 className={styles.cardTitle}>1. Reference Images</h2>
+        <div className={styles.cardTitleRow}>
+          <span className={styles.cardIcon}>
+            <ImageIcon />
+          </span>
+          <div>
+            <h2 className={styles.cardTitle}>Reference Images</h2>
+          </div>
         </div>
         <div className={styles.headerActions}>
           <button
@@ -106,7 +111,9 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
             className={`pointer-events-auto ${styles.expandedPanel}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <DialogTitle className={styles.srOnly}>Expanded reference image</DialogTitle>
+            <DialogTitle className={styles.srOnly}>
+              Expanded reference image
+            </DialogTitle>
             <button
               type="button"
               className={styles.expandedClose}

@@ -19,6 +19,12 @@ import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
 import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
 import { generateSceneSuggestions } from "../services/geminiService";
+import { 
+  Scene, 
+  scenesToPrompts, 
+  promptsToScenes,
+  sceneToPrompt 
+} from "../types/scene";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -145,9 +151,14 @@ export const useDashboardManual = ({
     );
   }, [hashtags]);
 
-  const promptList = useMemo(
-    () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
+  const scenes = useMemo(
+    () => promptsToScenes(manualPrompts) || [],
     [manualPrompts]
+  );
+
+  const promptList = useMemo(
+    () => scenes.map(sceneToPrompt),
+    [scenes]
   );
 
   /** At least one tab (Scene 1) for the Scene Prompts UI. */
@@ -162,9 +173,6 @@ export const useDashboardManual = ({
     }
   }, [activeSceneIndex, displayPromptList.length]);
 
-  const effectiveHashtags =
-    selectedHashtags.length > 0 ? selectedHashtags : hashtags;
-
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
@@ -174,8 +182,8 @@ export const useDashboardManual = ({
     size: "1K",
     planType,
     captionRules: rules,
+    hashtags,
     guidelines,
-    hashtags: effectiveHashtags,
     transparentBackground,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
@@ -194,6 +202,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     projectId,
   } = imageGenerationHook;
 
@@ -220,7 +229,7 @@ export const useDashboardManual = ({
     : undefined;
 
   const hasValidScenePrompts =
-    promptList.filter((p) => p.trim() !== "").length > 0;
+    scenes.some(scene => scene.title.trim() || scene.description.trim());
   const disableGenerate =
     isGenerating ||
     references.length === 0 ||
@@ -251,26 +260,52 @@ export const useDashboardManual = ({
   }, [userId]);
 
   const addScene = useCallback(() => {
-    const nextIndex = promptList.length + 1;
-    const nextPrompt = `Scene ${nextIndex} prompt`;
     setManualPrompts((prev) => {
-      const trimmed = prev.trim();
-      return trimmed ? `${trimmed}\n${nextPrompt}` : nextPrompt;
+      const currentScenes = promptsToScenes(prev);
+      const newScene: Scene = {
+        id: `scene_${currentScenes.length}`, // Index-based stable ID
+        title: "",
+        description: "",
+      };
+      const updatedScenes = [...currentScenes, newScene];
+      return scenesToPrompts(updatedScenes);
     });
-    setActiveSceneIndex(promptList.length);
-  }, [promptList.length, setManualPrompts]);
+    
+    setActiveSceneIndex(scenes.length);
+  }, [scenes.length, setManualPrompts]);
 
   const removeScene = useCallback(
     (index: number) => {
-      if (promptList.length <= 1) return;
-      handleRemovePrompt(index);
+      setManualPrompts((prev) => {
+        const currentScenes = promptsToScenes(prev);
+        const updatedScenes = currentScenes.filter((_, idx) => idx !== index);
+        return scenesToPrompts(updatedScenes);
+      });
+      
       setActiveSceneIndex((prev) => {
         if (prev === index) return Math.max(0, index - 1);
         if (prev > index) return prev - 1;
         return prev;
       });
     },
-    [promptList.length, handleRemovePrompt]
+    [setManualPrompts]
+  );
+
+  const saveScene = useCallback(
+    (index: number, title: string, description: string) => {
+      setManualPrompts((prev) => {
+        const currentScenes = promptsToScenes(prev);
+        if (index >= 0 && index < currentScenes.length) {
+          currentScenes[index] = {
+            ...currentScenes[index],
+            title,
+            description,
+          };
+        }
+        return scenesToPrompts(currentScenes);
+      });
+    },
+    [setManualPrompts]
   );
 
   const handleTopicChange = useCallback((value: string) => {
@@ -278,19 +313,29 @@ export const useDashboardManual = ({
     setTopicError(null);
   }, []);
 
-  const generateTopicScenes = useCallback(async () => {
-    const trimmed = topic.trim();
+  const generateTopicScenes = useCallback(async (topicOverride?: string, count: number = 4) => {
+    const topicToUse = topicOverride !== undefined ? topicOverride : topic;
+    const trimmed = topicToUse.trim();
     if (!trimmed || isTopicGenerating) return;
 
     setIsTopicGenerating(true);
     setTopicError(null);
 
     try {
-      const suggestions = await generateSceneSuggestions(trimmed, 4);
+      const suggestions = await generateSceneSuggestions(trimmed, count);
       if (!suggestions.length) {
         throw new Error("No suggestions returned");
       }
-      setManualPrompts(suggestions.join("\n"));
+      
+      // Convert suggestions to Scene objects with stable index-based IDs
+      const newScenes: Scene[] = suggestions.map(({ title, description }, index) => ({
+        id: `scene_${index}`,
+        title,
+        description,
+      }));
+      
+      // Convert scenes to prompt string format
+      setManualPrompts(scenesToPrompts(newScenes));
       setActiveSceneIndex(0);
     } catch (error) {
       console.error("Failed to generate scene suggestions:", error);
@@ -322,10 +367,12 @@ export const useDashboardManual = ({
     manualPrompts,
     promptList,
     displayPromptList,
+    scenes,
     editingPromptIndex,
     handleSavePrompt,
     addScene,
     removeScene,
+    saveScene,
     activeSceneIndex,
     setActiveSceneIndex,
     rulesTab,
@@ -354,6 +401,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     projectId,
     disableGenerate,
     isReferenceLibraryOpen,

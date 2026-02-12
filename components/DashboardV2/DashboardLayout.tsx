@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import type { DashboardLayoutProps } from "./dashboardLayout.types";
 import DashboardHeader from "./DashboardHeader";
 import ReferenceCard from "./ReferenceCard";
-import TopicCard from "./TopicCard";
 import SceneCard from "./SceneCard";
-import RulesCard from "./RulesCard";
 import GuidelinesCard from "./GuidelinesCard";
 import FooterBar from "./FooterBar";
 import ResultsCard from "./ResultsCard";
+import AutoGenerateSceneModal from "./AutoGenerateSceneModal";
 import styles from "./DashboardLayout.module.scss";
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -21,12 +20,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onGenerateTopicScenes,
   isTopicGenerating,
   topicError,
-  promptList,
+  scenes,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
   onRemoveScene,
-  onSavePrompt,
+  onSaveScene,
   previewImageUrl,
   isGenerating,
   disableGenerate,
@@ -41,12 +40,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   guidelines,
   onGuidelinesChange,
   captions,
+  onGenerateCaption,
   results,
   onRegenerateResult,
   allowRegenerate,
   onProjectNameChange,
   onBackToEditor,
 }) => {
+  const [isAutoGenerateOpen, setIsAutoGenerateOpen] = useState(false);
+
+  const handleAutoGenerate = (topic: string, count: number, guideline?: string) => {
+    onTopicChange(topic);
+    setIsAutoGenerateOpen(false);
+    // Pass the topic and count directly to avoid state update race condition
+    onGenerateTopicScenes(topic, count);
+    // TODO: Use guideline if needed in the future
+  };
+
   if (results.length) {
     return (
       <div className={styles.dashboard}>
@@ -56,6 +66,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onRegenerateResult={onRegenerateResult}
           onRegenerateAll={onGenerateAll}
           captions={captions}
+          onGenerateCaption={onGenerateCaption}
+          captionRuleOptions={rules}
+          captionHashtagOptions={hashtags}
           projectName={projectName}
           allowRegenerate={allowRegenerate}
           onBack={onBackToEditor}
@@ -71,6 +84,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           projectName={projectName}
           onProjectNameChange={onProjectNameChange}
         />
+        <SceneCard
+          scenes={scenes}
+          activeSceneIndex={activeSceneIndex}
+          onSceneSelect={onSceneSelect}
+          onAddScene={onAddScene}
+          onRemoveScene={onRemoveScene}
+          onSaveScene={onSaveScene}
+          previewImageUrl={previewImageUrl}
+          onOpenAutoGenerate={() => setIsAutoGenerateOpen(true)}
+          isTopicGenerating={isTopicGenerating}
+        />
         <div className={styles.contentRow}>
           <div className={styles.leftColumn}>
             <ReferenceCard
@@ -79,30 +103,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onOpenLibrary={onOpenLibrary}
               onRemoveReference={onRemoveReference}
             />
-            <TopicCard
-              topic={topic}
-              onTopicChange={onTopicChange}
-              onGenerate={onGenerateTopicScenes}
-              isGenerating={isTopicGenerating}
-              error={topicError}
-            />
-            <SceneCard
-              promptList={promptList}
-              activeSceneIndex={activeSceneIndex}
-              onSceneSelect={onSceneSelect}
-              onAddScene={onAddScene}
-              onRemoveScene={onRemoveScene}
-              onSavePrompt={onSavePrompt}
-              previewImageUrl={previewImageUrl}
-            />
           </div>
           <div className={styles.rightColumn}>
-            <RulesCard
-              rules={rules}
-              hashtags={hashtags}
-              selectedHashtags={selectedHashtags}
-              onSelectedHashtagsChange={onSelectedHashtagsChange}
-            />
             <GuidelinesCard
               guidelines={guidelines}
               onGuidelinesChange={onGuidelinesChange}
@@ -117,6 +119,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         projectName={projectName}
         transparentBackground={transparentBackground}
         onTransparentBackgroundChange={onTransparentBackgroundChange}
+      />
+
+      {/* Auto-Generate Scenes Modal */}
+      <AutoGenerateSceneModal
+        isOpen={isAutoGenerateOpen}
+        onClose={() => setIsAutoGenerateOpen(false)}
+        initialTopic={topic}
+        onGenerate={handleAutoGenerate}
+        isGenerating={isTopicGenerating}
+        error={topicError ?? undefined}
       />
     </div>
   );

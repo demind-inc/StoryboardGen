@@ -5,6 +5,7 @@ import {
   ReferenceImage,
   SceneResult,
 } from "../../types";
+import { Scene } from "../../types/scene";
 
 export interface DashboardLayoutProps {
   projectName: string;
@@ -15,15 +16,15 @@ export interface DashboardLayoutProps {
   onRemoveReference?: (id: string) => void;
   topic: string;
   onTopicChange: (value: string) => void;
-  onGenerateTopicScenes: () => void;
+  onGenerateTopicScenes: (topicOverride?: string, count?: number) => void;
   isTopicGenerating: boolean;
   topicError?: string | null;
-  promptList: string[];
+  scenes: Scene[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSavePrompt: (index: number, value: string) => void;
+  onSaveScene: (index: number, title: string, description: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;
   disableGenerate: boolean;
@@ -41,6 +42,10 @@ export interface DashboardLayoutProps {
     tiktok: string;
     instagram: string;
   };
+  onGenerateCaption?: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void> | void;
   results: SceneResult[];
   onRegenerateResult: (index: number) => void;
   allowRegenerate?: boolean;

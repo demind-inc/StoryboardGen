@@ -1,39 +1,58 @@
 .card {
-  background: var(--card-bg-secondary, #151518);
-  border: 1px solid var(--card-border-secondary, rgba(255, 255, 255, 0.06));
-  border-radius: var(--card-radius, 12px);
-  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-secondary, rgba(196, 181, 253, 0.1));
+  border-radius: var(--card-radius, 14px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
 }
 
 .cardHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid
+    var(--card-border-secondary, rgba(196, 181, 253, 0.1));
 }
 
 .cardTitleRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-purple-soft);
+  color: var(--accent-purple);
+  flex-shrink: 0;
 }
 
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   margin: 0;
+  color: var(--text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
-  font-size: var(--fs-14);
+  font-size: var(--fs-12);
   color: var(--muted);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -44,80 +63,90 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .guidelineList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   font-size: var(--fs-13);
-  color: var(--muted);
+  color: var(--muted-light);
 }
 
 .ruleSelector {
   width: 100%;
-  max-width: 160px;
-  padding: 6px 10px;
+  max-width: 200px;
+  padding: 10px 14px;
   font-size: var(--fs-12);
   color: var(--text);
-  background: #2e2e2e;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  background: var(--input-bg-dark);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 28px;
-}
+  background-position: right 12px center;
+  padding-right: 32px;
+  transition: border-color 0.15s ease;
 
-.ruleSelector:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-}
+  &:hover {
+    border-color: var(--accent-purple);
+  }
 
-.ruleSelector:focus {
-  outline: none;
-  border-color: var(--accent);
+  &:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+  }
 }
 
 .editIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
-  background: #2e2e2e;
-  color: var(--muted);
+  background: var(--input-bg);
+  color: var(--muted-light);
   border: none;
   padding: 0;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--chip-border);
+    color: var(--text);
+  }
 }
 
 .ruleTextarea {
   width: 100%;
-  min-height: 110px;
+  min-height: 120px;
   resize: none;
-  background: #2e2e2e;
-  border: 1px solid transparent;
+  background: var(--input-bg-dark);
+  border: 1px solid var(--card-border);
   border-radius: 10px;
-  padding: 12px;
-  color: var(--text);
-  font-size: var(--fs-11);
-  line-height: 1.6;
+  padding: 14px 16px;
+  color: var(--text-secondary);
+  font-size: var(--fs-12);
+  line-height: 1.7;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   white-space: pre-wrap;
   overflow: visible;
   field-sizing: content;
-}
+  transition: border-color 0.15s ease;
 
-.ruleTextarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.04);
-}
+  &:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    background: rgba(196, 181, 253, 0.03);
+  }
 
-.ruleTextarea[readonly] {
-  cursor: default;
-  opacity: 0.9;
+  &[readonly] {
+    cursor: default;
+    opacity: 0.85;
+  }
 }

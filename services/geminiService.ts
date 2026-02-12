@@ -120,7 +120,7 @@ const extractJsonArray = (rawText: string): string => {
 export async function generateSceneSuggestions(
   topic: string,
   count = 4
-): Promise<string[]> {
+): Promise<Array<{ title: string; description: string }>> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("KEY_NOT_FOUND");
@@ -128,17 +128,27 @@ export async function generateSceneSuggestions(
   const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
-You are a storyboard assistant.
-Generate ${count} concise scene prompts based on the topic below.
-Each prompt should describe a clear, concrete visual moment with a setting, subject, and action.
-Keep each prompt to 1-2 sentences.
-Avoid repeating the same setting or action.
+You are a storyboard creator for visual slideshows and presentations.
+Generate ${count} sequential scenes that tell a cohesive visual story about the topic below.
+
+Each scene should have:
+- A concise, narrative title (2-4 words) that flows sequentially (e.g., "Scene 1:", "Opening:", "The Discovery:", etc.)
+- A vivid visual description (1-2 sentences) written in present tense, focusing on what viewers will SEE in this slideshow frame - include specific visual elements, colors, composition, mood, and camera angles
+
+The scenes should:
+- Follow a natural narrative progression (beginning → middle → end)
+- Be optimized for still image generation (describe a single frozen moment, not continuous action)
+- Use cinematic, descriptive language suitable for visual storytelling
+- Create variety in composition, perspective, and mood across scenes
 
 Topic:
 ${topic}
 
-Output JSON only as an array of strings, e.g.
-["Scene 1", "Scene 2", "Scene 3", "Scene 4"]
+Output JSON only as an array of objects with "title" and "description" fields, e.g.
+[
+  {"title": "Opening Scene", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
+  {"title": "The Problem", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
+]
 `.trim();
 
   try {
@@ -160,8 +170,11 @@ Output JSON only as an array of strings, e.g.
     }
 
     return parsed
-      .map((item) => String(item || "").trim())
-      .filter((item) => item.length > 0)
+      .map((item: any) => ({
+        title: String(item.title || "").trim(),
+        description: String(item.description || "").trim(),
+      }))
+      .filter((item) => item.title.length > 0 || item.description.length > 0)
       .slice(0, count);
   } catch (error: any) {
     if (error.message?.includes("Requested entity was not found")) {
@@ -248,7 +261,6 @@ Requirements:
         .join("") || "";
 
     const parsed = JSON.parse(extractJson(responseText));
-    console.log(parsed);
     if (!Array.isArray(parsed?.tiktok) || !Array.isArray(parsed?.instagram)) {
       throw new Error("CAPTION_PARSE_ERROR");
     }
@@ -259,6 +271,88 @@ Requirements:
         String(parsed.instagram[idx] ?? "").trim()
       ),
     };
+  } catch (error: any) {
+    if (error.message?.includes("Requested entity was not found")) {
+      throw new Error("KEY_NOT_FOUND");
+    }
+    throw error;
+  }
+}
+
+export async function generateSceneCaptionsForPlatform(
+  prompts: string[],
+  references: ReferenceImage[],
+  platform: "tiktok" | "instagram",
+  rules: CaptionRules,
+  guidelines: CustomGuidelines,
+  hashtags: Hashtags = []
+): Promise<string[]> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("KEY_NOT_FOUND");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
+  const referenceParts = references.map((ref) => ({
+    inlineData: {
+      data: ref.data.split(",")[1],
+      mimeType: ref.mimeType,
+    },
+  }));
+
+  const sceneList = prompts
+    .map((scene, idx) => `${idx + 1}. ${scene}`)
+    .join("\n");
+  const platformLabel = platform === "tiktok" ? "TikTok" : "Instagram";
+  const platformRules = rules[platform]
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
+  const guidelineList = guidelines.map((group) => `- ${group.rule}`).join("\n");
+  const hashtagList = hashtags.length ? hashtags.join(" ") : "(none)";
+
+  const captionPrompt = `
+You are a social media copywriter.
+Create ${platformLabel} captions for each scene using the attached reference images for character consistency.
+
+Scenes:
+${sceneList}
+
+Global brand guidelines:
+${guidelineList || "- (none)"}
+
+${platformLabel} rules:
+${platformRules || "- (none)"}
+
+Approved hashtags:
+${hashtagList}
+
+Requirements:
+- Provide one ${platformLabel} caption per scene.
+- Keep the tone natural and platform-appropriate.
+- Output JSON only as an array of strings, e.g.
+["caption for scene 1", "caption for scene 2"]
+- The array length must match the number of scenes.
+`.trim();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: CAPTION_MODEL_NAME,
+      contents: {
+        parts: [...referenceParts, { text: captionPrompt }],
+      },
+    });
+
+    const responseText =
+      response.candidates?.[0]?.content?.parts
+        ?.map((part) => (part as any).text || "")
+        .join("") || "";
+
+    const parsed = JSON.parse(extractJsonArray(responseText));
+    if (!Array.isArray(parsed)) {
+      throw new Error("CAPTION_PARSE_ERROR");
+    }
+
+    return prompts.map((_, idx) => String(parsed[idx] ?? "").trim());
   } catch (error: any) {
     if (error.message?.includes("Requested entity was not found")) {
       throw new Error("KEY_NOT_FOUND");

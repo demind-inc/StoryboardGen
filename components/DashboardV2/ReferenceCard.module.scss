@@ -1,99 +1,133 @@
 .card {
   background: var(--card-bg);
-  border: none;
-  border-radius: var(--card-radius, 12px);
-  overflow: hidden;
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius, 14px);
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
 }
 
 .cardHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  gap: 8px;
+  padding: 10px 20px;
+  gap: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   margin: 0;
+  color: var(--text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
-  font-size: var(--fs-14);
+  font-size: var(--fs-12);
   color: var(--muted);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardBody {
-  padding: 0 20px 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .iconButton {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--accent);
   border: none;
-  color: #111111;
+  color: #111827;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .iconButtonSecondary {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: transparent;
-  border: 1px solid #31343a;
-  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--muted-light);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
-}
 
-.iconButtonSecondary:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 }
 
 .referenceGrid {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 .uploadTile {
-  width: 150px;
-  height: 150px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: #2e2e2e;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px dashed var(--chip-border);
+  border-radius: 10px;
+  background: var(--input-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  color: var(--muted);
+  gap: 8px;
+  color: var(--muted-light);
   cursor: pointer;
   font-size: var(--fs-12);
   transition: border-color 0.2s ease, background-color 0.2s ease,
@@ -101,45 +135,46 @@
 
   &:hover {
     border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 12%, #2e2e2e);
+    background: var(--accent-soft);
     color: var(--accent);
   }
 }
 
 .referenceThumbContainer {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  aspect-ratio: 1;
 }
 
 .referenceThumbWrap {
   width: 100%;
   height: 100%;
   padding: 0;
-  border: none;
-  border-radius: 8px;
+  border: 2px solid transparent;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  background: #2e2e2e;
+  background: var(--input-bg);
   display: block;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease,
+    border-color 0.15s ease;
 
   &:hover {
-    box-shadow: 0 0 0 2px var(--accent);
+    border-color: var(--accent);
     transform: scale(1.02);
   }
 }
 
 .referenceThumbRemove {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   color: #fff;
   font-size: 16px;
   line-height: 1;
@@ -150,7 +185,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: rgba(200, 60, 60, 0.9);
+    background: rgba(255, 100, 100, 0.9);
     color: #fff;
   }
 }

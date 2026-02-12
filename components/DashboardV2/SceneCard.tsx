@@ -1,95 +1,125 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { SceneIcon, AIIcon, PlusIcon, SpinnerIcon } from "./DashboardIcons";
+import SceneItem from "./SceneItem";
+import { Scene } from "../../types/scene";
 import styles from "./SceneCard.module.scss";
 
 export interface SceneCardProps {
-  promptList: string[];
+  scenes: Scene[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSavePrompt: (index: number, value: string) => void;
+  onSaveScene: (index: number, title: string, description: string) => void;
   previewImageUrl?: string;
+  onOpenAutoGenerate?: () => void;
+  isTopicGenerating?: boolean;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
-  promptList,
+  scenes,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
   onRemoveScene,
-  onSavePrompt,
+  onSaveScene,
+  onOpenAutoGenerate,
+  isTopicGenerating = false,
 }) => {
-  const canRemove = onRemoveScene != null && promptList.length > 1;
-  const [draftPrompt, setDraftPrompt] = useState(
-    promptList[activeSceneIndex] || ""
-  );
-
-  useEffect(() => {
-    setDraftPrompt(promptList[activeSceneIndex] || "");
-  }, [promptList, activeSceneIndex]);
-
-  const handleBlur = () => {
-    if (draftPrompt.trim()) {
-      onSavePrompt(activeSceneIndex, draftPrompt);
-    }
-  };
+  const canRemove = onRemoveScene != null;
+  const hasScenes = scenes.length > 0;
 
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
-        <div>
-          <h2 className={styles.cardTitle}>3. Scene Prompts</h2>
-        </div>
-      </div>
-      <div className={styles.cardBody}>
-        <div className={styles.sceneTabs}>
-          {promptList.map((_, idx) => (
-            <span key={`scene-${idx}`} className={styles.sceneTabWrap}>
-              <button
-                type="button"
-                className={`${styles.sceneTab} ${
-                  idx === activeSceneIndex ? styles.sceneTabActive : ""
-                }`}
-                onClick={() => onSceneSelect(idx)}
-              >
-                Scene {idx + 1}
-              </button>
-              {canRemove && (
-                <button
-                  type="button"
-                  className={styles.sceneTabRemove}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveScene?.(idx);
-                  }}
-                  title="Remove scene"
-                  aria-label={`Remove scene ${idx + 1}`}
-                >
-                  ×
-                </button>
-              )}
-            </span>
-          ))}
-          <button
-            type="button"
-            className={styles.sceneTab}
-            onClick={onAddScene}
-          >
-            +
-          </button>
-        </div>
-
-        <div>
-          <div className={styles.promptBox}>
-            <textarea
-              className={styles.promptTextarea}
-              placeholder="e.g. Boy studying at a cafe"
-              value={draftPrompt}
-              onChange={(event) => setDraftPrompt(event.target.value)}
-              onBlur={handleBlur}
-            />
+        <div className={styles.cardTitleRow}>
+          <span className={styles.cardIcon}>
+            <SceneIcon />
+          </span>
+          <div>
+            <h2 className={styles.cardTitle}>Scenes</h2>
           </div>
         </div>
+        {hasScenes && (
+          <div className={styles.headerActions}>
+            {onOpenAutoGenerate && (
+              <button
+                type="button"
+                className={styles.autoGenerateBtn}
+                onClick={onOpenAutoGenerate}
+                disabled={isTopicGenerating}
+              >
+                {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
+                <span>
+                  {isTopicGenerating ? "Generating..." : "Auto-Generate"}
+                </span>
+              </button>
+            )}
+            <button
+              type="button"
+              className={styles.addSceneBtn}
+              onClick={onAddScene}
+            >
+              <PlusIcon />
+              <span>Add Scene</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.cardBody}>
+        {!hasScenes ? (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyActions}>
+              <button
+                type="button"
+                className={styles.emptyActionPrimary}
+                onClick={onOpenAutoGenerate}
+                disabled={isTopicGenerating}
+              >
+                <span className={styles.emptyActionIcon}>
+                  {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
+                </span>
+                <span className={styles.emptyActionLabel}>
+                  {isTopicGenerating ? "Generating..." : "Auto-Generate Scenes"}
+                </span>
+              </button>
+              <button
+                type="button"
+                className={styles.emptyActionSecondary}
+                onClick={onAddScene}
+              >
+                <span className={styles.emptyActionIconSecondary}>
+                  <PlusIcon />
+                </span>
+                <span className={styles.emptyActionLabel}>Add Scene</span>
+              </button>
+            </div>
+            <p className={styles.emptyHint}>
+              Generate from topic and guidelines, or add scenes manually one by
+              one.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className={styles.sceneList}>
+              {scenes.map((scene, idx) => (
+                <SceneItem
+                  key={scene.id}
+                  scene={scene}
+                  index={idx}
+                  isActive={idx === activeSceneIndex}
+                  canRemove={canRemove}
+                  onSelect={() => onSceneSelect(idx)}
+                  onRemove={() => onRemoveScene?.(idx)}
+                  onSave={(title, description) =>
+                    onSaveScene(idx, title, description)
+                  }
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

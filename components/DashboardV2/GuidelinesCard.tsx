@@ -27,7 +27,9 @@ const GuidelinesCard: React.FC<GuidelinesCardProps> = ({ guidelines }) => {
       <div className={styles.cardHeader}>
         <div>
           <div className={styles.cardTitleRow}>
-            <CustomGuidelinesIcon />
+            <span className={styles.cardIcon}>
+              <CustomGuidelinesIcon />
+            </span>
             <h2 className={styles.cardTitle}>Custom Guidelines</h2>
             <button
               type="button"
