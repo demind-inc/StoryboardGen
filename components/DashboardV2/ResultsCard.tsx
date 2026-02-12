@@ -1,5 +1,5 @@
 import React from "react";
-import { SceneResult } from "../../types";
+import { CaptionRules, Hashtags, SceneResult } from "../../types";
 import Results from "../Results/Results";
 
 export interface ResultsCardProps {
@@ -8,6 +8,12 @@ export interface ResultsCardProps {
   onRegenerateResult: (index: number) => void;
   onRegenerateAll: () => void;
   captions: { tiktok: string; instagram: string };
+  onGenerateCaption?: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void> | void;
+  captionRuleOptions?: CaptionRules;
+  captionHashtagOptions?: Hashtags;
   projectName: string;
   allowRegenerate?: boolean;
   onBack?: () => void;
@@ -19,6 +25,9 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   onRegenerateResult,
   onRegenerateAll,
   captions,
+  onGenerateCaption,
+  captionRuleOptions,
+  captionHashtagOptions,
   projectName,
   allowRegenerate,
   onBack,
@@ -67,6 +76,9 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
       onRegenerateAll={onRegenerateAll}
       onDownloadAll={handleDownloadAll}
       captions={captions}
+      onGenerateCaption={onGenerateCaption}
+      captionRuleOptions={captionRuleOptions}
+      captionHashtagOptions={captionHashtagOptions}
       projectName={projectName}
       allowRegenerate={allowRegenerate}
       onBack={onBack}

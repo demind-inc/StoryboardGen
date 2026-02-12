@@ -1,12 +1,12 @@
 .panel {
-  background: #0f0f10;
+  background: #060b16;
   border-radius: 18px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-height: 100%;
-  color: #f1f1f1;
+  color: #f8fafc;
 }
 
 .header {
@@ -34,7 +34,7 @@
 .subtitle {
   margin: 0;
   font-size: var(--fs-14);
-  color: #9a9aa0;
+  color: #94a3b8;
 }
 
 .headerActions {
@@ -76,9 +76,9 @@
 
 .filterPill {
   padding: 8px 16px;
-  background: #202022;
+  background: #0b1220;
   border-radius: 999px;
-  color: #c9c9cf;
+  color: #cbd5e1;
   font-size: var(--fs-13);
 }
 
@@ -86,21 +86,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #c9c9cf;
+  color: #cbd5e1;
   font-size: var(--fs-13);
 }
 
 .sortSelect {
-  background: #1a1a1b;
-  border: 1px solid #2a2a2c;
-  color: #c9c9cf;
+  background: #111827;
+  border: 1px solid #1e293b;
+  color: #cbd5e1;
   border-radius: 999px;
   padding: 6px 12px;
   font-size: var(--fs-13);
 }
 
 .gridShell {
-  background: #1a1a1b;
+  background: #111827;
   border-radius: 14px;
   padding: 24px;
   flex: 1;
@@ -117,8 +117,8 @@
 
 .newSetCard {
   grid-column: 1 / -1;
-  background: #151516;
-  border: 1px solid #2a2a2c;
+  background: #0b1220;
+  border: 1px solid #1e293b;
   border-radius: 12px;
   padding: 16px;
   display: grid;
@@ -134,11 +134,11 @@
 }
 
 .newSetInput {
-  background: #101011;
-  border: 1px solid #333336;
+  background: #1e293b;
+  border: 1px solid #1e293b;
   border-radius: 8px;
   padding: 8px 12px;
-  color: #f1f1f1;
+  color: #f8fafc;
   font-size: var(--fs-14);
   flex: 1;
   min-width: 200px;
@@ -163,9 +163,9 @@
   border-radius: 8px;
   padding: 6px 12px;
   font-size: var(--fs-13);
-  border: 1px solid #2a2a2c;
+  border: 1px solid #1e293b;
   background: transparent;
-  color: #c9c9cf;
+  color: #cbd5e1;
   cursor: pointer;
 }
 
@@ -179,7 +179,7 @@
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid #2a2a2c;
+  border: 1px solid #1e293b;
 
   img {
     width: 100%;
@@ -206,7 +206,7 @@
 }
 
 .newSetUpload {
-  border: 1px dashed #3a3a3d;
+  border: 1px dashed #334155;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.02);
   padding: 16px;
@@ -216,7 +216,7 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  color: #c9c9cf;
+  color: #cbd5e1;
   min-height: 120px;
 
   span {
@@ -291,7 +291,7 @@
 .caption {
   margin: 0;
   font-size: var(--fs-13);
-  color: #c7c7cc;
+  color: #cbd5e1;
 }
 
 .captionRow {
@@ -302,11 +302,11 @@
 }
 
 .captionInput {
-  background: #101011;
-  border: 1px solid #333336;
+  background: #1e293b;
+  border: 1px solid #1e293b;
   border-radius: 999px;
   padding: 6px 12px;
-  color: #f1f1f1;
+  color: #f8fafc;
   font-size: var(--fs-13);
   min-width: 140px;
   flex: 1;
@@ -338,15 +338,15 @@
   border-radius: 999px;
   padding: 4px 10px;
   font-size: var(--fs-12);
-  border: 1px solid #2a2a2c;
+  border: 1px solid #1e293b;
   background: transparent;
-  color: #c9c9cf;
+  color: #cbd5e1;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    border-color: #3a3a3d;
-    color: #f1f1f1;
+    border-color: #334155;
+    color: #f8fafc;
   }
 }
 
@@ -363,7 +363,7 @@
 
 .empty {
   margin: 0;
-  color: #9a9aa0;
+  color: #94a3b8;
   font-size: var(--fs-13);
 }
 

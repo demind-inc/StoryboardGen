@@ -85,6 +85,7 @@ const SavedProjectsListPage: React.FC = () => {
             projectListLoading={isLoading}
             selectedProject={null}
             isLoadingDetail={false}
+            planType={subscription.planType}
             onSelectProject={(projectId) =>
               router.push("/saved/project/" + projectId)
             }

@@ -42,6 +42,10 @@ export interface DashboardLayoutProps {
     tiktok: string;
     instagram: string;
   };
+  onGenerateCaption?: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void> | void;
   results: SceneResult[];
   onRegenerateResult: (index: number) => void;
   allowRegenerate?: boolean;
