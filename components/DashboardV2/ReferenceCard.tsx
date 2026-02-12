@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { ReferenceImage } from "../../types";
-import { LibraryIcon } from "./DashboardIcons";
+import { LibraryIcon, ImageIcon } from "./DashboardIcons";
 import styles from "./ReferenceCard.module.scss";
 export interface ReferenceCardProps {
   references: ReferenceImage[];
@@ -30,8 +30,16 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
-        <div>
-          <h2 className={styles.cardTitle}>1. Reference Images</h2>
+        <div className={styles.cardTitleRow}>
+          <span className={styles.cardIcon}>
+            <ImageIcon />
+          </span>
+          <div>
+            <h2 className={styles.cardTitle}>Reference Images</h2>
+            <p className={styles.cardDescription}>
+              Upload style and subject references
+            </p>
+          </div>
         </div>
         <div className={styles.headerActions}>
           <button

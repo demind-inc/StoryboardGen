@@ -1,168 +1,301 @@
 .card {
   background: var(--card-bg);
-  border: none;
-  border-radius: var(--card-radius, 12px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius, 14px);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cardHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cardIcon {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  gap: 8px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-purple-soft);
+  color: var(--accent-purple);
+  flex-shrink: 0;
 }
 
 .cardTitle {
   font-size: var(--fs-15);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   margin: 0;
+  color: var(--text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .cardDescription {
   margin: 4px 0 0;
-  font-size: var(--fs-14);
+  font-size: var(--fs-12);
   color: var(--muted);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.autoGenerateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #111827;
+  font-size: var(--fs-12);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.addSceneBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent-purple);
+  color: #111827;
+  font-size: var(--fs-12);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
 }
 
 .cardBody {
   flex: 1;
   min-height: 0;
-  padding: 0 20px 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  overflow-y: auto;
 }
 
-.buttonGhost {
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: var(--fs-14);
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease,
-    background 0.15s ease, color 0.15s ease;
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: transparent;
-  border-color: #31343a;
-  color: var(--text);
-}
-
-.buttonGhost:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.sceneTabs {
+/* Empty state */
+.emptyState {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.sceneTabWrap {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  padding: 32px 24px;
+  gap: 16px;
+  height: 100%;
 }
 
-.sceneTab {
-  padding: 4px 12px;
+.emptyActions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.emptyActionPrimary,
+.emptyActionSecondary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
   border-radius: 999px;
-  border: 1px solid var(--chip-border);
-  background: var(--chip-bg);
-  color: var(--muted);
-  font-size: var(--fs-12);
+  border: none;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
 }
 
-.sceneTabActive {
-  border-color: var(--accent);
+.emptyActionPrimary {
+  background: var(--accent);
+  color: #111827;
+}
+
+.emptyActionSecondary {
+  background: var(--accent-purple);
+  color: #111827;
+}
+
+.emptyActionIcon,
+.emptyActionIconSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.emptyActionLabel {
+  font-size: var(--fs-13);
+  font-weight: 600;
+}
+
+.emptyHint {
+  font-size: var(--fs-12);
+  color: var(--muted);
+  text-align: center;
+  max-width: 500px;
+  margin: 0;
+}
+
+/* Scene list */
+.sceneList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sceneItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: var(--input-bg);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent-purple);
+  }
+}
+
+.sceneItemActive {
+  border-color: var(--accent-purple);
+  background: rgba(196, 181, 253, 0.08);
+}
+
+.sceneItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sceneItemTitle {
+  font-size: var(--fs-13);
+  font-weight: 600;
   color: var(--text);
 }
 
-.sceneTabRemove {
+.sceneItemDesc {
+  font-size: var(--fs-12);
+  color: var(--muted-light);
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sceneItemRemove {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: transparent;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   transition: color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    color: #ff7a7a;
+    background: rgba(255, 122, 122, 0.1);
+  }
 }
 
-.sceneTabRemove:hover {
-  color: var(--text);
-  background: var(--chip-bg);
+/* Prompt section */
+.promptSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .promptLabel {
-  font-size: var(--fs-14);
+  font-size: var(--fs-12);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .promptBox {
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: #2e2e2e;
-  padding: 10px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--input-bg-dark);
+  padding: 14px 16px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
 
-.promptBox:focus-within {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.2);
+  &:focus-within {
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.15);
+  }
 }
 
 .promptTextarea {
   width: 100%;
-  min-height: 110px;
-  max-height: 140px;
+  min-height: 120px;
+  max-height: 200px;
   background: transparent;
   border: none;
   resize: vertical;
   color: var(--text);
-  font-size: var(--fs-12);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-.promptTextarea:focus {
-  outline: none;
-}
-
-.promptTextarea::placeholder {
-  color: var(--muted);
-}
-
-.promptHint {
   font-size: var(--fs-13);
-  color: var(--muted);
-}
+  line-height: 1.6;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-.optionRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: var(--muted);
-  font-size: var(--fs-14);
-}
+  &:focus {
+    outline: none;
+  }
 
-.optionRow input {
-  accent-color: var(--accent);
+  &::placeholder {
+    color: var(--muted);
+  }
 }

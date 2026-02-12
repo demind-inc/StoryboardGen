@@ -7,6 +7,11 @@ import {
   faHashtag,
   faListCheck,
   faWandMagicSparkles,
+  faImage,
+  faFilm,
+  faPlus,
+  faTimes,
+  faLightbulb,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTiktok, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
@@ -42,6 +47,46 @@ export const AIIcon: React.FC<{ className?: string }> = ({ className }) => (
   <FontAwesomeIcon
     icon={faWandMagicSparkles}
     style={{ width: 18, height: 18 }}
+    className={className}
+  />
+);
+
+export const ImageIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faImage}
+    style={{ width: 18, height: 18 }}
+    className={className}
+  />
+);
+
+export const SceneIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faFilm}
+    style={{ width: 18, height: 18 }}
+    className={className}
+  />
+);
+
+export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faPlus}
+    style={{ width: 16, height: 16 }}
+    className={className}
+  />
+);
+
+export const CloseIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faTimes}
+    style={{ width: 16, height: 16 }}
+    className={className}
+  />
+);
+
+export const TopicIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faLightbulb}
+    style={{ width: 16, height: 16 }}
     className={className}
   />
 );
