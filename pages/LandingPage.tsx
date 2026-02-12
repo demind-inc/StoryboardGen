@@ -10,6 +10,7 @@ import {
 import {
   faChevronLeft,
   faChevronRight,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import useEmblaCarousel from "embla-carousel-react";
 import { useAuth } from "../providers/AuthProvider";
@@ -222,7 +223,7 @@ const LandingPage: React.FC = () => {
                 : setShowAuthModal(true)
             }
           >
-            Dashboard
+            Log in
           </button>
           <button className="landing__start" onClick={handleStart}>
             Start free
@@ -270,7 +271,11 @@ const LandingPage: React.FC = () => {
               className="landing__hero-generate"
               onClick={handleStart}
             >
-              Generate
+              <FontAwesomeIcon
+                icon={faWandMagicSparkles}
+                style={{ width: 14, height: 14 }}
+              />
+              <span>Generate</span>
             </button>
           </div>
         </section>
@@ -281,7 +286,7 @@ const LandingPage: React.FC = () => {
         >
           <div className="landing__problem-layout">
             <div className="landing__problem-left">
-              <h3>Why use Storyboardgen?</h3>
+              <h3>Why use StoryboardGen?</h3>
               <p>
                 Create consistent multi-scene visuals and personalized social
                 content—complete with captions and hashtags—from one simple
