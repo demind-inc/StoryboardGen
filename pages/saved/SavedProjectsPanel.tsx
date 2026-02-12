@@ -344,7 +344,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         captions={captions}
         results={displayResults}
         onRegenerateResult={handleRegenerateResult}
-        allowRegenerate={false}
+        allowRegenerate
         transparentBackground={true}
         onTransparentBackgroundChange={() => {}}
         hashtags={DEFAULT_HASHTAGS}
