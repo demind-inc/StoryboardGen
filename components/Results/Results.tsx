@@ -252,7 +252,7 @@ const Results: React.FC<ResultsProps> = ({
                             disabled={isGenerating || result.isLoading}
                             aria-label={`Regenerate scene ${idx + 1}`}
                           >
-                            Re-run
+                            Regenerate
                           </button>
                         )}
                         <a
