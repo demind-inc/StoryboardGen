@@ -33,6 +33,11 @@ alter table public.project_outputs add column if not exists description text;
 create index if not exists project_outputs_project_id_idx
   on public.project_outputs(project_id);
 
+-- Needed for PostgREST/Supabase upserts (on_conflict=project_id,scene_index)
+-- and for app code using `upsert(..., { onConflict: "project_id,scene_index" })`
+create unique index if not exists project_outputs_project_id_scene_index_uidx
+  on public.project_outputs(project_id, scene_index);
+
 create index if not exists projects_user_id_idx
   on public.projects(user_id);
 
@@ -78,6 +83,23 @@ create policy "Users can insert own project outputs"
     )
   );
 
+create policy "Users can update own project outputs"
+  on public.project_outputs for update
+  using (
+    exists (
+      select 1 from public.projects
+      where projects.id = project_outputs.project_id
+        and projects.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.projects
+      where projects.id = project_outputs.project_id
+        and projects.user_id = auth.uid()
+    )
+  );
+
 create policy "Users can delete own project outputs"
   on public.project_outputs for delete
   using (
@@ -98,6 +120,13 @@ on conflict (id) do nothing;
 create policy "Users can upload own project outputs"
   on storage.objects for insert
   with check (
+    bucket_id = 'project-outputs' and
+    (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Users can update own project outputs"
+  on storage.objects for update
+  using (
     bucket_id = 'project-outputs' and
     (storage.foldername(name))[1] = auth.uid()::text
   );
