@@ -134,8 +134,13 @@ const LandingPage: React.FC = () => {
   } = useAuth();
 
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedPreviews, setUploadedPreviews] = useState<
+    { url: string; name: string }[]
+  >([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewsRef = useRef<{ url: string; name: string }[]>([]);
+  previewsRef.current = uploadedPreviews;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -147,6 +152,12 @@ const LandingPage: React.FC = () => {
       setShowAuthModal(false);
     }
   }, [authStatus]);
+
+  useEffect(() => {
+    return () => {
+      previewsRef.current.forEach((p) => URL.revokeObjectURL(p.url));
+    };
+  }, []);
 
   const handleStart = () => {
     if (authStatus === "signed_in") {
@@ -173,10 +184,27 @@ const LandingPage: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadedFileName(file.name);
-    setShowAuthModal(true);
+    const fileList = e.target.files;
+    if (!fileList?.length) return;
+    const files = Array.from(fileList);
+    setUploadedPreviews((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.url));
+      return files.map((f) => ({
+        url: URL.createObjectURL(f),
+        name: f.name,
+      }));
+    });
+    setUploadedFiles(files);
+    e.target.value = "";
+  };
+
+  const removePreview = (index: number) => {
+    setUploadedPreviews((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      URL.revokeObjectURL(prev[index].url);
+      return next;
+    });
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const scrollToSection = (id: string) => {
@@ -192,6 +220,7 @@ const LandingPage: React.FC = () => {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden-input"
         onChange={handleFileChange}
       />
@@ -256,16 +285,46 @@ const LandingPage: React.FC = () => {
               <span>What do you want to create?</span>
               <textarea placeholder="Describe your story scenes, target audience, and desired outcome..." />
             </label>
-            <button
-              className="landing__upload-square"
-              onClick={handleUploadClick}
-            >
-              <span className="landing__upload-plus">+</span>
-              <span>Upload image</span>
-              {uploadedFileName && (
-                <small title={uploadedFileName}>{uploadedFileName}</small>
+            <div className="landing__upload-row">
+              <button
+                className="landing__upload-square"
+                onClick={handleUploadClick}
+              >
+                <span className="landing__upload-plus">+</span>
+                <span>Upload image{uploadedFiles.length !== 1 ? "s" : ""}</span>
+                {uploadedFiles.length > 0 && (
+                  <small title={uploadedFiles.map((f) => f.name).join(", ")}>
+                    {uploadedFiles.length} file
+                    {uploadedFiles.length !== 1 ? "s" : ""} selected
+                  </small>
+                )}
+              </button>
+              {uploadedPreviews.length > 0 && (
+                <div className="landing__upload-previews">
+                  {uploadedPreviews.map((preview, index) => (
+                    <div
+                      key={preview.url}
+                      className="landing__upload-preview"
+                      title={preview.name}
+                    >
+                      <img
+                        src={preview.url}
+                        alt={`Preview ${index + 1}`}
+                        title={preview.name}
+                      />
+                      <button
+                        type="button"
+                        className="landing__upload-preview-remove"
+                        onClick={() => removePreview(index)}
+                        aria-label={`Remove ${preview.name}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-            </button>
+            </div>
             <button
               type="button"
               className="landing__hero-generate"
