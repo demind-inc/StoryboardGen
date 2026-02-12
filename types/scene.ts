@@ -12,7 +12,8 @@ export function sceneToPrompt(scene: Scene): string {
   if (scene.title && scene.description) {
     return `${scene.title}: ${scene.description}`;
   }
-  return scene.title || scene.description || "";
+  // Return a space for empty scenes to preserve them in the conversion cycle
+  return scene.title || scene.description || " ";
 }
 
 export function scenesToPrompts(scenes: Scene[]): string {
@@ -41,9 +42,14 @@ export function promptToScene(prompt: string, id?: string): Scene {
 }
 
 export function promptsToScenes(prompts: string): Scene[] {
-  if (!prompts || !prompts.trim()) {
+  if (!prompts) {
     return [];
   }
   
-  return prompts.split("\n").map(prompt => promptToScene(prompt));
+  // Split by newlines and convert each to a scene
+  // Use index-based stable IDs (will stay consistent as long as order doesn't change)
+  return prompts.split("\n").map((prompt, index) => {
+    const id = `scene_${index}`;
+    return promptToScene(prompt, id);
+  });
 }

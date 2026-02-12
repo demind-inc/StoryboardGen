@@ -21,7 +21,6 @@ import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
 import { generateSceneSuggestions } from "../services/geminiService";
 import { 
   Scene, 
-  generateSceneId, 
   scenesToPrompts, 
   promptsToScenes,
   sceneToPrompt 
@@ -263,14 +262,13 @@ export const useDashboardManual = ({
   }, [userId]);
 
   const addScene = useCallback(() => {
-    const newScene: Scene = {
-      id: generateSceneId(),
-      title: "",
-      description: "",
-    };
-    
     setManualPrompts((prev) => {
       const currentScenes = promptsToScenes(prev);
+      const newScene: Scene = {
+        id: `scene_${currentScenes.length}`, // Index-based stable ID
+        title: "",
+        description: "",
+      };
       const updatedScenes = [...currentScenes, newScene];
       return scenesToPrompts(updatedScenes);
     });
@@ -317,8 +315,9 @@ export const useDashboardManual = ({
     setTopicError(null);
   }, []);
 
-  const generateTopicScenes = useCallback(async () => {
-    const trimmed = topic.trim();
+  const generateTopicScenes = useCallback(async (topicOverride?: string) => {
+    const topicToUse = topicOverride !== undefined ? topicOverride : topic;
+    const trimmed = topicToUse.trim();
     if (!trimmed || isTopicGenerating) return;
 
     setIsTopicGenerating(true);
@@ -330,9 +329,9 @@ export const useDashboardManual = ({
         throw new Error("No suggestions returned");
       }
       
-      // Convert suggestions to Scene objects with IDs
-      const newScenes: Scene[] = suggestions.map(({ title, description }) => ({
-        id: generateSceneId(),
+      // Convert suggestions to Scene objects with stable index-based IDs
+      const newScenes: Scene[] = suggestions.map(({ title, description }, index) => ({
+        id: `scene_${index}`,
         title,
         description,
       }));
