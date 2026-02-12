@@ -2,7 +2,6 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { useRouter } from "next/router";
 import { AuthProvider } from "../providers/AuthProvider";
 import { SubscriptionProvider } from "../providers/SubscriptionProvider";
 import { createQueryClient } from "../lib/queryClient";
