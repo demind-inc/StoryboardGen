@@ -251,8 +251,7 @@ export const useDashboardManual = ({
   }, [userId]);
 
   const addScene = useCallback(() => {
-    const nextIndex = promptList.length + 1;
-    const nextPrompt = `Scene ${nextIndex} prompt`;
+    const nextPrompt = "";
     setManualPrompts((prev) => {
       const trimmed = prev.trim();
       return trimmed ? `${trimmed}\n${nextPrompt}` : nextPrompt;
