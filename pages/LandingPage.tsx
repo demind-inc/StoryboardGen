@@ -196,7 +196,7 @@ const LandingPage: React.FC = () => {
   }, [fadeInRefs]);
 
   const handleStart = () => {
-    setIsMobileMenuOpen(false);
+    setMobileMenuOpen(false);
     if (authStatus === "signed_in") {
       router.push("/dashboard");
       return;
@@ -205,7 +205,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handlePlanStart = (plan: SubscriptionPlan) => {
-    setIsMobileMenuOpen(false);
+    setMobileMenuOpen(false);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("preferred_plan", plan);
       window.localStorage.setItem("start_payment_flow", "1");
@@ -246,7 +246,7 @@ const LandingPage: React.FC = () => {
   };
 
   const scrollToSection = (id: string) => {
-    setIsMobileMenuOpen(false);
+    setMobileMenuOpen(false);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -254,7 +254,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handleHeaderAccountClick = () => {
-    setIsMobileMenuOpen(false);
+    setMobileMenuOpen(false);
     if (authStatus === "signed_in") {
       router.replace("/dashboard");
       return;
