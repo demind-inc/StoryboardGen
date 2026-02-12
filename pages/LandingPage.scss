@@ -117,11 +117,15 @@
   }
 
   &__hero {
-    background: #111827;
+    background: linear-gradient(45deg, #111827, #221827);
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.06);
     padding: 34px 40px;
-    animation: landing-fade-in 0.5s ease forwards;
+    opacity: 0;
+
+    &.landing__in-view {
+      animation: landing-fade-in 0.5s ease forwards;
+    }
 
     h1 {
       text-align: center;
@@ -372,22 +376,9 @@
   &__section {
     margin-top: 120px;
     opacity: 0;
-    animation: landing-fade-in 0.5s ease forwards;
 
-    &--problem {
-      animation-delay: 0.08s;
-    }
-
-    &--flow {
-      animation-delay: 0.16s;
-    }
-
-    &--pricing {
-      animation-delay: 0.24s;
-    }
-
-    &--faq {
-      animation-delay: 0.32s;
+    &.landing__in-view {
+      animation: landing-fade-in 0.5s ease forwards;
     }
 
     h2 {
@@ -522,7 +513,10 @@
   }
 
   &__showcase {
-    background: rgba(196, 181, 253, 0.2);
+    background: linear-gradient(
+      rgba(196, 181, 253, 0.2),
+      rgba(111, 181, 253, 0.4)
+    );
     border-radius: 24px;
     padding: 22px;
     display: grid;

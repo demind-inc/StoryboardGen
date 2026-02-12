@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -142,6 +142,22 @@ const LandingPage: React.FC = () => {
   const previewsRef = useRef<{ url: string; name: string }[]>([]);
   previewsRef.current = uploadedPreviews;
 
+  const heroRef = useRef<HTMLElement>(null);
+  const sectionProblemRef = useRef<HTMLElement>(null);
+  const sectionFlowRef = useRef<HTMLElement>(null);
+  const sectionPricingRef = useRef<HTMLElement>(null);
+  const sectionFaqRef = useRef<HTMLElement>(null);
+  const fadeInRefs = useMemo(
+    () => [
+      heroRef,
+      sectionProblemRef,
+      sectionFlowRef,
+      sectionPricingRef,
+      sectionFaqRef,
+    ],
+    []
+  );
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     align: "start",
@@ -158,6 +174,23 @@ const LandingPage: React.FC = () => {
       previewsRef.current.forEach((p) => URL.revokeObjectURL(p.url));
     };
   }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("landing__in-view");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    fadeInRefs.forEach((ref) => {
+      if (ref.current) observer.observe(ref.current);
+    });
+    return () => observer.disconnect();
+  }, [fadeInRefs]);
 
   const handleStart = () => {
     if (authStatus === "signed_in") {
@@ -261,7 +294,7 @@ const LandingPage: React.FC = () => {
       </header>
 
       <main className="landing__main">
-        <section className="landing__hero">
+        <section className="landing__hero" ref={heroRef}>
           <p className="landing__hero-badge">
             Try our new AI storyboard generator
           </p>
@@ -341,6 +374,7 @@ const LandingPage: React.FC = () => {
 
         <section
           id="problem"
+          ref={sectionProblemRef}
           className="landing__section landing__section--problem"
         >
           <div className="landing__problem-layout">
@@ -371,7 +405,11 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section id="flow" className="landing__section landing__section--flow">
+        <section
+          id="flow"
+          ref={sectionFlowRef}
+          className="landing__section landing__section--flow"
+        >
           <div className="landing__section-head landing__section-head--flow">
             <h2 className="landing__flow-title">
               One tool, endless possibilities
@@ -418,6 +456,7 @@ const LandingPage: React.FC = () => {
 
         <section
           id="pricing"
+          ref={sectionPricingRef}
           className="landing__section landing__section--pricing"
         >
           <div className="landing__section-head">
@@ -449,7 +488,11 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section id="faq" className="landing__section landing__section--faq">
+        <section
+          id="faq"
+          ref={sectionFaqRef}
+          className="landing__section landing__section--faq"
+        >
           <div className="landing__section-head">
             <p className="landing__eyebrow">FAQ</p>
             <h2>Quick Answers</h2>
