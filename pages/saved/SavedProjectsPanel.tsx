@@ -6,13 +6,19 @@ import {
   DEFAULT_CUSTOM_GUIDELINES,
   DEFAULT_HASHTAGS,
 } from "../../services/captionSettingsService";
-import type { ProjectDetail, ProjectSummary, SceneResult } from "../../types";
+import type {
+  ProjectDetail,
+  ProjectSummary,
+  ReferenceImage,
+  SceneResult,
+} from "../../types";
 import {
   generateCharacterScene,
   generateSceneCaptions,
   generateSceneSummaries,
 } from "../../services/geminiService";
 import { useSaveProjectOutput } from "../../hooks/useProjectService";
+import { urlToReferenceImage } from "../../hooks/useImageGeneration";
 import styles from "./SavedProjectsPanel.module.scss";
 
 const formatShortDate = (value?: string | null) => {
@@ -104,7 +110,22 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     );
 
     try {
-      const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+      const currentImageUrl = displayResults[index]?.imageUrl;
+      let referencesToUse: ReferenceImage[] = [];
+      if (currentImageUrl) {
+        try {
+          const previousRef = await urlToReferenceImage(currentImageUrl);
+          referencesToUse = [previousRef];
+        } catch (e) {
+          console.error("Failed to use previous image as reference", e);
+        }
+      }
+      const imageUrl = await generateCharacterScene(
+        prompt,
+        referencesToUse,
+        "1K",
+        []
+      );
       let summaryUpdate: { title?: string; description?: string } | undefined;
       try {
         const summaryResponse = await generateSceneSummaries([prompt], []);
@@ -189,7 +210,22 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         continue;
       }
       try {
-        const imageUrl = await generateCharacterScene(prompt, [], "1K", []);
+        const currentImageUrl = nextResults[i]?.imageUrl;
+        let referencesToUse: ReferenceImage[] = [];
+        if (currentImageUrl) {
+          try {
+            const previousRef = await urlToReferenceImage(currentImageUrl);
+            referencesToUse = [previousRef];
+          } catch (e) {
+            console.error("Failed to use previous image as reference", e);
+          }
+        }
+        const imageUrl = await generateCharacterScene(
+          prompt,
+          referencesToUse,
+          "1K",
+          []
+        );
         let summaryUpdate: { title?: string; description?: string } | undefined;
         try {
           const summaryResponse = await generateSceneSummaries([prompt], []);
@@ -344,7 +380,7 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         captions={captions}
         results={displayResults}
         onRegenerateResult={handleRegenerateResult}
-        allowRegenerate={false}
+        allowRegenerate
         transparentBackground={true}
         onTransparentBackgroundChange={() => {}}
         hashtags={DEFAULT_HASHTAGS}

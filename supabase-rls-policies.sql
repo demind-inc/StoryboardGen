@@ -9,6 +9,14 @@ alter table public.reference_library enable row level security;
 alter table public.prompt_library enable row level security;
 alter table public.caption_settings enable row level security;
 
+-- Projects & outputs (see supabase-projects.sql for table definitions)
+alter table public.projects enable row level security;
+alter table public.project_outputs enable row level security;
+
+-- Upsert support: required for on_conflict=project_id,scene_index
+create unique index if not exists project_outputs_project_id_scene_index_uidx
+  on public.project_outputs(project_id, scene_index);
+
 -- Profiles policies: users can read/update their own profile
 create policy "Users can view own profile"
   on public.profiles for select

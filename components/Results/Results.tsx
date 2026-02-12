@@ -240,39 +240,55 @@ const Results: React.FC<ResultsProps> = ({
                           </>
                         )}
                       </div>
-                      <a
-                        className={`${styles.downloadButton} ${
-                          !hasImage || isGenerating
-                            ? styles.downloadButtonDisabled
-                            : ""
-                        }`}
-                        href={result.imageUrl || "#"}
-                        download={`scene-${idx + 1}.png`}
-                        aria-disabled={!hasImage || isGenerating}
-                        aria-label={`Download scene ${idx + 1}`}
-                        onClick={(event) => {
-                          if (!hasImage || isGenerating) {
-                            event.preventDefault();
-                          }
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
+                      <div className={styles.sceneHeaderActions}>
+                        {allowRegenerate && onRegenerate && (
+                          <button
+                            className={`${styles.regenerateButton} ${
+                              isGenerating || result.isLoading
+                                ? styles.regenerateButtonDisabled
+                                : ""
+                            }`}
+                            onClick={() => onRegenerate(idx)}
+                            disabled={isGenerating || result.isLoading}
+                            aria-label={`Regenerate scene ${idx + 1}`}
+                          >
+                            Re-run
+                          </button>
+                        )}
+                        <a
+                          className={`${styles.downloadButton} ${
+                            !hasImage || isGenerating
+                              ? styles.downloadButtonDisabled
+                              : ""
+                          }`}
+                          href={result.imageUrl || "#"}
+                          download={`scene-${idx + 1}.png`}
+                          aria-disabled={!hasImage || isGenerating}
+                          aria-label={`Download scene ${idx + 1}`}
+                          onClick={(event) => {
+                            if (!hasImage || isGenerating) {
+                              event.preventDefault();
+                            }
+                          }}
                         >
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                          <polyline points="7 10 12 15 17 10" />
-                          <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                      </a>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                     {result.description && (
                       <div className={styles.sceneDescription}>

@@ -59,6 +59,28 @@ interface UseImageGenerationReturn {
 
 const FREE_CREDIT_CAP = 3;
 
+/** Convert an image URL (data, blob, or https) to ReferenceImage for API use. */
+export async function urlToReferenceImage(url: string): Promise<ReferenceImage> {
+  if (url.startsWith("data:")) {
+    const match = url.match(/^data:(image\/[^;]+);base64,/);
+    return {
+      id: "previous",
+      data: url,
+      mimeType: match ? match[1] : "image/png",
+    };
+  }
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const mimeType = blob.type || "image/png";
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+  return { id: "previous", data: dataUrl, mimeType };
+}
+
 export const useImageGeneration = ({
   mode,
   userId,
@@ -249,9 +271,19 @@ export const useImageGeneration = ({
     }
 
     try {
+      // When rerunning, pass the current result image as reference for consistency
+      let referencesToUse = references;
+      if (targetResult.imageUrl) {
+        try {
+          const previousRef = await urlToReferenceImage(targetResult.imageUrl);
+          referencesToUse = [previousRef, ...references];
+        } catch (e) {
+          console.error("Failed to use previous image as reference", e);
+        }
+      }
       const imageUrl = await generateCharacterScene(
         targetResult.prompt,
-        references,
+        referencesToUse,
         size,
         guidelines,
         { transparentBackground }
@@ -279,7 +311,7 @@ export const useImageGeneration = ({
       try {
         const captionResponse = await generateSceneCaptions(
           [targetResult.prompt],
-          references,
+          referencesToUse,
           captionRules,
           guidelines,
           hashtags
