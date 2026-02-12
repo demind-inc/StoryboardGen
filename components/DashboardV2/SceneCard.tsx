@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { SceneIcon, AIIcon, PlusIcon, CloseIcon } from "./DashboardIcons";
+import React from "react";
+import {
+  SceneIcon,
+  AIIcon,
+  PlusIcon,
+  SpinnerIcon,
+} from "./DashboardIcons";
+import SceneItem from "./SceneItem";
 import styles from "./SceneCard.module.scss";
 
 export interface SceneCardProps {
@@ -11,6 +17,7 @@ export interface SceneCardProps {
   onSavePrompt: (index: number, value: string) => void;
   previewImageUrl?: string;
   onOpenAutoGenerate?: () => void;
+  isTopicGenerating?: boolean;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
@@ -21,52 +28,10 @@ const SceneCard: React.FC<SceneCardProps> = ({
   onRemoveScene,
   onSavePrompt,
   onOpenAutoGenerate,
+  isTopicGenerating = false,
 }) => {
   const canRemove = onRemoveScene != null;
   const hasScenes = promptList.some((p) => p.trim().length > 0);
-
-  // Parse the current prompt to extract title and description
-  const parsePrompt = (
-    prompt: string
-  ): { title: string; description: string } => {
-    if (!prompt) return { title: "", description: "" };
-
-    // Check if prompt has the format "Title: Description"
-    const separatorIndex = prompt.indexOf(": ");
-    if (separatorIndex > 0) {
-      return {
-        title: prompt.substring(0, separatorIndex).trim(),
-        description: prompt.substring(separatorIndex + 2).trim(),
-      };
-    }
-
-    // If no separator, treat entire prompt as description
-    return { title: "", description: prompt.trim() };
-  };
-
-  const currentPrompt = promptList[activeSceneIndex] || "";
-  const parsed = parsePrompt(currentPrompt);
-
-  const [draftTitle, setDraftTitle] = useState(parsed.title);
-  const [draftDescription, setDraftDescription] = useState(parsed.description);
-
-  useEffect(() => {
-    const parsed = parsePrompt(promptList[activeSceneIndex] || "");
-    setDraftTitle(parsed.title);
-    setDraftDescription(parsed.description);
-  }, [promptList, activeSceneIndex]);
-
-  const savePrompt = () => {
-    // Combine title and description
-    const prompt =
-      draftTitle.trim() && draftDescription.trim()
-        ? `${draftTitle.trim()}: ${draftDescription.trim()}`
-        : draftTitle.trim() || draftDescription.trim();
-
-    if (prompt) {
-      onSavePrompt(activeSceneIndex, prompt);
-    }
-  };
 
   return (
     <section className={styles.card}>
@@ -89,9 +54,12 @@ const SceneCard: React.FC<SceneCardProps> = ({
                 type="button"
                 className={styles.autoGenerateBtn}
                 onClick={onOpenAutoGenerate}
+                disabled={isTopicGenerating}
               >
-                <AIIcon />
-                <span>Auto-Generate</span>
+                {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
+                <span>
+                  {isTopicGenerating ? "Generating..." : "Auto-Generate"}
+                </span>
               </button>
             )}
             <button
@@ -114,12 +82,13 @@ const SceneCard: React.FC<SceneCardProps> = ({
                 type="button"
                 className={styles.emptyActionPrimary}
                 onClick={onOpenAutoGenerate}
+                disabled={isTopicGenerating}
               >
                 <span className={styles.emptyActionIcon}>
-                  <AIIcon />
+                  {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
                 </span>
                 <span className={styles.emptyActionLabel}>
-                  Auto-Generate Scenes
+                  {isTopicGenerating ? "Generating..." : "Auto-Generate Scenes"}
                 </span>
               </button>
               <button
@@ -141,80 +110,18 @@ const SceneCard: React.FC<SceneCardProps> = ({
         ) : (
           <>
             <div className={styles.sceneList}>
-              {promptList.map((prompt, idx) => {
-                const parsedItem = parsePrompt(prompt);
-                const isActive = idx === activeSceneIndex;
-
-                return (
-                  <div
-                    key={`scene-${idx}`}
-                    className={`${styles.sceneItem} ${
-                      isActive ? styles.sceneItemActive : ""
-                    }`}
-                  >
-                    <div className={styles.sceneItemHeader}>
-                      <div className={styles.sceneItemContent}>
-                        <input
-                          type="text"
-                          className={styles.sceneItemTitleInput}
-                          placeholder={`Scene ${idx + 1}`}
-                          value={isActive ? draftTitle : parsedItem.title}
-                          onChange={(e) => {
-                            if (idx !== activeSceneIndex) {
-                              onSceneSelect(idx);
-                            }
-                            setDraftTitle(e.target.value);
-                          }}
-                          onBlur={savePrompt}
-                          onFocus={() => {
-                            if (idx !== activeSceneIndex) {
-                              onSceneSelect(idx);
-                            }
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <textarea
-                          className={styles.sceneItemDescInput}
-                          placeholder={`Scene ${idx + 1} prompt`}
-                          value={
-                            isActive ? draftDescription : parsedItem.description
-                          }
-                          onChange={(e) => {
-                            if (idx !== activeSceneIndex) {
-                              onSceneSelect(idx);
-                            }
-                            setDraftDescription(e.target.value);
-                          }}
-                          onBlur={savePrompt}
-                          onFocus={() => {
-                            if (idx !== activeSceneIndex) {
-                              onSceneSelect(idx);
-                            }
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          rows={2}
-                        />
-                      </div>
-                      <div className={styles.sceneItemActions}>
-                        {canRemove && (
-                          <button
-                            type="button"
-                            className={styles.closeBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onRemoveScene?.(idx);
-                            }}
-                            title="Remove scene"
-                            aria-label={`Remove scene ${idx + 1}`}
-                          >
-                            <CloseIcon />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {promptList.map((prompt, idx) => (
+                <SceneItem
+                  key={`${idx}-${prompt.substring(0, 50)}`}
+                  prompt={prompt}
+                  index={idx}
+                  isActive={idx === activeSceneIndex}
+                  canRemove={canRemove}
+                  onSelect={() => onSceneSelect(idx)}
+                  onRemove={() => onRemoveScene?.(idx)}
+                  onSave={(newPrompt) => onSavePrompt(idx, newPrompt)}
+                />
+              ))}
             </div>
           </>
         )}

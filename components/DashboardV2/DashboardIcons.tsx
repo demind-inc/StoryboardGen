@@ -13,6 +13,7 @@ import {
   faTimes,
   faLightbulb,
   faCheck,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTiktok, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
@@ -97,5 +98,14 @@ export const CheckIcon: React.FC<{ className?: string }> = ({ className }) => (
     icon={faCheck}
     style={{ width: 16, height: 16 }}
     className={className}
+  />
+);
+
+export const SpinnerIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <FontAwesomeIcon
+    icon={faSpinner}
+    style={{ width: 16, height: 16 }}
+    className={className}
+    spin
   />
 );

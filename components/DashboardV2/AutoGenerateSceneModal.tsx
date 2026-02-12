@@ -5,6 +5,7 @@ import {
   CustomGuidelinesIcon,
   CloseIcon,
   AIIcon,
+  SpinnerIcon,
 } from "./DashboardIcons";
 import styles from "./DashboardLayout.module.scss";
 
@@ -99,7 +100,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
                   <CustomGuidelinesIcon />
                 </span>
                 <label className={styles.modalFieldLabel}>
-                  Custom Guideline (optional)
+                  Guideline (optional)
                 </label>
               </div>
               <textarea
@@ -127,7 +128,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
               onClick={handleGenerate}
               disabled={!topic.trim() || isGenerating}
             >
-              <AIIcon />
+              {isGenerating ? <SpinnerIcon /> : <AIIcon />}
               <span>{isGenerating ? "Generating..." : "Generate"}</span>
             </button>
           </div>

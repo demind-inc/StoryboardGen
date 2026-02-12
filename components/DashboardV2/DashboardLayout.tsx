@@ -88,6 +88,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onSavePrompt={onSavePrompt}
           previewImageUrl={previewImageUrl}
           onOpenAutoGenerate={() => setIsAutoGenerateOpen(true)}
+          isTopicGenerating={isTopicGenerating}
         />
         <div className={styles.contentRow}>
           <div className={styles.leftColumn}>
