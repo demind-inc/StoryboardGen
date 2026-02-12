@@ -7719,7 +7719,7 @@
     {
       "type": "frame",
       "id": "BdgW3",
-      "x": 98,
+      "x": 99,
       "y": 2285,
       "name": "landing-page",
       "clip": true,
@@ -7743,7 +7743,7 @@
             "position": 0.52
           },
           {
-            "color": "#14142B",
+            "color": "#020209",
             "position": 1
           }
         ]
@@ -7864,7 +7864,7 @@
           "y": 96,
           "name": "hero-light-shell",
           "width": 1280,
-          "height": 624,
+          "height": 664,
           "fill": "#111827",
           "cornerRadius": 24
         },
@@ -7932,6 +7932,32 @@
         },
         {
           "type": "frame",
+          "id": "LpV3",
+          "x": 381,
+          "y": 432,
+          "name": "value3",
+          "width": 575,
+          "height": 288,
+          "fill": "#1f1d23ff",
+          "cornerRadius": 14
+        },
+        {
+          "type": "text",
+          "id": "LpV3t",
+          "x": 507.57291666666663,
+          "y": 458,
+          "name": "value3Title",
+          "fill": "#F8FAFC",
+          "textGrowth": "fixed-width",
+          "width": 325,
+          "content": "What do you want to create?",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
           "id": "LpV2",
           "x": 720,
           "y": 270,
@@ -7956,6 +7982,21 @@
         },
         {
           "type": "text",
+          "id": "LpV3b",
+          "x": 456.57291666666663,
+          "y": 490,
+          "name": "value3Body",
+          "fill": "#94A3B8",
+          "textGrowth": "fixed-width",
+          "width": 425,
+          "content": "Describe your story scenes, target audience, and desired outcome...",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
           "id": "LpV2b",
           "x": 810,
           "y": 343,
@@ -7965,41 +8006,6 @@
           "textAlign": "center",
           "fontFamily": "Inter",
           "fontSize": 16,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "frame",
-          "id": "LpV3",
-          "x": 220,
-          "y": 432,
-          "name": "value3",
-          "width": 960,
-          "height": 264,
-          "fill": "#0B1220",
-          "cornerRadius": 14
-        },
-        {
-          "type": "text",
-          "id": "LpV3t",
-          "x": 246,
-          "y": 458,
-          "name": "value3Title",
-          "fill": "#F8FAFC",
-          "content": "What do you want to create?",
-          "fontFamily": "Inter",
-          "fontSize": 14,
-          "fontWeight": "600"
-        },
-        {
-          "type": "text",
-          "id": "LpV3b",
-          "x": 246,
-          "y": 490,
-          "name": "value3Body",
-          "fill": "#94A3B8",
-          "content": "Describe your story scenes, target audience, and desired outcome...",
-          "fontFamily": "Inter",
-          "fontSize": 13,
           "fontWeight": "normal"
         },
         {
@@ -8016,13 +8022,13 @@
         {
           "type": "text",
           "id": "LpHw2",
-          "x": 278,
-          "y": 1431,
+          "x": 384,
+          "y": 1459,
           "name": "howTitle",
           "fill": "#F8FAFC",
           "content": "One tool, endless possibilities",
           "fontFamily": "Inter",
-          "fontSize": 64,
+          "fontSize": 42,
           "fontWeight": "700"
         },
         {
@@ -8050,14 +8056,14 @@
         {
           "type": "text",
           "id": "LpH1t",
-          "x": 127,
-          "y": 1552,
+          "x": 300,
+          "y": 1547,
           "name": "step1Title",
           "fill": "#A3B1C6",
           "content": "StoryboardGen helps you create and grow with AI across social media, faster and simpler.",
           "textAlign": "center",
           "fontFamily": "Inter",
-          "fontSize": 26,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -8793,7 +8799,7 @@
           "fill": "#F8FAFC",
           "content": "Why use Storyboardgen?",
           "fontFamily": "Inter",
-          "fontSize": 34,
+          "fontSize": 32,
           "fontWeight": "700"
         },
         {
@@ -8808,17 +8814,17 @@
           "height": 101,
           "content": "Create consistent multi-scene visuals and personalized social content—complete with captions and hashtags—from one simple prompt.",
           "fontFamily": "Inter",
-          "fontSize": 20,
+          "fontSize": 18,
           "fontWeight": "normal"
         },
         {
           "type": "frame",
           "id": "Bx21L",
           "x": 64,
-          "y": 1192,
+          "y": 1196,
           "name": "problem-left-cta",
-          "width": 309,
-          "height": 64,
+          "width": 243,
+          "height": 51,
           "fill": "#f0a84b",
           "cornerRadius": 32
         },
@@ -8831,7 +8837,7 @@
           "fill": "#000000",
           "content": "Get started for free ->",
           "fontFamily": "Inter",
-          "fontSize": 24,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -8842,7 +8848,7 @@
           "name": "problem-row-1",
           "width": 628,
           "height": 114,
-          "fill": "#0F172A",
+          "fill": "#0a142aff",
           "cornerRadius": 12
         },
         {
@@ -8866,7 +8872,7 @@
           "fill": "#F8FAFC",
           "content": "Scene-consistent characters and visuals",
           "fontFamily": "Inter",
-          "fontSize": 24,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -8901,7 +8907,7 @@
           "fill": "#F8FAFC",
           "content": "Fast multi-image generation with one prompt",
           "fontFamily": "Inter",
-          "fontSize": 24,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -8915,7 +8921,7 @@
           "width": 562,
           "content": "Describe your full story in one prompt and create a complete, aligned image set instantly.\n",
           "fontFamily": "Inter",
-          "fontSize": 18,
+          "fontSize": 16,
           "fontWeight": "normal"
         },
         {
@@ -8950,7 +8956,7 @@
           "fill": "#F8FAFC",
           "content": "Simple, efficient workflow",
           "fontFamily": "Inter",
-          "fontSize": 24,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -8964,7 +8970,7 @@
           "width": 562,
           "content": "Upload references, list scenes, and generate — fast and streamlined.\n",
           "fontFamily": "Inter",
-          "fontSize": 18,
+          "fontSize": 16,
           "fontWeight": "normal"
         },
         {
@@ -8999,7 +9005,7 @@
           "fill": "#F8FAFC",
           "content": "Personalized social content & slideshows",
           "fontFamily": "Inter",
-          "fontSize": 24,
+          "fontSize": 18,
           "fontWeight": "600"
         },
         {
@@ -9013,7 +9019,7 @@
           "width": 522,
           "content": "Create customized multi-image posts and slideshows, complete with captions and relevant hashtags.\n",
           "fontFamily": "Inter",
-          "fontSize": 18,
+          "fontSize": 16,
           "fontWeight": "normal"
         },
         {
@@ -9065,8 +9071,8 @@
         {
           "type": "group",
           "id": "ukC5O",
-          "x": 242,
-          "y": 548,
+          "x": 476.17708333333326,
+          "y": 518,
           "children": [
             {
               "type": "frame",
@@ -9074,7 +9080,7 @@
               "x": 0,
               "y": 0,
               "name": "value4",
-              "width": 124,
+              "width": 393,
               "height": 124,
               "fill": "#1E293B",
               "cornerRadius": 12,
@@ -9087,11 +9093,14 @@
             {
               "type": "text",
               "id": "4y72i",
-              "x": 51,
+              "x": 161.63709677419422,
               "y": 39,
               "name": "upload-plus-icon",
               "fill": "#F0A84B",
+              "textGrowth": "fixed-width",
+              "width": 53.87903225806453,
               "content": "+",
+              "textAlign": "center",
               "fontFamily": "Inter",
               "fontSize": 24,
               "fontWeight": "700"
@@ -9099,10 +9108,12 @@
             {
               "type": "text",
               "id": "LpV4t",
-              "x": 24,
+              "x": 64.06451612903243,
               "y": 73,
               "name": "value4Title",
               "fill": "#E2E8F0",
+              "textGrowth": "fixed-width",
+              "width": 253.54838709677418,
               "content": "Upload image",
               "textAlign": "center",
               "fontFamily": "Inter",
@@ -9122,8 +9133,33 @@
           "width": 562,
           "content": "Upload references once and keep characters, outfits, and visual style consistent across every scene.\n",
           "fontFamily": "Inter",
-          "fontSize": 18,
+          "fontSize": 16,
           "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "1NeHM",
+          "x": 574,
+          "y": 658,
+          "name": "hero-generate-btn",
+          "width": 200,
+          "height": 38,
+          "fill": "#F0A84B",
+          "cornerRadius": 12,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "JOLLo",
+              "name": "heroGenerateBtnText",
+              "fill": "#1A1204",
+              "content": "Generate",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "600"
+            }
+          ]
         }
       ]
     },

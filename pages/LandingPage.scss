@@ -9,11 +9,11 @@
 
   &__header {
     position: sticky;
-    top: 12px;
+    top: 0;
     z-index: 20;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 16px 24px;
+    padding: 16px;
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: 20px;
@@ -29,14 +29,14 @@
     gap: 10px;
     font-weight: 600;
     font-size: 18px;
+  }
 
-    &-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: #f0a84b;
-      display: inline-block;
-    }
+  &__brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: contain;
+    display: block;
   }
 
   &__nav {
@@ -48,10 +48,11 @@
       border: 0;
       background: transparent;
       color: #94a3b8;
+      font-size: 14px;
       padding: 8px 12px;
       border-radius: 10px;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 400;
     }
   }
 
@@ -84,7 +85,7 @@
   &__main {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 24px 24px 96px;
+    padding: 24px 48px 96px;
   }
 
   &__hero {
@@ -96,7 +97,7 @@
     h1 {
       text-align: center;
       margin: 0 0 24px;
-      font-size: 42px;
+      font-size: 44px;
       font-weight: 700;
     }
   }
@@ -106,8 +107,8 @@
     color: #f0a84b;
     margin: 0 0 8px;
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
   }
 
   &__hero-steps {
@@ -118,27 +119,33 @@
   }
 
   &__step-card {
-    background: #0b1220;
-    border-radius: 14px;
     padding: 16px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     h3 {
       margin: 10px 0 6px;
-      font-size: 32px;
+      font-size: 20px;
       font-weight: 600;
     }
 
     p {
       margin: 0;
       color: #94a3b8;
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 
+  &__step-detail {
+    white-space: pre-line;
+  }
+
   &__step-number {
-    width: 42px;
-    height: 42px;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
@@ -157,27 +164,52 @@
 
   &__hero-form {
     background: #0b1220;
+    max-width: 565px;
     border-radius: 14px;
     padding: 18px;
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    margin: auto;
+  }
+
+  &__hero-form-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 16px;
-    align-items: stretch;
+    width: 100%;
+  }
+
+  &__hero-generate {
+    width: 200px;
+    height: 38px;
+    border: 0;
+    border-radius: 12px;
+    background: #f0a84b;
+    color: #1a1204;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
   }
 
   &__field {
     display: grid;
     gap: 10px;
+    width: 100%;
+    text-align: center;
 
     span {
-      font-size: 13px;
+      font-size: 20px;
       color: #f8fafc;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     textarea {
       width: 100%;
-      min-height: 96px;
+      height: 42px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #94a3b8;
@@ -185,15 +217,17 @@
       padding: 12px;
       resize: none;
       font-size: 13px;
+      white-space: nowrap;
     }
   }
 
   &__upload-square {
-    width: 124px;
+    width: 100%;
+    min-width: 124px;
     height: 124px;
     border-radius: 12px;
-    border: 1px solid #f0a84b;
-    background: #1e293b;
+    border: 1px dashed #fff;
+    background: transparent;
     color: #e2e8f0;
     display: flex;
     flex-direction: column;
@@ -201,9 +235,16 @@
     justify-content: center;
     gap: 2px;
     cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #f0a84b;
+    }
 
     span {
       font-size: 12px;
+      font-weight: 600;
       text-align: center;
     }
 
@@ -212,14 +253,18 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 10px;
+      font-size: 11px;
       color: #94a3b8;
+    }
+
+    &:hover .landing__upload-plus {
+      color: #f0a84b;
     }
   }
 
   &__upload-plus,
   &__upload-image {
-    color: #f0a84b;
+    color: #fff;
   }
 
   &__upload-plus {
@@ -232,7 +277,7 @@
   }
 
   &__section {
-    margin-top: 34px;
+    margin-top: 120px;
 
     h2 {
       margin: 6px 0 0;
@@ -242,44 +287,58 @@
 
   &__section-head {
     margin-bottom: 16px;
+
+    &--flow {
+      margin-bottom: 24px;
+    }
+  }
+
+  &__flow-title {
+    font-size: 42px !important;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 8px;
   }
 
   &__eyebrow {
     margin: 0;
     color: #f0a84b;
     font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
     font-weight: 600;
+    letter-spacing: 0.5px;
   }
 
   &__problem-layout {
     display: grid;
     grid-template-columns: 0.95fr 1fr;
     gap: 26px;
+    align-items: center;
   }
 
   &__problem-left {
     h3 {
       margin: 0 0 10px;
-      font-size: 34px;
+      font-size: 32px;
+      font-weight: 700;
     }
 
     p {
       margin: 0 0 14px;
       color: #a3b1c6;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 1.4;
     }
   }
 
   &__problem-cta {
     border: 0;
-    height: 44px;
-    border-radius: 24px;
+    height: 51px;
+    width: 243px;
+    border-radius: 32px;
     padding: 0 18px;
     background: #f0a84b;
-    color: #1a1204;
+    color: #000;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
   }
@@ -290,7 +349,7 @@
   }
 
   &__problem-item {
-    background: #0f172a;
+    background: #111827;
     border-radius: 12px;
     padding: 10px 12px;
     display: grid;
@@ -300,22 +359,31 @@
   }
 
   &__problem-icon {
-    color: #f0a84b;
-    font-size: 20px;
+    color: #fff;
+    font-size: 24px;
     line-height: 1;
     margin-top: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   &__problem-title {
     margin: 0 0 4px;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 600;
   }
 
   &__problem-detail {
+    white-space: pre-line;
     margin: 0;
     color: #a3b1c6;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.4;
   }
 
@@ -323,7 +391,9 @@
     color: #a3b1c6;
     text-align: center;
     margin: 8px auto 10px;
-    max-width: 760px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
   }
 
   &__flow-cta {
@@ -333,6 +403,8 @@
     border-radius: 24px;
     height: 40px;
     padding: 0 16px;
+    font-size: 24px;
+    font-weight: 400;
     background: transparent;
     color: #f8fafc;
     cursor: pointer;
@@ -346,32 +418,48 @@
     grid-template-columns: auto 1fr auto;
     gap: 18px;
     align-items: center;
+    min-height: 520px;
   }
 
-  &__showcase-track {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  &__showcase-viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  &__showcase-container {
+    display: flex;
+    touch-action: pan-y pinch-zoom;
+    margin-left: 0;
   }
 
   &__showcase-shot {
-    border-radius: 12px;
+    flex: 0 0 100%;
+    min-width: 0;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     img {
       width: 100%;
+      max-width: 710px;
+      height: auto;
       display: block;
+      object-fit: contain;
+      border: 4px solid rgba(255, 255, 255, 0.25);
+      border-radius: 24px;
     }
   }
 
   &__showcase-nav {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
     border: 0;
-    background: #0f2f2d;
+    background: #111827;
     color: #f8fafc;
+    font-size: 14px;
     font-weight: 700;
   }
 
@@ -382,7 +470,7 @@
   }
 
   .pricing-card {
-    background: #0b1220;
+    background: #111827;
     border-radius: 14px;
     padding: 16px;
     min-height: 240px;
@@ -408,7 +496,12 @@
       font-weight: 700;
     }
 
-    &__credits,
+    &__credits {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
     &__note {
       margin: 0;
       color: #94a3b8;
@@ -446,12 +539,14 @@
     &__question {
       margin: 0 0 6px;
       font-weight: 600;
+      font-size: 14px;
     }
 
     &__answer {
       margin: 0;
       color: #94a3b8;
       font-size: 13px;
+      line-height: 1.4;
     }
   }
 
@@ -524,10 +619,6 @@
     }
 
     &__showcase {
-      grid-template-columns: 1fr;
-    }
-
-    &__showcase-track {
       grid-template-columns: 1fr;
     }
 

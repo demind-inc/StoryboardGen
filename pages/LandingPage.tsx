@@ -1,5 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faStar,
+  faListAlt,
+  faImages,
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import useEmblaCarousel from "embla-carousel-react";
 import { useAuth } from "../providers/AuthProvider";
 import { SubscriptionPlan } from "../types";
 import AuthShell from "../components/AuthShell/AuthShell";
@@ -8,42 +20,49 @@ const heroSteps = [
   {
     number: "1",
     title: "Ideate",
-    detail: "Tell us scenes, topic, and upload reference images",
+    detail: "Tell us scenes, topic, and\nupload reference images",
     tone: "lavender",
   },
   {
     number: "2",
     title: "Generate",
     detail:
-      "With one click, generate engaging posts, images, captions and hashtags",
+      "With one click, generate engaging posts,\nimages, captions and hashtags",
     tone: "amber",
   },
 ];
 
+const navItems = [
+  { label: "Problem", sectionId: "problem" },
+  { label: "Solution", sectionId: "flow" },
+  { label: "Pricing", sectionId: "pricing" },
+  { label: "FAQ", sectionId: "faq" },
+];
+
 const whyUseItems = [
   {
-    icon: "👤",
+    icon: faUser,
     title: "Scene-consistent characters and visuals",
     detail:
-      "Once you upload reference images, StoryboardGen locks in your character and style so faces, outfits, and artistic look stay consistent across all scenes-no style drift and no repeated uploads.",
+      "Upload references once and keep characters, outfits, and visual style consistent across every scene.",
   },
   {
-    icon: "⚡",
+    icon: faStar,
     title: "Fast multi-image generation with one prompt",
     detail:
-      "Instead of crafting prompts or generating each image one at a time, you describe all the scenes in one place and the tool creates a full set of images together-all aligned with your vision.",
+      "Describe your full story in one prompt and create a complete, aligned image set instantly.",
   },
   {
-    icon: "⚙",
+    icon: faListAlt,
     title: "Simple, efficient workflow",
     detail:
-      "The process is streamlined into three easy steps: upload reference images once, list your scenes or topic, then generate a consistent image set.",
+      "Upload references, list scenes, and generate\n— fast and streamlined.",
   },
   {
-    icon: "✦",
-    title: "Perfect for storytelling and social content",
+    icon: faImages,
+    title: "Personalized social content & slideshows",
     detail:
-      "It is ideal for storyboards, comics, and multi-image narratives-and even includes ready-to-use social media captions with hashtags for each generated image.",
+      "Create customized multi-image posts and slideshows, complete with captions and relevant hashtags.",
   },
 ];
 
@@ -117,6 +136,11 @@ const LandingPage: React.FC = () => {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+  });
+
   useEffect(() => {
     if (authStatus === "signed_in") {
       setShowAuthModal(false);
@@ -173,15 +197,20 @@ const LandingPage: React.FC = () => {
 
       <header className="landing__header">
         <div className="landing__brand">
-          <span className="landing__brand-icon" />
+          <img
+            src="/assets/images/logo.png"
+            alt="StoryboardGen Logo"
+            className="landing__brand-logo"
+          />
           <span>StoryboardGen</span>
         </div>
 
         <nav className="landing__nav">
-          <button onClick={() => scrollToSection("problem")}>Problem</button>
-          <button onClick={() => scrollToSection("flow")}>How it works</button>
-          <button onClick={() => scrollToSection("pricing")}>Pricing</button>
-          <button onClick={() => scrollToSection("faq")}>FAQ</button>
+          {navItems.map(({ label, sectionId }) => (
+            <button key={sectionId} onClick={() => scrollToSection(sectionId)}>
+              {label}
+            </button>
+          ))}
         </nav>
 
         <div className="landing__actions">
@@ -203,7 +232,9 @@ const LandingPage: React.FC = () => {
 
       <main className="landing__main">
         <section className="landing__hero">
-          <p className="landing__hero-badge">Try our new AI storyboard generator</p>
+          <p className="landing__hero-badge">
+            Try our new AI storyboard generator
+          </p>
           <h1>Create your next storyboard with one click</h1>
           <div className="landing__hero-steps">
             {heroSteps.map((step) => (
@@ -214,7 +245,7 @@ const LandingPage: React.FC = () => {
                   {step.number}
                 </span>
                 <h3>{step.title}</h3>
-                <p>{step.detail}</p>
+                <p className="landing__step-detail">{step.detail}</p>
               </article>
             ))}
           </div>
@@ -222,42 +253,50 @@ const LandingPage: React.FC = () => {
           <div className="landing__hero-form">
             <label className="landing__field">
               <span>What do you want to create?</span>
-              <textarea
-                readOnly
-                value="Describe your story scenes, target audience, and desired outcome..."
-              />
+              <textarea placeholder="Describe your story scenes, target audience, and desired outcome..." />
             </label>
-            <button className="landing__upload-square" onClick={handleUploadClick}>
+            <button
+              className="landing__upload-square"
+              onClick={handleUploadClick}
+            >
               <span className="landing__upload-plus">+</span>
-              <span className="landing__upload-image">[]</span>
               <span>Upload image</span>
               {uploadedFileName && (
                 <small title={uploadedFileName}>{uploadedFileName}</small>
               )}
             </button>
+            <button
+              type="button"
+              className="landing__hero-generate"
+              onClick={handleStart}
+            >
+              Generate
+            </button>
           </div>
         </section>
 
-        <section id="problem" className="landing__section landing__section--problem">
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">THE PROBLEM</p>
-            <h2>Creating Consistent Visuals Is Painful</h2>
-          </div>
+        <section
+          id="problem"
+          className="landing__section landing__section--problem"
+        >
           <div className="landing__problem-layout">
             <div className="landing__problem-left">
               <h3>Why use Storyboardgen?</h3>
               <p>
                 Create consistent multi-scene visuals and personalized social
-                content-complete with captions and hashtags-from one simple prompt.
+                content—complete with captions and hashtags—from one simple
+                prompt.
               </p>
               <button className="landing__problem-cta" onClick={handleStart}>
-                Get started for free -&gt;
+                Get started for free
               </button>
             </div>
             <div className="landing__problem-right">
               {whyUseItems.map((item) => (
                 <article key={item.title} className="landing__problem-item">
-                  <span className="landing__problem-icon">{item.icon}</span>
+                  <span className="landing__problem-icon">
+                    <FontAwesomeIcon icon={item.icon as never} />
+                  </span>
                   <div>
                     <p className="landing__problem-title">{item.title}</p>
                     <p className="landing__problem-detail">{item.detail}</p>
@@ -269,30 +308,46 @@ const LandingPage: React.FC = () => {
         </section>
 
         <section id="flow" className="landing__section landing__section--flow">
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">How it works</p>
-            <h2>One tool, endless possibilities</h2>
+          <div className="landing__section-head landing__section-head--flow">
+            <h2 className="landing__flow-title">
+              One tool, endless possibilities
+            </h2>
             <p className="landing__flow-subtitle">
-              StoryboardGen helps you create and grow with AI across social media,
-              faster and simpler.
+              StoryboardGen helps you create and grow with AI across social
+              media, faster and simpler.
             </p>
             <button className="landing__flow-cta" onClick={handleStart}>
-              Get started for free -&gt;
+              Get started for free
             </button>
           </div>
           <div className="landing__showcase">
-            <button className="landing__showcase-nav" aria-label="Previous">
-              &lt;
+            <button
+              type="button"
+              className="landing__showcase-nav"
+              aria-label="Previous image"
+              onClick={() => emblaApi?.scrollPrev()}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
             </button>
-            <div className="landing__showcase-track">
-              {showcaseShots.map((src, index) => (
-                <div key={src} className="landing__showcase-shot">
-                  <img src={src} alt={`Storyboard preview ${index + 1}`} />
-                </div>
-              ))}
+            <div className="landing__showcase-viewport embla" ref={emblaRef}>
+              <div className="landing__showcase-container embla__container">
+                {showcaseShots.map((src, index) => (
+                  <div
+                    key={src}
+                    className="landing__showcase-shot embla__slide"
+                  >
+                    <img src={src} alt={`Storyboard preview ${index + 1}`} />
+                  </div>
+                ))}
+              </div>
             </div>
-            <button className="landing__showcase-nav" aria-label="Next">
-              &gt;
+            <button
+              type="button"
+              className="landing__showcase-nav"
+              aria-label="Next image"
+              onClick={() => emblaApi?.scrollNext()}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
         </section>
