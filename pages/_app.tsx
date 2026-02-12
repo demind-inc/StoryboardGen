@@ -2,6 +2,7 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { useRouter } from "next/router";
 import { AuthProvider } from "../providers/AuthProvider";
 import { SubscriptionProvider } from "../providers/SubscriptionProvider";
 import { createQueryClient } from "../lib/queryClient";
@@ -19,7 +20,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SubscriptionProvider>
-          <div className="app-shell">
+          <div
+            className={`app-shell${
+              isLandingPage ? "" : " app-shell--mobile-blocked"
+            }`}
+          >
             <Component {...pageProps} />
           </div>
           {!isLandingPage && (
