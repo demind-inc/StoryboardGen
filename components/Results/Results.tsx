@@ -385,15 +385,8 @@ const Results: React.FC<ResultsProps> = ({
                         <span className={styles.sceneTitle}>
                           Scene {idx + 1}
                         </span>
-                        {result.title && (
-                          <>
-                            <span className={styles.sceneTitleDivider}>•</span>
-                            <span className={styles.sceneTitleText}>
-                              {result.title}
-                            </span>
-                          </>
-                        )}
                       </div>
+
                       <div className={styles.sceneHeaderActions}>
                         {allowRegenerate && onRegenerate && (
                           <button
@@ -448,15 +441,16 @@ const Results: React.FC<ResultsProps> = ({
                         </a>
                       </div>
                     </div>
+                    {result.title && (
+                      <span className={styles.sceneTitleText}>
+                        {result.title}
+                      </span>
+                    )}
                     {result.description && (
                       <div className={styles.sceneDescription}>
                         {result.description}
                       </div>
                     )}
-                    <div className={styles.promptBlock}>
-                      <div className={styles.promptLabel}>Prompt</div>
-                      <div className={styles.promptText}>{result.prompt}</div>
-                    </div>
                   </div>
                 </div>
               );

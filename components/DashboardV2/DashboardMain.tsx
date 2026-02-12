@@ -27,6 +27,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     disableGenerate,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,
     handleAddReferencesFromLibrary,
@@ -107,6 +108,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         guidelines={guidelines}
         onGuidelinesChange={setGuidelines}
         captions={captions}
+        onGenerateCaption={handleGenerateCaption}
         results={manualResults}
         onRegenerateResult={handleRegenerate}
         onBackToEditor={() => setManualResults([])}

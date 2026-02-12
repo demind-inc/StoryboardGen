@@ -11,6 +11,7 @@ import type {
   ProjectSummary,
   ReferenceImage,
   SceneResult,
+  SubscriptionPlan,
 } from "../../types";
 import {
   generateCharacterScene,
@@ -18,7 +19,9 @@ import {
   generateSceneSummaries,
 } from "../../services/geminiService";
 import { useSaveProjectOutput } from "../../hooks/useProjectService";
+import { useRecordGeneration } from "../../hooks/useUsageService";
 import { urlToReferenceImage } from "../../hooks/useImageGeneration";
+import { promptToScene } from "../../types/scene";
 import styles from "./SavedProjectsPanel.module.scss";
 
 const formatShortDate = (value?: string | null) => {
@@ -48,6 +51,7 @@ interface SavedProjectsPanelProps {
   isLoadingDetail?: boolean;
   onSelectProject?: (projectId: string) => void;
   userId?: string;
+  planType?: SubscriptionPlan;
 }
 
 const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
@@ -57,9 +61,11 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   isLoadingDetail = false,
   onSelectProject,
   userId,
+  planType,
 }) => {
   const router = useRouter();
   const saveProjectOutputMutation = useSaveProjectOutput();
+  const recordGenerationMutation = useRecordGeneration();
   const handleSelectProject =
     onSelectProject ?? ((id) => router.push("/saved/project/" + id));
   const [detailResults, setDetailResults] = useState<SceneResult[]>([]);
@@ -166,6 +172,11 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         )
       );
       if (userId) {
+        await recordGenerationMutation.mutateAsync({
+          userId,
+          amount: 1,
+          planType: planType ?? null,
+        });
         await saveProjectOutputMutation.mutateAsync({
           userId,
           projectId: selectedProject.id,
@@ -261,6 +272,11 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         };
         if (userId) {
           try {
+            await recordGenerationMutation.mutateAsync({
+              userId,
+              amount: 1,
+              planType: planType ?? null,
+            });
             await saveProjectOutputMutation.mutateAsync({
               userId,
               projectId: selectedProject.id,
@@ -350,6 +366,10 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
 
   // Detail view
   if (!isLoadingDetail && selectedProject && displayResults.length > 0) {
+    const scenes = selectedProject.prompts.map((prompt, index) =>
+      promptToScene(prompt, `scene_${index}`)
+    );
+
     return (
       <DashboardLayout
         projectName={selectedProject.name}
@@ -363,12 +383,12 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         onGenerateTopicScenes={() => {}}
         isTopicGenerating={false}
         topicError={null}
-        promptList={selectedProject.prompts}
+        scenes={scenes}
         activeSceneIndex={0}
         onSceneSelect={() => {}}
         onAddScene={() => {}}
         onRemoveScene={() => {}}
-        onSavePrompt={() => {}}
+        onSaveScene={() => {}}
         previewImageUrl={previewImageUrl}
         isGenerating={isRegenerating}
         disableGenerate

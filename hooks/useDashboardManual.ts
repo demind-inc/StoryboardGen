@@ -173,9 +173,6 @@ export const useDashboardManual = ({
     }
   }, [activeSceneIndex, displayPromptList.length]);
 
-  const effectiveHashtags =
-    selectedHashtags.length > 0 ? selectedHashtags : hashtags;
-
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
@@ -185,8 +182,8 @@ export const useDashboardManual = ({
     size: "1K",
     planType,
     captionRules: rules,
+    hashtags,
     guidelines,
-    hashtags: effectiveHashtags,
     transparentBackground,
     hasGeneratedFreeImage,
     isPaymentUnlocked,
@@ -205,6 +202,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     projectId,
   } = imageGenerationHook;
 
@@ -403,6 +401,7 @@ export const useDashboardManual = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     projectId,
     disableGenerate,
     isReferenceLibraryOpen,

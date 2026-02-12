@@ -8,6 +8,10 @@ export interface ResultsCardProps {
   onRegenerateResult: (index: number) => void;
   onRegenerateAll: () => void;
   captions: { tiktok: string; instagram: string };
+  onGenerateCaption?: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void> | void;
   projectName: string;
   allowRegenerate?: boolean;
   onBack?: () => void;
@@ -19,6 +23,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   onRegenerateResult,
   onRegenerateAll,
   captions,
+  onGenerateCaption,
   projectName,
   allowRegenerate,
   onBack,
@@ -67,6 +72,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
       onRegenerateAll={onRegenerateAll}
       onDownloadAll={handleDownloadAll}
       captions={captions}
+      onGenerateCaption={onGenerateCaption}
       projectName={projectName}
       allowRegenerate={allowRegenerate}
       onBack={onBack}

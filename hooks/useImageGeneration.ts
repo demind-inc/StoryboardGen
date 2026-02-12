@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AppMode,
   CaptionRules,
@@ -12,16 +12,15 @@ import {
 import {
   generateCharacterScene,
   generateSceneCaptions,
-  generateSceneSummaries,
 } from "../services/geminiService";
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
 import { useSaveProjectWithOutputs } from "./useProjectService";
 import {
-  getHasGeneratedFreeImage,
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
 } from "../services/authService";
 import { trackImageGeneration, trackImageRegeneration } from "../lib/analytics";
+import { promptToScene } from "../types/scene";
 
 interface UseImageGenerationProps {
   mode: AppMode;
@@ -32,8 +31,8 @@ interface UseImageGenerationProps {
   size: ImageSize;
   planType: string;
   captionRules: CaptionRules;
-  guidelines: CustomGuidelines;
   hashtags: Hashtags;
+  guidelines: CustomGuidelines;
   transparentBackground: boolean;
   hasGeneratedFreeImage: boolean;
   isPaymentUnlocked: boolean;
@@ -54,6 +53,10 @@ interface UseImageGenerationReturn {
   setManualResults: React.Dispatch<React.SetStateAction<SceneResult[]>>;
   startGeneration: () => Promise<void>;
   handleRegenerate: (index: number) => Promise<void>;
+  handleGenerateCaption: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void>;
   projectId: string | null;
 }
 
@@ -90,8 +93,8 @@ export const useImageGeneration = ({
   size,
   planType,
   captionRules,
-  guidelines,
   hashtags,
+  guidelines,
   transparentBackground,
   hasGeneratedFreeImage,
   isPaymentUnlocked,
@@ -108,42 +111,6 @@ export const useImageGeneration = ({
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
-  const [captionResults, setCaptionResults] = useState<{
-    tiktok: string[];
-    instagram: string[];
-  }>({ tiktok: [], instagram: [] });
-
-  const normalizeHashtags = (tags: Hashtags) =>
-    Array.from(new Set(tags.map((tag) => tag.trim()).filter(Boolean)));
-
-  const appendHashtags = (caption: string, tags: string[]) => {
-    if (tags.length === 0) return caption;
-    const existingTags = new Set(
-      caption
-        .split(/\s+/)
-        .filter((word) => word.startsWith("#"))
-        .map((word) => word.trim())
-    );
-    const missing = tags.filter((tag) => !existingTags.has(tag));
-    if (missing.length === 0) return caption;
-    const trimmed = caption.trim();
-    const separator = trimmed.length > 0 ? "\n\n" : "";
-    return `${trimmed}${separator}${missing.join(" ")}`;
-  };
-
-  const applyHashtagsToCaptions = (results: {
-    tiktok: string[];
-    instagram: string[];
-  }) => {
-    const tagList = normalizeHashtags(hashtags);
-    if (tagList.length === 0) return results;
-    return {
-      tiktok: results.tiktok.map((caption) => appendHashtags(caption, tagList)),
-      instagram: results.instagram.map((caption) =>
-        appendHashtags(caption, tagList)
-      ),
-    };
-  };
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -156,22 +123,6 @@ export const useImageGeneration = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isGenerating]);
 
-  const updateCaptionDisplay = useCallback(
-    (results: { tiktok: string[]; instagram: string[] }) => {
-      const format = (items: string[]) =>
-        items
-          .map((caption, idx) =>
-            items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
-          )
-          .join("\n\n");
-      setCaptions({
-        tiktok: format(results.tiktok),
-        instagram: format(results.instagram),
-      });
-    },
-    [setCaptions]
-  );
-
   const markFirstGenerationComplete = async () => {
     if (!hasGeneratedFreeImage && userId) {
       try {
@@ -183,6 +134,53 @@ export const useImageGeneration = ({
         setHasGeneratedFreeImage(true);
       }
     }
+  };
+
+  const handleGenerateCaption = async (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => {
+    if (manualResults.length === 0) return;
+    const prompts = manualResults
+      .map((result) => result.prompt.trim())
+      .filter(Boolean);
+    if (prompts.length === 0) return;
+
+    const customRule = options.rules.trim();
+    const mergedRules: CaptionRules = {
+      ...captionRules,
+      [platform]: customRule
+        ? [{ name: "Custom", rule: customRule }]
+        : captionRules[platform],
+    };
+
+    const mergedHashtags = Array.from(
+      new Set(
+        [...hashtags, ...options.hashtags]
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      )
+    );
+
+    const response = await generateSceneCaptions(
+      prompts,
+      references,
+      mergedRules,
+      guidelines,
+      mergedHashtags
+    );
+
+    const selectedCaptions = response[platform];
+    const formatted = selectedCaptions
+      .map((caption, idx) =>
+        selectedCaptions.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
+      )
+      .join("\n\n");
+
+    setCaptions((prev) => ({
+      ...prev,
+      [platform]: formatted,
+    }));
   };
 
   const handleRegenerate = async (index: number) => {
@@ -288,48 +286,6 @@ export const useImageGeneration = ({
         guidelines,
         { transparentBackground }
       );
-      try {
-        const summaryResponse = await generateSceneSummaries(
-          [targetResult.prompt],
-          guidelines
-        );
-        setManualResults((prev) =>
-          prev.map((res, idx) =>
-            idx === index
-              ? {
-                  ...res,
-                  title: summaryResponse.titles[0] || res.title,
-                  description:
-                    summaryResponse.descriptions[0] || res.description,
-                }
-              : res
-          )
-        );
-      } catch (summaryError) {
-        console.error("Summary regeneration error:", summaryError);
-      }
-      try {
-        const captionResponse = await generateSceneCaptions(
-          [targetResult.prompt],
-          referencesToUse,
-          captionRules,
-          guidelines,
-          hashtags
-        );
-        const captionWithHashtags = applyHashtagsToCaptions(captionResponse);
-        setCaptionResults((prev) => {
-          const next = {
-            tiktok: [...prev.tiktok],
-            instagram: [...prev.instagram],
-          };
-          next.tiktok[index] = captionWithHashtags.tiktok[0] || "";
-          next.instagram[index] = captionWithHashtags.instagram[0] || "";
-          updateCaptionDisplay(next);
-          return next;
-        });
-      } catch (captionError) {
-        console.error("Caption regeneration error:", captionError);
-      }
       const updatedUsage = await recordGenerationMutation.mutateAsync({
         userId,
         amount: 1,
@@ -430,68 +386,18 @@ export const useImageGeneration = ({
       return;
     }
 
-    const initialManualResults = promptList.map(
-      (p) => ({ prompt: p, isLoading: true } as SceneResult)
-    );
+    const initialManualResults = promptList.map((p) => {
+      const scene = promptToScene(p);
+      return {
+        prompt: p,
+        title: scene.title || undefined,
+        description: scene.description || undefined,
+        isLoading: true,
+      } as SceneResult;
+    });
     setManualResults(initialManualResults);
     const generatedResults = [...initialManualResults];
     setCaptions({ tiktok: "", instagram: "" });
-
-    let latestCaptions: { tiktok: string[]; instagram: string[] } = {
-      tiktok: [],
-      instagram: [],
-    };
-    let latestSummaries: { titles: string[]; descriptions: string[] } = {
-      titles: [],
-      descriptions: [],
-    };
-    const captionPromise = (async () => {
-      try {
-        const generatedCaptions = await generateSceneCaptions(
-          promptList,
-          references,
-          captionRules,
-          guidelines,
-          hashtags
-        );
-        const captionWithHashtags =
-          applyHashtagsToCaptions(generatedCaptions);
-        latestCaptions = captionWithHashtags;
-        setCaptionResults(captionWithHashtags);
-        updateCaptionDisplay(captionWithHashtags);
-      } catch (captionError) {
-        console.error("Caption generation error:", captionError);
-      }
-      return latestCaptions;
-    })();
-    const summaryPromise = (async () => {
-      try {
-        const generatedSummaries = await generateSceneSummaries(
-          promptList,
-          guidelines
-        );
-        latestSummaries = generatedSummaries;
-        generatedResults.forEach((res, idx) => {
-          generatedResults[idx] = {
-            ...res,
-            title: generatedSummaries.titles[idx] || res.title,
-            description:
-              generatedSummaries.descriptions[idx] || res.description,
-          };
-        });
-        setManualResults((prev) =>
-          prev.map((res, idx) => ({
-            ...res,
-            title: generatedSummaries.titles[idx] || res.title,
-            description:
-              generatedSummaries.descriptions[idx] || res.description,
-          }))
-        );
-      } catch (summaryError) {
-        console.error("Summary generation error:", summaryError);
-      }
-      return latestSummaries;
-    })();
 
     for (let i = 0; i < initialManualResults.length; i++) {
       try {
@@ -531,9 +437,6 @@ export const useImageGeneration = ({
       }
     }
 
-    const finalCaptions = await captionPromise;
-    await summaryPromise;
-
     const isFinished = generatedResults.every((result) => !result.isLoading);
     const hasAnyOutput = generatedResults.some((result) => result.imageUrl);
     if (isFinished && hasAnyOutput) {
@@ -543,7 +446,7 @@ export const useImageGeneration = ({
           projectId: projectId ?? undefined,
           projectName,
           prompts: promptList,
-          captions: finalCaptions,
+          captions: { tiktok: [], instagram: [] },
           results: generatedResults,
         });
         setProjectId(savedProjectId);
@@ -561,6 +464,7 @@ export const useImageGeneration = ({
     setManualResults,
     startGeneration,
     handleRegenerate,
+    handleGenerateCaption,
     projectId,
   };
 };
