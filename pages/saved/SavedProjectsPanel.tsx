@@ -15,11 +15,14 @@ import type {
 } from "../../types";
 import {
   generateCharacterScene,
-  generateSceneCaptions,
-  generateSceneSummaries,
+  generateSceneCaptionsForPlatform,
 } from "../../services/geminiService";
-import { useSaveProjectOutput } from "../../hooks/useProjectService";
+import {
+  useSaveProjectCaptions,
+  useSaveProjectOutput,
+} from "../../hooks/useProjectService";
 import { useRecordGeneration } from "../../hooks/useUsageService";
+import { useCaptionSettings } from "../../hooks/useCaptionSettingsService";
 import { urlToReferenceImage } from "../../hooks/useImageGeneration";
 import { promptToScene } from "../../types/scene";
 import styles from "./SavedProjectsPanel.module.scss";
@@ -65,10 +68,20 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
 }) => {
   const router = useRouter();
   const saveProjectOutputMutation = useSaveProjectOutput();
+  const saveProjectCaptionsMutation = useSaveProjectCaptions();
   const recordGenerationMutation = useRecordGeneration();
+  const captionSettingsQuery = useCaptionSettings(userId);
+  const availableRules =
+    captionSettingsQuery.data?.rules ?? DEFAULT_CAPTION_RULES;
+  const availableHashtags =
+    captionSettingsQuery.data?.hashtags ?? DEFAULT_HASHTAGS;
   const handleSelectProject =
     onSelectProject ?? ((id) => router.push("/saved/project/" + id));
   const [detailResults, setDetailResults] = useState<SceneResult[]>([]);
+  const [detailCaptions, setDetailCaptions] = useState<{
+    tiktok: string[];
+    instagram: string[];
+  }>({ tiktok: [], instagram: [] });
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   const results: SceneResult[] = useMemo(() => {
@@ -85,22 +98,83 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   const displayResults = detailResults.length ? detailResults : results;
 
   const captions = useMemo(() => {
-    if (!selectedProject) return { tiktok: "", instagram: "" };
+    if (!selectedProject && detailCaptions.tiktok.length === 0) {
+      return { tiktok: "", instagram: "" };
+    }
     return {
-      tiktok: formatCaptionList(selectedProject.captions.tiktok),
-      instagram: formatCaptionList(selectedProject.captions.instagram),
+      tiktok: formatCaptionList(detailCaptions.tiktok),
+      instagram: formatCaptionList(detailCaptions.instagram),
     };
-  }, [selectedProject]);
+  }, [selectedProject, detailCaptions]);
 
   const previewImageUrl = displayResults[0]?.imageUrl;
 
   useEffect(() => {
     if (!selectedProject) {
       setDetailResults([]);
+      setDetailCaptions({ tiktok: [], instagram: [] });
       return;
     }
     setDetailResults(results);
+    setDetailCaptions({
+      tiktok: selectedProject.captions.tiktok,
+      instagram: selectedProject.captions.instagram,
+    });
   }, [selectedProject, results]);
+
+  const handleGenerateCaption = async (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => {
+    if (!selectedProject) return;
+    const prompts = displayResults
+      .map((result, idx) => result.prompt || selectedProject.prompts[idx] || "")
+      .filter(Boolean);
+    if (prompts.length === 0) return;
+
+    const customRule = options.rules.trim();
+    const rulesForGeneration = {
+      ...availableRules,
+      [platform]: customRule
+        ? [{ name: "Custom", rule: customRule }]
+        : availableRules[platform],
+    };
+    const hashtagsForGeneration = Array.from(
+      new Set(
+        [...availableHashtags, ...options.hashtags]
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      )
+    );
+
+    const generated = await generateSceneCaptionsForPlatform(
+      prompts,
+      [],
+      platform,
+      rulesForGeneration,
+      DEFAULT_CUSTOM_GUIDELINES,
+      hashtagsForGeneration
+    );
+    setDetailCaptions((prev) => ({
+      ...prev,
+      [platform]: generated,
+    }));
+
+    if (!userId) return;
+    try {
+      await saveProjectCaptionsMutation.mutateAsync({
+        userId,
+        projectId: selectedProject.id,
+        captions: {
+          tiktok: platform === "tiktok" ? generated : detailCaptions.tiktok,
+          instagram:
+            platform === "instagram" ? generated : detailCaptions.instagram,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to save generated caption:", error);
+    }
+  };
 
   const handleRegenerateResult = async (index: number) => {
     if (!selectedProject) return;
@@ -132,32 +206,6 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         "1K",
         []
       );
-      let summaryUpdate: { title?: string; description?: string } | undefined;
-      try {
-        const summaryResponse = await generateSceneSummaries([prompt], []);
-        summaryUpdate = {
-          title: summaryResponse.titles[0] || "",
-          description: summaryResponse.descriptions[0] || "",
-        };
-      } catch (summaryError) {
-        console.error("Failed to regenerate summary:", summaryError);
-      }
-      let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
-      try {
-        const captionResponse = await generateSceneCaptions(
-          [prompt],
-          [],
-          DEFAULT_CAPTION_RULES,
-          DEFAULT_CUSTOM_GUIDELINES,
-          DEFAULT_HASHTAGS
-        );
-        captionsUpdate = {
-          tiktok: captionResponse.tiktok[0] || "",
-          instagram: captionResponse.instagram[0] || "",
-        };
-      } catch (captionError) {
-        console.error("Failed to regenerate captions:", captionError);
-      }
       setDetailResults((prev) =>
         prev.map((res, idx) =>
           idx === index
@@ -165,8 +213,6 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
                 ...res,
                 imageUrl,
                 isLoading: false,
-                title: summaryUpdate?.title ?? res.title,
-                description: summaryUpdate?.description ?? res.description,
               }
             : res
         )
@@ -183,9 +229,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           sceneIndex: index,
           prompt,
           imageUrl,
-          title: summaryUpdate?.title,
-          description: summaryUpdate?.description,
-          captions: captionsUpdate,
+          title: displayResults[index]?.title,
+          description: displayResults[index]?.description,
         });
       }
     } catch (error: any) {
@@ -237,38 +282,10 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
           "1K",
           []
         );
-        let summaryUpdate: { title?: string; description?: string } | undefined;
-        try {
-          const summaryResponse = await generateSceneSummaries([prompt], []);
-          summaryUpdate = {
-            title: summaryResponse.titles[0] || "",
-            description: summaryResponse.descriptions[0] || "",
-          };
-        } catch (summaryError) {
-          console.error("Failed to regenerate summary:", summaryError);
-        }
-        let captionsUpdate: { tiktok?: string; instagram?: string } | undefined;
-        try {
-          const captionResponse = await generateSceneCaptions(
-            [prompt],
-            [],
-            DEFAULT_CAPTION_RULES,
-            DEFAULT_CUSTOM_GUIDELINES,
-            DEFAULT_HASHTAGS
-          );
-          captionsUpdate = {
-            tiktok: captionResponse.tiktok[0] || "",
-            instagram: captionResponse.instagram[0] || "",
-          };
-        } catch (captionError) {
-          console.error("Failed to regenerate captions:", captionError);
-        }
         nextResults[i] = {
           ...nextResults[i],
           imageUrl,
           isLoading: false,
-          title: summaryUpdate?.title ?? nextResults[i].title,
-          description: summaryUpdate?.description ?? nextResults[i].description,
         };
         if (userId) {
           try {
@@ -283,9 +300,8 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
               sceneIndex: i,
               prompt,
               imageUrl,
-              title: summaryUpdate?.title,
-              description: summaryUpdate?.description,
-              captions: captionsUpdate,
+              title: nextResults[i]?.title,
+              description: nextResults[i]?.description,
             });
           } catch (error) {
             console.error("Failed to save regenerated output:", error);
@@ -394,17 +410,18 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         disableGenerate
         onGenerateAll={handleRegenerateAll}
         onRegenerateActive={() => {}}
-        rules={DEFAULT_CAPTION_RULES}
+        rules={availableRules}
         guidelines={DEFAULT_CUSTOM_GUIDELINES}
         onGuidelinesChange={() => {}}
         captions={captions}
+        onGenerateCaption={handleGenerateCaption}
         results={displayResults}
         onRegenerateResult={handleRegenerateResult}
         allowRegenerate
         transparentBackground={true}
         onTransparentBackgroundChange={() => {}}
-        hashtags={DEFAULT_HASHTAGS}
-        selectedHashtags={DEFAULT_HASHTAGS}
+        hashtags={availableHashtags}
+        selectedHashtags={availableHashtags}
         onSelectedHashtagsChange={() => {}}
       />
     );

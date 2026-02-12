@@ -201,6 +201,24 @@ export async function saveProjectOutput(params: {
   if (projectError) throw projectError;
 }
 
+export async function saveProjectCaptions(params: {
+  userId: string;
+  projectId: string;
+  captions: { tiktok: string[]; instagram: string[] };
+}): Promise<void> {
+  const { userId, projectId, captions } = params;
+  const supabase = getSupabaseClient();
+  const { error } = await (supabase.from("projects") as any)
+    .update({
+      tiktok_captions: captions.tiktok,
+      instagram_captions: captions.instagram,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", projectId)
+    .eq("user_id", userId);
+  if (error) throw error;
+}
+
 export async function fetchProjectList(
   userId: string
 ): Promise<ProjectSummary[]> {

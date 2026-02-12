@@ -3,6 +3,7 @@ import type { SceneResult } from "../types";
 import {
   fetchProjectList,
   fetchProjectDetail,
+  saveProjectCaptions,
   saveProjectWithOutputs,
   saveProjectOutput,
 } from "../services/projectService";
@@ -59,6 +60,25 @@ export function useSaveProjectOutput() {
       description?: string;
       captions?: { tiktok?: string; instagram?: string };
     }) => saveProjectOutput(params),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.list(variables.userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(variables.userId, variables.projectId),
+      });
+    },
+  });
+}
+
+export function useSaveProjectCaptions() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: {
+      userId: string;
+      projectId: string;
+      captions: { tiktok: string[]; instagram: string[] };
+    }) => saveProjectCaptions(params),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.list(variables.userId),

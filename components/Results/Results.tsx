@@ -1,6 +1,12 @@
 import React from "react";
-import { AppMode, SceneResult } from "../../types";
-import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
+import { Listbox } from "@headlessui/react";
+import { useRouter } from "next/router";
+import { AppMode, CaptionRules, Hashtags, SceneResult } from "../../types";
+import {
+  TikTokIcon,
+  InstagramIcon,
+  SettingsIcon,
+} from "../DashboardV2/DashboardIcons";
 import styles from "./Results.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +24,8 @@ interface ResultsProps {
     platform: "tiktok" | "instagram",
     options: { rules: string; hashtags: string[] }
   ) => Promise<void> | void;
+  captionRuleOptions?: CaptionRules;
+  captionHashtagOptions?: Hashtags;
   onRegenerateAll?: () => void;
   onDownloadAll?: () => void;
   onBack?: () => void;
@@ -32,12 +40,15 @@ const Results: React.FC<ResultsProps> = ({
   onRegenerate,
   captions,
   onGenerateCaption,
+  captionRuleOptions,
+  captionHashtagOptions = [],
   onRegenerateAll,
   onDownloadAll,
   onBack,
   projectName,
   allowRegenerate = true,
 }) => {
+  const router = useRouter();
   const handleBack = onBack ?? (() => undefined);
   const handleDownloadAll = onDownloadAll ?? (() => undefined);
   const [captionModalPlatform, setCaptionModalPlatform] = React.useState<
@@ -45,13 +56,16 @@ const Results: React.FC<ResultsProps> = ({
   >(null);
   const [captionGeneratingPlatform, setCaptionGeneratingPlatform] =
     React.useState<"tiktok" | "instagram" | null>(null);
-  const [captionRules, setCaptionRules] = React.useState({
-    tiktok: "",
-    instagram: "",
+  const [selectedRuleIndex, setSelectedRuleIndex] = React.useState({
+    tiktok: 0,
+    instagram: 0,
   });
-  const [captionHashtags, setCaptionHashtags] = React.useState({
-    tiktok: "",
-    instagram: "",
+  const [selectedHashtags, setSelectedHashtags] = React.useState<{
+    tiktok: string[];
+    instagram: string[];
+  }>({
+    tiktok: [],
+    instagram: [],
   });
   const [expandedImage, setExpandedImage] = React.useState<string | null>(null);
   const [copiedTarget, setCopiedTarget] = React.useState<
@@ -60,6 +74,7 @@ const Results: React.FC<ResultsProps> = ({
   const closeExpandedImage = () => setExpandedImage(null);
   const captionValues = captions ?? { tiktok: "", instagram: "" };
   const hasCaptionSection = Boolean(captions || onGenerateCaption);
+  const ruleOptions = captionRuleOptions ?? { tiktok: [], instagram: [] };
 
   const openCaptionModal = (platform: "tiktok" | "instagram") => {
     setCaptionModalPlatform(platform);
@@ -89,18 +104,16 @@ const Results: React.FC<ResultsProps> = ({
     }
 
     const platform = captionModalPlatform;
-    const hashtags = captionHashtags[platform]
-      .split(/[\s,]+/)
-      .map((item) => item.trim())
-      .filter(Boolean);
+    const selectedRule = ruleOptions[platform][selectedRuleIndex[platform]];
+    const hashtags = selectedHashtags[platform];
 
     setCaptionGeneratingPlatform(platform);
+    setCaptionModalPlatform(null);
     try {
       await onGenerateCaption(platform, {
-        rules: captionRules[platform].trim(),
+        rules: selectedRule?.rule ?? "",
         hashtags,
       });
-      setCaptionModalPlatform(null);
     } catch (error) {
       console.error("Failed to generate caption:", error);
     } finally {
@@ -119,11 +132,7 @@ const Results: React.FC<ResultsProps> = ({
     if (!hasCaption) {
       return (
         <button
-          className={`${styles.captionGenerateButton} ${
-            platform === "instagram"
-              ? styles.captionGenerateButtonSecondary
-              : ""
-          }`}
+          className={`${styles.captionGenerateButton}`}
           onClick={() => openCaptionModal(platform)}
           disabled={isGeneratingPlatform || !onGenerateCaption}
           type="button"
@@ -271,46 +280,158 @@ const Results: React.FC<ResultsProps> = ({
             <div className={styles.captionModalHint}>
               Configure custom rules and hashtags before generating.
             </div>
+            {(() => {
+              const selectedRule =
+                ruleOptions[captionModalPlatform][
+                  selectedRuleIndex[captionModalPlatform]
+                ];
+              return (
+                <>
             <label
-              className={styles.captionModalLabel}
-              htmlFor="caption-rules-input"
+              className={styles.captionModalLabelRow}
+              htmlFor="caption-rule-select"
             >
-              Custom Rules
+              <span className={styles.captionModalLabel}>Rule</span>
+              <button
+                type="button"
+                className={styles.captionModalSettingButton}
+                title="Open rule settings"
+                aria-label="Open rule settings"
+                onClick={() =>
+                  router.push(
+                    captionModalPlatform === "tiktok"
+                      ? "/rules/tiktok"
+                      : "/rules/instagram"
+                  )
+                }
+              >
+                <SettingsIcon />
+              </button>
             </label>
-            <textarea
-              id="caption-rules-input"
-              className={styles.captionModalTextarea}
-              placeholder={
-                captionModalPlatform === "tiktok"
-                  ? "Set TikTok-specific tone, hook style, and CTA behavior..."
-                  : "Set Instagram-specific voice, storytelling, and structure..."
-              }
-              value={captionRules[captionModalPlatform]}
-              onChange={(event) =>
-                setCaptionRules((prev) => ({
+            <Listbox
+              value={selectedRuleIndex[captionModalPlatform]}
+              onChange={(value: number) =>
+                setSelectedRuleIndex((prev) => ({
                   ...prev,
-                  [captionModalPlatform]: event.target.value,
+                  [captionModalPlatform]: value,
                 }))
               }
-            />
-            <label
-              className={styles.captionModalLabel}
-              htmlFor="caption-hashtags-input"
             >
-              Hashtags
+              <div className={styles.listbox}>
+                <Listbox.Button
+                  id="caption-rule-select"
+                  className={styles.listboxButton}
+                >
+                  {ruleOptions[captionModalPlatform][
+                    selectedRuleIndex[captionModalPlatform]
+                  ]?.name || "Select rule"}
+                </Listbox.Button>
+                <Listbox.Options className={styles.listboxOptions}>
+                  {ruleOptions[captionModalPlatform].map((rule, idx) => (
+                    <Listbox.Option
+                      key={`${captionModalPlatform}-${rule.name}-${idx}`}
+                      value={idx}
+                      className={({ active, selected }) =>
+                        [
+                          styles.listboxOption,
+                          active ? styles.listboxOptionActive : "",
+                          selected ? styles.listboxOptionSelected : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")
+                      }
+                    >
+                      {rule.name}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </div>
+            </Listbox>
+                  <div className={styles.captionRuleDescription}>
+                    {selectedRule?.rule || "No rule description available."}
+                  </div>
+            <label
+              className={styles.captionModalLabelRow}
+              htmlFor="caption-hashtag-selector"
+            >
+              <span className={styles.captionModalLabel}>Hashtags</span>
+              <button
+                type="button"
+                className={styles.captionModalSettingButton}
+                title="Open hashtag settings"
+                aria-label="Open hashtag settings"
+                onClick={() => router.push("/rules/hashtags")}
+              >
+                <SettingsIcon />
+              </button>
             </label>
-            <input
-              id="caption-hashtags-input"
-              className={styles.captionModalInput}
-              placeholder="#tag1 #tag2 #tag3"
-              value={captionHashtags[captionModalPlatform]}
-              onChange={(event) =>
-                setCaptionHashtags((prev) => ({
-                  ...prev,
-                  [captionModalPlatform]: event.target.value,
-                }))
-              }
-            />
+                  <div className={styles.captionModalHint}>
+                    Select hashtags to apply (multi-select supported).
+                  </div>
+            {captionHashtagOptions.length > 0 ? (
+              <Listbox
+                value={selectedHashtags[captionModalPlatform]}
+                onChange={(value: string[]) =>
+                  setSelectedHashtags((prev) => ({
+                    ...prev,
+                    [captionModalPlatform]: value,
+                  }))
+                }
+                multiple
+              >
+                <div className={styles.listbox}>
+                  <Listbox.Button
+                    id="caption-hashtag-selector"
+                    className={styles.listboxButton}
+                  >
+                    {selectedHashtags[captionModalPlatform].length > 0
+                      ? selectedHashtags[captionModalPlatform].join(" ")
+                      : "Select hashtags"}
+                  </Listbox.Button>
+                  <Listbox.Options className={styles.listboxOptions}>
+                    {captionHashtagOptions.map((tag) => (
+                      <Listbox.Option
+                        key={`${captionModalPlatform}-${tag}`}
+                        value={tag}
+                        className={({ active, selected }) =>
+                          [
+                            styles.listboxOption,
+                            active ? styles.listboxOptionActive : "",
+                            selected ? styles.listboxOptionSelected : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")
+                        }
+                      >
+                        {({ selected }) => (
+                          <div className={styles.listboxOptionInner}>
+                            <span className={styles.listboxOptionLabel}>
+                              {tag}
+                            </span>
+                            <span
+                              className={
+                                selected
+                                  ? styles.listboxOptionCheckActive
+                                  : styles.listboxOptionCheck
+                              }
+                            >
+                              {selected ? "Selected" : "Select"}
+                            </span>
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </div>
+              </Listbox>
+            ) : (
+              <div className={styles.captionModalHint}>
+                No hashtag options available.
+              </div>
+            )}
+                </>
+              );
+            })()}
             <div className={styles.captionModalActions}>
               <button
                 className={styles.captionModalCancel}

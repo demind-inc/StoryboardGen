@@ -261,7 +261,6 @@ Requirements:
         .join("") || "";
 
     const parsed = JSON.parse(extractJson(responseText));
-    console.log(parsed);
     if (!Array.isArray(parsed?.tiktok) || !Array.isArray(parsed?.instagram)) {
       throw new Error("CAPTION_PARSE_ERROR");
     }
@@ -272,6 +271,88 @@ Requirements:
         String(parsed.instagram[idx] ?? "").trim()
       ),
     };
+  } catch (error: any) {
+    if (error.message?.includes("Requested entity was not found")) {
+      throw new Error("KEY_NOT_FOUND");
+    }
+    throw error;
+  }
+}
+
+export async function generateSceneCaptionsForPlatform(
+  prompts: string[],
+  references: ReferenceImage[],
+  platform: "tiktok" | "instagram",
+  rules: CaptionRules,
+  guidelines: CustomGuidelines,
+  hashtags: Hashtags = []
+): Promise<string[]> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("KEY_NOT_FOUND");
+  }
+  const ai = new GoogleGenAI({ apiKey });
+
+  const referenceParts = references.map((ref) => ({
+    inlineData: {
+      data: ref.data.split(",")[1],
+      mimeType: ref.mimeType,
+    },
+  }));
+
+  const sceneList = prompts
+    .map((scene, idx) => `${idx + 1}. ${scene}`)
+    .join("\n");
+  const platformLabel = platform === "tiktok" ? "TikTok" : "Instagram";
+  const platformRules = rules[platform]
+    .map((group) => `- ${group.rule}`)
+    .join("\n");
+  const guidelineList = guidelines.map((group) => `- ${group.rule}`).join("\n");
+  const hashtagList = hashtags.length ? hashtags.join(" ") : "(none)";
+
+  const captionPrompt = `
+You are a social media copywriter.
+Create ${platformLabel} captions for each scene using the attached reference images for character consistency.
+
+Scenes:
+${sceneList}
+
+Global brand guidelines:
+${guidelineList || "- (none)"}
+
+${platformLabel} rules:
+${platformRules || "- (none)"}
+
+Approved hashtags:
+${hashtagList}
+
+Requirements:
+- Provide one ${platformLabel} caption per scene.
+- Keep the tone natural and platform-appropriate.
+- Output JSON only as an array of strings, e.g.
+["caption for scene 1", "caption for scene 2"]
+- The array length must match the number of scenes.
+`.trim();
+
+  try {
+    const response = await ai.models.generateContent({
+      model: CAPTION_MODEL_NAME,
+      contents: {
+        parts: [...referenceParts, { text: captionPrompt }],
+      },
+    });
+
+    const responseText =
+      response.candidates?.[0]?.content?.parts
+        ?.map((part) => (part as any).text || "")
+        .join("") || "";
+
+    const parsed = JSON.parse(extractJsonArray(responseText));
+    if (!Array.isArray(parsed)) {
+      throw new Error("CAPTION_PARSE_ERROR");
+    }
+
+    return prompts.map((_, idx) => String(parsed[idx] ?? "").trim());
   } catch (error: any) {
     if (error.message?.includes("Requested entity was not found")) {
       throw new Error("KEY_NOT_FOUND");

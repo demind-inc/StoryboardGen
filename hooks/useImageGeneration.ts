@@ -11,7 +11,7 @@ import {
 } from "../types";
 import {
   generateCharacterScene,
-  generateSceneCaptions,
+  generateSceneCaptionsForPlatform,
 } from "../services/geminiService";
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
@@ -111,6 +111,10 @@ export const useImageGeneration = ({
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [captionStore, setCaptionStore] = useState<{
+    tiktok: string[];
+    instagram: string[];
+  }>({ tiktok: [], instagram: [] });
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -135,6 +139,11 @@ export const useImageGeneration = ({
       }
     }
   };
+
+  const formatCaptionDisplay = (items: string[]) =>
+    items
+      .map((caption, idx) => (items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption))
+      .join("\n\n");
 
   const handleGenerateCaption = async (
     platform: "tiktok" | "instagram",
@@ -162,25 +171,40 @@ export const useImageGeneration = ({
       )
     );
 
-    const response = await generateSceneCaptions(
+    const response = await generateSceneCaptionsForPlatform(
       prompts,
       references,
+      platform,
       mergedRules,
       guidelines,
       mergedHashtags
     );
 
-    const selectedCaptions = response[platform];
-    const formatted = selectedCaptions
-      .map((caption, idx) =>
-        selectedCaptions.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
-      )
-      .join("\n\n");
+    const nextCaptionStore = {
+      ...captionStore,
+      [platform]: response,
+    };
+    setCaptionStore(nextCaptionStore);
+    setCaptions({
+      tiktok: formatCaptionDisplay(nextCaptionStore.tiktok),
+      instagram: formatCaptionDisplay(nextCaptionStore.instagram),
+    });
 
-    setCaptions((prev) => ({
-      ...prev,
-      [platform]: formatted,
-    }));
+    if (userId && manualResults.length > 0) {
+      try {
+        const savedProjectId = await saveProjectMutation.mutateAsync({
+          userId,
+          projectId: projectId ?? undefined,
+          projectName,
+          prompts: manualResults.map((result) => result.prompt),
+          captions: nextCaptionStore,
+          results: manualResults,
+        });
+        setProjectId(savedProjectId);
+      } catch (error) {
+        console.error("Failed to save generated captions:", error);
+      }
+    }
   };
 
   const handleRegenerate = async (index: number) => {
@@ -397,6 +421,8 @@ export const useImageGeneration = ({
     });
     setManualResults(initialManualResults);
     const generatedResults = [...initialManualResults];
+    const emptyCaptions = { tiktok: [], instagram: [] };
+    setCaptionStore(emptyCaptions);
     setCaptions({ tiktok: "", instagram: "" });
 
     for (let i = 0; i < initialManualResults.length; i++) {
@@ -446,7 +472,7 @@ export const useImageGeneration = ({
           projectId: projectId ?? undefined,
           projectName,
           prompts: promptList,
-          captions: { tiktok: [], instagram: [] },
+          captions: emptyCaptions,
           results: generatedResults,
         });
         setProjectId(savedProjectId);
