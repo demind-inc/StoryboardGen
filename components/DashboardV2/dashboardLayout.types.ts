@@ -15,6 +15,10 @@ export interface DashboardLayoutProps {
   onRemoveReference?: (id: string) => void;
   topic: string;
   onTopicChange: (value: string) => void;
+  topicGuideline: string;
+  onTopicGuidelineChange: (value: string) => void;
+  isTopicGuidelineOpen: boolean;
+  onToggleTopicGuideline: () => void;
   onGenerateTopicScenes: () => void;
   isTopicGenerating: boolean;
   topicError?: string | null;

@@ -18,6 +18,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onRemoveReference,
   topic,
   onTopicChange,
+  topicGuideline,
+  onTopicGuidelineChange,
+  isTopicGuidelineOpen,
+  onToggleTopicGuideline,
   onGenerateTopicScenes,
   isTopicGenerating,
   topicError,
@@ -82,6 +86,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <TopicCard
               topic={topic}
               onTopicChange={onTopicChange}
+              topicGuideline={topicGuideline}
+              onTopicGuidelineChange={onTopicGuidelineChange}
+              isGuidelineOpen={isTopicGuidelineOpen}
+              onToggleGuideline={onToggleTopicGuideline}
               onGenerate={onGenerateTopicScenes}
               isGenerating={isTopicGenerating}
               error={topicError}

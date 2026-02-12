@@ -127,7 +127,8 @@ const formatTopicContext = (topic: string): string => {
 
 export async function generateSceneSuggestions(
   topic: string,
-  count = 4
+  count = 4,
+  guideline = ""
 ): Promise<string[]> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -136,6 +137,7 @@ export async function generateSceneSuggestions(
   const ai = new GoogleGenAI({ apiKey });
 
   const topicContext = formatTopicContext(topic);
+  const guidelineContext = formatTopicContext(guideline);
   const prompt = `
 You are a storyboard assistant.
 Generate ${count} concise scene prompts using all details from the multi-line brief below.
@@ -146,6 +148,9 @@ Avoid repeating the same setting or action.
 
 Topic brief:
 ${topicContext}
+
+Manual guideline (optional):
+${guidelineContext || "(none)"}
 
 Output JSON only as an array of strings, e.g.
 ["Scene 1", "Scene 2", "Scene 3", "Scene 4"]

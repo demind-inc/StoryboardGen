@@ -47,6 +47,10 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     setProjectName,
     topic,
     setTopic,
+    topicGuideline,
+    setTopicGuideline,
+    isTopicGuidelineOpen,
+    toggleTopicGuideline,
     generateTopicScenes,
     isTopicGenerating,
     topicError,
@@ -85,6 +89,10 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onRemoveReference={removeReference}
         topic={topic}
         onTopicChange={setTopic}
+        topicGuideline={topicGuideline}
+        onTopicGuidelineChange={setTopicGuideline}
+        isTopicGuidelineOpen={isTopicGuidelineOpen}
+        onToggleTopicGuideline={toggleTopicGuideline}
         onGenerateTopicScenes={generateTopicScenes}
         isTopicGenerating={isTopicGenerating}
         topicError={topicError}

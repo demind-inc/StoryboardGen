@@ -54,24 +54,24 @@
 .topicInput {
   flex: 1;
   min-width: 220px;
-  min-height: 84px;
-  resize: vertical;
+  height: 38px;
   border-radius: 10px;
   border: 1px solid transparent;
   background: #2a2a2a;
   color: var(--text);
-  padding: 10px 12px;
+  padding: 0 12px;
   font-size: var(--fs-12);
-  line-height: 1.45;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.topicInput::placeholder {
+.topicInput::placeholder,
+.guidelineInput::placeholder {
   color: var(--muted);
 }
 
-.topicInput:focus {
+.topicInput:focus,
+.guidelineInput:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.2);
@@ -98,6 +98,37 @@
 
 .generateButton:not(:disabled):hover {
   transform: translateY(-1px);
+}
+
+.guidelineRow {
+  display: flex;
+}
+
+.guidelineButton {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #3a3a3a;
+  background: #242424;
+  color: var(--text);
+  font-size: var(--fs-12);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.guidelineInput {
+  width: 100%;
+  min-height: 84px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #2a2a2a;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: var(--fs-12);
+  line-height: 1.45;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .error {

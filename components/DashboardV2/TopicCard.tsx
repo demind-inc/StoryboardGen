@@ -4,6 +4,10 @@ import styles from "./TopicCard.module.scss";
 export interface TopicCardProps {
   topic: string;
   onTopicChange: (value: string) => void;
+  topicGuideline: string;
+  onTopicGuidelineChange: (value: string) => void;
+  isGuidelineOpen: boolean;
+  onToggleGuideline: () => void;
   onGenerate: () => void;
   isGenerating: boolean;
   error?: string | null;
@@ -12,6 +16,10 @@ export interface TopicCardProps {
 const TopicCard: React.FC<TopicCardProps> = ({
   topic,
   onTopicChange,
+  topicGuideline,
+  onTopicGuidelineChange,
+  isGuidelineOpen,
+  onToggleGuideline,
   onGenerate,
   isGenerating,
   error,
@@ -28,13 +36,14 @@ const TopicCard: React.FC<TopicCardProps> = ({
       </div>
       <div className={styles.cardBody}>
         <div className={styles.inputRow}>
-          <textarea
+          <input
             className={styles.topicInput}
-            placeholder="Describe your storyboard idea, themes, style, and key moments..."
+            type="text"
+            placeholder="e.g. A boy's rainy day adventure"
             value={topic}
             onChange={(event) => onTopicChange(event.target.value)}
             onKeyDown={(event) => {
-              if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && canGenerate) {
+              if (event.key === "Enter" && canGenerate) {
                 event.preventDefault();
                 onGenerate();
               }
@@ -49,7 +58,26 @@ const TopicCard: React.FC<TopicCardProps> = ({
             {isGenerating ? "Generating..." : "Generate Scenes"}
           </button>
         </div>
-        <p className={styles.hint}>Tip: press Ctrl/Cmd + Enter to generate scenes.</p>
+
+        <div className={styles.guidelineRow}>
+          <button
+            type="button"
+            className={styles.guidelineButton}
+            onClick={onToggleGuideline}
+          >
+            {isGuidelineOpen ? "Hide Manual Guideline" : "Add Manual Guideline"}
+          </button>
+        </div>
+
+        {isGuidelineOpen && (
+          <textarea
+            className={styles.guidelineInput}
+            placeholder="Optional: add style direction, constraints, tone, audience, pacing, or visual requirements for topic scene generation."
+            value={topicGuideline}
+            onChange={(event) => onTopicGuidelineChange(event.target.value)}
+          />
+        )}
+
         {error && <p className={styles.error}>{error}</p>}
       </div>
     </section>

@@ -112,6 +112,8 @@ export const useDashboardManual = ({
   );
   const [projectName, setProjectName] = useState(getDefaultProjectName);
   const [topic, setTopic] = useState("");
+  const [topicGuideline, setTopicGuideline] = useState("");
+  const [isTopicGuidelineOpen, setIsTopicGuidelineOpen] = useState(false);
   const [isTopicGenerating, setIsTopicGenerating] = useState(false);
   const [topicError, setTopicError] = useState<string | null>(null);
   const [transparentBackground, setTransparentBackground] = useState(true);
@@ -278,6 +280,15 @@ export const useDashboardManual = ({
     setTopicError(null);
   }, []);
 
+  const handleTopicGuidelineChange = useCallback((value: string) => {
+    setTopicGuideline(value);
+    setTopicError(null);
+  }, []);
+
+  const toggleTopicGuideline = useCallback(() => {
+    setIsTopicGuidelineOpen((prev) => !prev);
+  }, []);
+
   const generateTopicScenes = useCallback(async () => {
     const trimmed = topic.trim();
     if (!trimmed || isTopicGenerating) return;
@@ -286,7 +297,7 @@ export const useDashboardManual = ({
     setTopicError(null);
 
     try {
-      const suggestions = await generateSceneSuggestions(trimmed, 4);
+      const suggestions = await generateSceneSuggestions(trimmed, 4, topicGuideline);
       if (!suggestions.length) {
         throw new Error("No suggestions returned");
       }
@@ -298,7 +309,7 @@ export const useDashboardManual = ({
     } finally {
       setIsTopicGenerating(false);
     }
-  }, [topic, isTopicGenerating, setActiveSceneIndex, setManualPrompts]);
+  }, [topic, topicGuideline, isTopicGenerating, setActiveSceneIndex, setManualPrompts]);
 
   return {
     usage,
@@ -336,6 +347,10 @@ export const useDashboardManual = ({
     setProjectName,
     topic,
     setTopic: handleTopicChange,
+    topicGuideline,
+    setTopicGuideline: handleTopicGuidelineChange,
+    isTopicGuidelineOpen,
+    toggleTopicGuideline,
     generateTopicScenes,
     isTopicGenerating,
     topicError,

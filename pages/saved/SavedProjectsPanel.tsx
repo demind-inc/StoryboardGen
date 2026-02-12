@@ -324,6 +324,10 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         onRemoveReference={() => {}}
         topic=""
         onTopicChange={() => {}}
+        topicGuideline=""
+        onTopicGuidelineChange={() => {}}
+        isTopicGuidelineOpen={false}
+        onToggleTopicGuideline={() => {}}
         onGenerateTopicScenes={() => {}}
         isTopicGenerating={false}
         topicError={null}
