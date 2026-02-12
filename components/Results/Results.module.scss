@@ -72,12 +72,81 @@
 }
 
 .captionsCard {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   background: #111827;
   border-radius: 14px;
   padding: 18px;
+}
+
+.captionGenerationIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.captionGenerationLabel {
+  font-size: var(--fs-12);
+  letter-spacing: 1px;
+  color: #f8fafc;
+}
+
+.captionGenerationHint {
+  font-size: var(--fs-13);
+  color: #64748b;
+}
+
+.captionActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.captionGenerateButton {
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 14px;
+  background: #f0a84b;
+  color: #1a1204;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-13);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.captionGenerateButtonSecondary {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.captionGenerateButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.captionGenerateBadge {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #1a1204;
+  color: #f0a84b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.captionGenerateButtonSecondary .captionGenerateBadge {
+  background: #0f172a;
+  color: #c4b5fd;
+}
+
+.captionGenerateBadge svg {
+  width: 12px;
+  height: 12px;
 }
 
 .captionBox {
@@ -120,7 +189,7 @@
 .copyButton {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid rgba(240, 168, 75, 0.3);
@@ -144,6 +213,98 @@
 .captionText {
   font-size: var(--fs-13);
   color: #cbd5e1;
+}
+
+.captionModalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+  padding: 16px;
+}
+
+.captionModal {
+  width: min(390px, 94vw);
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.captionModalTitle {
+  font-size: var(--fs-18);
+  color: #f8fafc;
+}
+
+.captionModalHint {
+  font-size: var(--fs-12);
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.captionModalLabel {
+  font-size: var(--fs-13);
+  color: #f8fafc;
+}
+
+.captionModalTextarea,
+.captionModalInput {
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: var(--fs-13);
+  padding: 12px 14px;
+}
+
+.captionModalTextarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.captionModalTextarea::placeholder,
+.captionModalInput::placeholder {
+  color: #94a3b8;
+}
+
+.captionModalActions {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.captionModalCancel,
+.captionModalGenerate {
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: var(--fs-13);
+}
+
+.captionModalCancel {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.captionModalGenerate {
+  background: #f0a84b;
+  color: #1a1204;
+}
+
+.captionModalCancel:disabled,
+.captionModalGenerate:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .resultsListScroll {
@@ -327,6 +488,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid rgba(240, 168, 75, 0.3);
@@ -439,7 +601,7 @@
     aspect-ratio: 1 / 1;
   }
 
-  .captionsCard {
+  .captionActions {
     grid-template-columns: 1fr;
   }
 }

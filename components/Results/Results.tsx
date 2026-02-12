@@ -2,6 +2,8 @@ import React from "react";
 import { AppMode, SceneResult } from "../../types";
 import { TikTokIcon, InstagramIcon } from "../DashboardV2/DashboardIcons";
 import styles from "./Results.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
 interface ResultsProps {
   mode: AppMode;
@@ -12,6 +14,10 @@ interface ResultsProps {
     tiktok: string;
     instagram: string;
   };
+  onGenerateCaption?: (
+    platform: "tiktok" | "instagram",
+    options: { rules: string; hashtags: string[] }
+  ) => Promise<void> | void;
   onRegenerateAll?: () => void;
   onDownloadAll?: () => void;
   onBack?: () => void;
@@ -25,6 +31,7 @@ const Results: React.FC<ResultsProps> = ({
   isGenerating,
   onRegenerate,
   captions,
+  onGenerateCaption,
   onRegenerateAll,
   onDownloadAll,
   onBack,
@@ -33,14 +40,38 @@ const Results: React.FC<ResultsProps> = ({
 }) => {
   const handleBack = onBack ?? (() => undefined);
   const handleDownloadAll = onDownloadAll ?? (() => undefined);
+  const [captionModalPlatform, setCaptionModalPlatform] = React.useState<
+    "tiktok" | "instagram" | null
+  >(null);
+  const [captionGeneratingPlatform, setCaptionGeneratingPlatform] =
+    React.useState<"tiktok" | "instagram" | null>(null);
+  const [captionRules, setCaptionRules] = React.useState({
+    tiktok: "",
+    instagram: "",
+  });
+  const [captionHashtags, setCaptionHashtags] = React.useState({
+    tiktok: "",
+    instagram: "",
+  });
   const [expandedImage, setExpandedImage] = React.useState<string | null>(null);
   const [copiedTarget, setCopiedTarget] = React.useState<
     "tiktok" | "instagram" | null
   >(null);
   const closeExpandedImage = () => setExpandedImage(null);
+  const captionValues = captions ?? { tiktok: "", instagram: "" };
+  const hasCaptionSection = Boolean(captions || onGenerateCaption);
+
+  const openCaptionModal = (platform: "tiktok" | "instagram") => {
+    setCaptionModalPlatform(platform);
+  };
+
+  const closeCaptionModal = () => {
+    if (captionGeneratingPlatform) return;
+    setCaptionModalPlatform(null);
+  };
+
   const handleCopy = async (platform: "tiktok" | "instagram") => {
-    if (!captions) return;
-    const text = captions[platform];
+    const text = captionValues[platform];
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text);
@@ -49,6 +80,100 @@ const Results: React.FC<ResultsProps> = ({
     } catch (error) {
       console.error("Failed to copy caption:", error);
     }
+  };
+
+  const handleGenerateCaption = async () => {
+    if (!captionModalPlatform || !onGenerateCaption) {
+      setCaptionModalPlatform(null);
+      return;
+    }
+
+    const platform = captionModalPlatform;
+    const hashtags = captionHashtags[platform]
+      .split(/[\s,]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    setCaptionGeneratingPlatform(platform);
+    try {
+      await onGenerateCaption(platform, {
+        rules: captionRules[platform].trim(),
+        hashtags,
+      });
+      setCaptionModalPlatform(null);
+    } catch (error) {
+      console.error("Failed to generate caption:", error);
+    } finally {
+      setCaptionGeneratingPlatform(null);
+    }
+  };
+
+  const renderCaptionColumn = (
+    platform: "tiktok" | "instagram",
+    label: string,
+    Icon: React.ComponentType
+  ) => {
+    const hasCaption = Boolean(captionValues[platform]?.trim());
+    const isGeneratingPlatform = captionGeneratingPlatform === platform;
+
+    if (!hasCaption) {
+      return (
+        <button
+          className={`${styles.captionGenerateButton} ${
+            platform === "instagram"
+              ? styles.captionGenerateButtonSecondary
+              : ""
+          }`}
+          onClick={() => openCaptionModal(platform)}
+          disabled={isGeneratingPlatform || !onGenerateCaption}
+          type="button"
+        >
+          <span className={styles.captionGenerateBadge}>
+            <Icon />
+          </span>
+          <span>
+            {isGeneratingPlatform
+              ? `Generating ${label}...`
+              : `Generate ${label}`}
+          </span>
+        </button>
+      );
+    }
+
+    return (
+      <div className={styles.captionBox}>
+        <div className={styles.captionTitleRow}>
+          <div className={styles.captionTitle}>
+            <Icon />
+            <span>{label}</span>
+          </div>
+          <button
+            className={styles.copyButton}
+            onClick={() => handleCopy(platform)}
+            aria-label={`Copy ${label}`}
+            disabled={!captionValues[platform]}
+            type="button"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </button>
+        </div>
+        <div className={styles.captionText}>{captionValues[platform]}</div>
+      </div>
+    );
   };
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -106,74 +231,103 @@ const Results: React.FC<ResultsProps> = ({
         <div className={styles.projectMeta}>Project: {projectName}</div>
       )}
 
-      {captions && (
+      {hasCaptionSection && (
         <div className={styles.captionsCard}>
-          <div className={styles.captionBox}>
-            <div className={styles.captionTitleRow}>
-              <div className={styles.captionTitle}>
-                <TikTokIcon />
-                <span>TikTok Caption</span>
-              </div>
-              <button
-                className={styles.copyButton}
-                onClick={() => handleCopy("tiktok")}
-                aria-label="Copy TikTok caption"
-                disabled={!captions.tiktok}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-              </button>
+          <div className={styles.captionGenerationIntro}>
+            <div className={styles.captionGenerationLabel}>
+              CAPTION GENERATION
             </div>
-            <div className={styles.captionText}>
-              {isGenerating && !captions.tiktok
-                ? "Generating captions..."
-                : captions.tiktok}
+            <div className={styles.captionGenerationHint}>
+              Generate platform captions with custom rules and hashtags.
             </div>
           </div>
-          <div className={styles.captionBox}>
-            <div className={styles.captionTitleRow}>
-              <div className={styles.captionTitle}>
-                <InstagramIcon />
-                <span>Instagram Caption</span>
-              </div>
-              <button
-                className={styles.copyButton}
-                onClick={() => handleCopy("instagram")}
-                aria-label="Copy Instagram caption"
-                disabled={!captions.instagram}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-              </button>
+          <div className={styles.captionActions}>
+            {renderCaptionColumn("tiktok", "TikTok Caption", TikTokIcon)}
+            {renderCaptionColumn(
+              "instagram",
+              "Instagram Caption",
+              InstagramIcon
+            )}
+          </div>
+        </div>
+      )}
+
+      {captionModalPlatform && (
+        <div
+          className={styles.captionModalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          onClick={closeCaptionModal}
+        >
+          <div
+            className={styles.captionModal}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={styles.captionModalTitle}>
+              {captionModalPlatform === "tiktok"
+                ? "TikTok Caption Setup"
+                : "Instagram Caption Setup"}
             </div>
-            <div className={styles.captionText}>
-              {isGenerating && !captions.instagram
-                ? "Generating captions..."
-                : captions.instagram}
+            <div className={styles.captionModalHint}>
+              Configure custom rules and hashtags before generating.
+            </div>
+            <label
+              className={styles.captionModalLabel}
+              htmlFor="caption-rules-input"
+            >
+              Custom Rules
+            </label>
+            <textarea
+              id="caption-rules-input"
+              className={styles.captionModalTextarea}
+              placeholder={
+                captionModalPlatform === "tiktok"
+                  ? "Set TikTok-specific tone, hook style, and CTA behavior..."
+                  : "Set Instagram-specific voice, storytelling, and structure..."
+              }
+              value={captionRules[captionModalPlatform]}
+              onChange={(event) =>
+                setCaptionRules((prev) => ({
+                  ...prev,
+                  [captionModalPlatform]: event.target.value,
+                }))
+              }
+            />
+            <label
+              className={styles.captionModalLabel}
+              htmlFor="caption-hashtags-input"
+            >
+              Hashtags
+            </label>
+            <input
+              id="caption-hashtags-input"
+              className={styles.captionModalInput}
+              placeholder="#tag1 #tag2 #tag3"
+              value={captionHashtags[captionModalPlatform]}
+              onChange={(event) =>
+                setCaptionHashtags((prev) => ({
+                  ...prev,
+                  [captionModalPlatform]: event.target.value,
+                }))
+              }
+            />
+            <div className={styles.captionModalActions}>
+              <button
+                className={styles.captionModalCancel}
+                type="button"
+                onClick={closeCaptionModal}
+                disabled={Boolean(captionGeneratingPlatform)}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.captionModalGenerate}
+                type="button"
+                onClick={handleGenerateCaption}
+                disabled={Boolean(captionGeneratingPlatform)}
+              >
+                {captionGeneratingPlatform ? "Generating..." : "Generate"}
+              </button>
             </div>
           </div>
         </div>
@@ -252,6 +406,10 @@ const Results: React.FC<ResultsProps> = ({
                             disabled={isGenerating || result.isLoading}
                             aria-label={`Regenerate scene ${idx + 1}`}
                           >
+                            <FontAwesomeIcon
+                              icon={faArrowsRotate}
+                              style={{ width: 12, height: 12 }}
+                            />
                             Regenerate
                           </button>
                         )}
