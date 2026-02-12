@@ -28,14 +28,13 @@ const TopicCard: React.FC<TopicCardProps> = ({
       </div>
       <div className={styles.cardBody}>
         <div className={styles.inputRow}>
-          <input
+          <textarea
             className={styles.topicInput}
-            type="text"
-            placeholder="e.g. A boy's rainy day adventure"
+            placeholder="Describe your storyboard idea, themes, style, and key moments..."
             value={topic}
             onChange={(event) => onTopicChange(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === "Enter" && canGenerate) {
+              if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && canGenerate) {
                 event.preventDefault();
                 onGenerate();
               }
@@ -50,6 +49,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
             {isGenerating ? "Generating..." : "Generate Scenes"}
           </button>
         </div>
+        <p className={styles.hint}>Tip: press Ctrl/Cmd + Enter to generate scenes.</p>
         {error && <p className={styles.error}>{error}</p>}
       </div>
     </section>

@@ -117,6 +117,14 @@ const extractJsonArray = (rawText: string): string => {
   return cleaned.slice(start, end + 1);
 };
 
+const formatTopicContext = (topic: string): string => {
+  return topic
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+};
+
 export async function generateSceneSuggestions(
   topic: string,
   count = 4
@@ -127,15 +135,17 @@ export async function generateSceneSuggestions(
   }
   const ai = new GoogleGenAI({ apiKey });
 
+  const topicContext = formatTopicContext(topic);
   const prompt = `
 You are a storyboard assistant.
-Generate ${count} concise scene prompts based on the topic below.
+Generate ${count} concise scene prompts using all details from the multi-line brief below.
+Treat each line as an intentional requirement (story beats, style, constraints, audience, mood, camera direction).
 Each prompt should describe a clear, concrete visual moment with a setting, subject, and action.
 Keep each prompt to 1-2 sentences.
 Avoid repeating the same setting or action.
 
-Topic:
-${topic}
+Topic brief:
+${topicContext}
 
 Output JSON only as an array of strings, e.g.
 ["Scene 1", "Scene 2", "Scene 3", "Scene 4"]

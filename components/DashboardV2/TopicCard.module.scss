@@ -54,13 +54,15 @@
 .topicInput {
   flex: 1;
   min-width: 220px;
-  height: 38px;
+  min-height: 84px;
+  resize: vertical;
   border-radius: 10px;
   border: 1px solid transparent;
   background: #2a2a2a;
   color: var(--text);
-  padding: 0 12px;
+  padding: 10px 12px;
   font-size: var(--fs-12);
+  line-height: 1.45;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
