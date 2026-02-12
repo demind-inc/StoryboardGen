@@ -111,14 +111,14 @@
 }
 
 .referenceGrid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  flex-wrap: wrap;
 }
 
 .uploadTile {
-  width: 140px;
-  height: 140px;
+  width: 100%;
+  aspect-ratio: 1;
   border: 2px dashed var(--chip-border);
   border-radius: 10px;
   background: var(--input-bg);
@@ -142,8 +142,8 @@
 
 .referenceThumbContainer {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 100%;
+  aspect-ratio: 1;
 }
 
 .referenceThumbWrap {
