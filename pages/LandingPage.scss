@@ -47,6 +47,27 @@
     animation: landing-fade-in 0.4s ease forwards;
   }
 
+  &__header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__hamburger {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: #f8fafc;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  &__header-menu {
+    display: contents;
+  }
+
   &__brand {
     display: inline-flex;
     align-items: center;
@@ -377,6 +398,10 @@
     margin-top: 120px;
     opacity: 0;
 
+    @media (max-width: 1080px) {
+      margin-top: 60px;
+    }
+
     &.landing__in-view {
       animation: landing-fade-in 0.5s ease forwards;
     }
@@ -698,12 +723,58 @@
 
   @media (max-width: 1080px) {
     &__header {
-      grid-template-columns: 1fr;
-      justify-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    &__header-top {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &__hamburger {
+      display: block;
+    }
+
+    &__header-menu {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 12px;
+    }
+
+    &__header--menu-open &__header-menu {
+      display: flex;
     }
 
     &__nav {
-      flex-wrap: wrap;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      width: 100%;
+      gap: 4px;
+
+      button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        text-align: center;
+      }
+    }
+
+    &__actions {
+      flex-direction: column;
+      width: 100%;
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     &__hero-steps {
@@ -725,6 +796,25 @@
 
     &__showcase {
       grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 12px 0;
+    }
+
+    &__showcase-nav:first-of-type {
+      grid-row: 1;
+      grid-column: 1;
+      justify-self: start;
+    }
+
+    &__showcase-viewport {
+      grid-row: 2;
+      grid-column: 1;
+    }
+
+    &__showcase-nav:last-of-type {
+      grid-row: 1;
+      grid-column: 1;
+      justify-self: end;
     }
 
     .pricing-grid {

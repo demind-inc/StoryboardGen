@@ -8,9 +8,11 @@ import {
   faImages,
 } from "@fortawesome/free-regular-svg-icons";
 import {
+  faBars,
   faChevronLeft,
   faChevronRight,
   faWandMagicSparkles,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import useEmblaCarousel from "embla-carousel-react";
 import { useAuth } from "../providers/AuthProvider";
@@ -134,6 +136,7 @@ const LandingPage: React.FC = () => {
   } = useAuth();
 
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [uploadedPreviews, setUploadedPreviews] = useState<
     { url: string; name: string }[]
@@ -258,38 +261,61 @@ const LandingPage: React.FC = () => {
         onChange={handleFileChange}
       />
 
-      <header className="landing__header">
-        <div className="landing__brand">
-          <img
-            src="/assets/images/logo.png"
-            alt="StoryboardGen Logo"
-            className="landing__brand-logo"
-          />
-          <span>StoryboardGen</span>
+      <header
+        className={`landing__header ${
+          mobileMenuOpen ? "landing__header--menu-open" : ""
+        }`}
+      >
+        <div className="landing__header-top">
+          <div className="landing__brand">
+            <img
+              src="/assets/images/logo.png"
+              alt="StoryboardGen Logo"
+              className="landing__brand-logo"
+            />
+            <span>StoryboardGen</span>
+          </div>
+          <button
+            type="button"
+            className="landing__hamburger"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle menu"
+          >
+            <FontAwesomeIcon icon={mobileMenuOpen ? faXmark : faBars} />
+          </button>
         </div>
 
-        <nav className="landing__nav">
-          {navItems.map(({ label, sectionId }) => (
-            <button key={sectionId} onClick={() => scrollToSection(sectionId)}>
-              {label}
-            </button>
-          ))}
-        </nav>
+        <div className="landing__header-menu">
+          <nav className="landing__nav">
+            {navItems.map(({ label, sectionId }) => (
+              <button
+                key={sectionId}
+                onClick={() => {
+                  scrollToSection(sectionId);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
 
-        <div className="landing__actions">
-          <button
-            className="landing__dashboard"
-            onClick={() =>
-              authStatus === "signed_in"
-                ? router.replace("/dashboard")
-                : setShowAuthModal(true)
-            }
-          >
-            Log in
-          </button>
-          <button className="landing__start" onClick={handleStart}>
-            Start free
-          </button>
+          <div className="landing__actions">
+            <button
+              className="landing__dashboard"
+              onClick={() =>
+                authStatus === "signed_in"
+                  ? router.replace("/dashboard")
+                  : setShowAuthModal(true)
+              }
+            >
+              Log in
+            </button>
+            <button className="landing__start" onClick={handleStart}>
+              Start free
+            </button>
+          </div>
         </div>
       </header>
 
@@ -385,9 +411,6 @@ const LandingPage: React.FC = () => {
                 content—complete with captions and hashtags—from one simple
                 prompt.
               </p>
-              <button className="landing__problem-cta" onClick={handleStart}>
-                Get started for free
-              </button>
             </div>
             <div className="landing__problem-right">
               {whyUseItems.map((item) => (
