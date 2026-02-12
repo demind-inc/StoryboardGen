@@ -29,7 +29,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
 }) => {
   const [topic, setTopic] = useState(initialTopic);
   const [guideline, setGuideline] = useState("");
-  const [sceneCount, setSceneCount] = useState(4);
+  const [sceneCountInput, setSceneCountInput] = useState("4");
 
   // Update topic when initialTopic changes
   useEffect(() => {
@@ -38,9 +38,22 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
     }
   }, [initialTopic]);
 
+  const validateAndClampSceneCount = (value: string): number => {
+    const num = parseInt(value, 10);
+    if (isNaN(num) || num < 1) return 1;
+    if (num > 10) return 10;
+    return num;
+  };
+
+  const handleSceneCountBlur = () => {
+    const validCount = validateAndClampSceneCount(sceneCountInput);
+    setSceneCountInput(String(validCount));
+  };
+
   const handleGenerate = () => {
     if (topic.trim()) {
-      onGenerate(topic, sceneCount, guideline.trim() || undefined);
+      const count = validateAndClampSceneCount(sceneCountInput);
+      onGenerate(topic, count, guideline.trim() || undefined);
     }
   };
 
@@ -101,7 +114,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
                 <span className={styles.modalFieldIcon}>
                   <SceneIcon />
                 </span>
-                <label className={styles.modalFieldLabel}>Number of Scenes</label>
+                <label className={styles.modalFieldLabel}>Number of Scenes (1-10)</label>
               </div>
               <input
                 type="number"
@@ -109,13 +122,9 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
                 placeholder="4"
                 min="1"
                 max="10"
-                value={sceneCount}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  if (!isNaN(val) && val >= 1 && val <= 10) {
-                    setSceneCount(val);
-                  }
-                }}
+                value={sceneCountInput}
+                onChange={(e) => setSceneCountInput(e.target.value)}
+                onBlur={handleSceneCountBlur}
                 disabled={isGenerating}
               />
             </div>
