@@ -1,87 +1,77 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faStar,
+  faListAlt,
+  faImages,
+} from "@fortawesome/free-regular-svg-icons";
+import {
+  faBars,
+  faChevronLeft,
+  faChevronRight,
+  faWandMagicSparkles,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import useEmblaCarousel from "embla-carousel-react";
 import { useAuth } from "../providers/AuthProvider";
 import { SubscriptionPlan } from "../types";
 import AuthShell from "../components/AuthShell/AuthShell";
 
-const referenceImage = {
-  src: "/assets/showcase/reference.png",
-  alt: "Reference upload",
-  topic: "ADHD behaviors",
-};
-
-const generatedImages = [
+const heroSteps = [
   {
-    src: "/assets/showcase/output-1.png",
-    prompt: "Boy with a question mark around him",
+    number: "1",
+    title: "Ideate",
+    detail: "Tell us scenes, topic, and\nupload reference images",
+    tone: "lavender",
   },
   {
-    src: "/assets/showcase/output-2.png",
-    prompt: "Boy writing in a notebook",
-  },
-  {
-    src: "/assets/showcase/output-3.png",
-    prompt: "Boy feeling annoyed at a noisy cafe",
+    number: "2",
+    title: "Generate",
+    detail:
+      "With one click, generate engaging posts,\nimages, captions and hashtags",
+    tone: "amber",
   },
 ];
 
-const socialCaptions = {
-  tiktok:
-    "3 quick ADHD resets: name the distraction, do a 2-minute brain dump, then change your environment.",
-  instagram:
-    "ADHD tips to reset focus fast: name the distraction, brain dump for two minutes, then shift your environment.",
-  hashtags:
-    "#adhd #focus #productivity #mentalhealth #studyhacks #neurodivergent",
-};
+const navItems = [
+  { label: "Problem", sectionId: "problem" },
+  { label: "Solution", sectionId: "flow" },
+  { label: "Pricing", sectionId: "pricing" },
+  { label: "FAQ", sectionId: "faq" },
+];
 
-const quickSteps = [
+const whyUseItems = [
   {
-    title: "Upload Once",
-    detail: "Upload reference images once to lock the character and style.",
+    icon: faUser,
+    title: "Scene-consistent characters and visuals",
+    detail:
+      "Upload references once and keep characters, outfits, and visual style consistent across every scene.",
   },
   {
-    title: "List Scenes",
+    icon: faStar,
+    title: "Fast multi-image generation with one prompt",
     detail:
-      "Describe all scenes in a single textbox on auto-generate scenes by entering a topic to start.",
+      "Describe your full story in one prompt and create a complete, aligned image set instantly.",
   },
   {
-    title: "Generate a Set",
+    icon: faListAlt,
+    title: "Simple, efficient workflow",
     detail:
-      "We generate multiple images at once with the same character across every scene.",
+      "Upload references, list scenes, and generate\n— fast and streamlined.",
+  },
+  {
+    icon: faImages,
+    title: "Personalized social content & slideshows",
+    detail:
+      "Create customized multi-image posts and slideshows, complete with captions and relevant hashtags.",
   },
 ];
 
-const valuePoints = [
-  {
-    title: "Scene-Consistent Images",
-    detail:
-      "Generate multiple scenes with the same character and illustration style.",
-  },
-  {
-    title: "One Sentence → Scene Prompts",
-    detail:
-      "Enter a topic in one sentence. We auto-generate scene prompts so you can refine and generate in one go.",
-  },
-  {
-    title: "Social Media Ready",
-    detail:
-      "Get TikTok and Instagram captions with hashtags for every image. One click to copy and post.",
-  },
-];
-
-const problems = [
-  {
-    title: "Style drifts without a reference",
-    detail: "Faces, outfits, and illustration style change between scenes.",
-  },
-  {
-    title: "You keep re-uploading the same images",
-    detail: "Uploading the same reference over and over slows everything down.",
-  },
-  {
-    title: "You can only generate one image at a time",
-    detail: "Building a full carousel or storyboard takes multiple runs.",
-  },
+const showcaseShots = [
+  "/assets/showcase/storyboard-input.png",
+  "/assets/showcase/storyboard-output.png",
 ];
 
 const pricingPlans = [
@@ -146,15 +136,64 @@ const LandingPage: React.FC = () => {
   } = useAuth();
 
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedPreviews, setUploadedPreviews] = useState<
+    { url: string; name: string }[]
+  >([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewsRef = useRef<{ url: string; name: string }[]>([]);
+  previewsRef.current = uploadedPreviews;
+
+  const heroRef = useRef<HTMLElement>(null);
+  const sectionProblemRef = useRef<HTMLElement>(null);
+  const sectionFlowRef = useRef<HTMLElement>(null);
+  const sectionPricingRef = useRef<HTMLElement>(null);
+  const sectionFaqRef = useRef<HTMLElement>(null);
+  const fadeInRefs = useMemo(
+    () => [
+      heroRef,
+      sectionProblemRef,
+      sectionFlowRef,
+      sectionPricingRef,
+      sectionFaqRef,
+    ],
+    []
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+  });
 
   useEffect(() => {
     if (authStatus === "signed_in") {
       setShowAuthModal(false);
     }
   }, [authStatus]);
+
+  useEffect(() => {
+    return () => {
+      previewsRef.current.forEach((p) => URL.revokeObjectURL(p.url));
+    };
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("landing__in-view");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    fadeInRefs.forEach((ref) => {
+      if (ref.current) observer.observe(ref.current);
+    });
+    return () => observer.disconnect();
+  }, [fadeInRefs]);
 
   const handleStart = () => {
     setIsMobileMenuOpen(false);
@@ -183,10 +222,27 @@ const LandingPage: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadedFileName(file.name);
-    setShowAuthModal(true);
+    const fileList = e.target.files;
+    if (!fileList?.length) return;
+    const files = Array.from(fileList);
+    setUploadedPreviews((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.url));
+      return files.map((f) => ({
+        url: URL.createObjectURL(f),
+        name: f.name,
+      }));
+    });
+    setUploadedFiles(files);
+    e.target.value = "";
+  };
+
+  const removePreview = (index: number) => {
+    setUploadedPreviews((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      URL.revokeObjectURL(prev[index].url);
+      return next;
+    });
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const scrollToSection = (id: string) => {
@@ -208,283 +264,234 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="landing">
-      <div className="landing__background">
-        <span className="landing__orb landing__orb--one" />
-        <span className="landing__orb landing__orb--two" />
-        <span className="landing__orb landing__orb--three" />
-      </div>
-
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden-input"
         onChange={handleFileChange}
       />
 
-      <header className="landing__header">
-        <div className="landing__brand brand">
-          <div className="brand__icon">
+      <header
+        className={`landing__header ${
+          mobileMenuOpen ? "landing__header--menu-open" : ""
+        }`}
+      >
+        <div className="landing__header-top">
+          <div className="landing__brand">
             <img
               src="/assets/images/logo.png"
               alt="StoryboardGen Logo"
-              className="brand__icon-image"
+              className="landing__brand-logo"
             />
+            <span>StoryboardGen</span>
           </div>
-          <div className="brand__text">
-            <p className="brand__title">StoryboardGen</p>
-            <div className="brand__subtitle">
-              <span className="brand__eyebrow">Scene-consistent</span>
-              <span className="brand__subtitle-text">
-                Multi-image generator
-              </span>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="landing__hamburger"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle menu"
+          >
+            <FontAwesomeIcon icon={mobileMenuOpen ? faXmark : faBars} />
+          </button>
         </div>
 
-        <button
-          className="landing__menu-toggle"
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        <div className="landing__header-menu">
+          <nav className="landing__nav">
+            {navItems.map(({ label, sectionId }) => (
+              <button
+                key={sectionId}
+                onClick={() => {
+                  scrollToSection(sectionId);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
 
-        <nav
-          className={`landing__nav${
-            isMobileMenuOpen ? " landing__nav--open" : ""
-          }`}
-        >
-          <button onClick={() => scrollToSection("gallery")}>Examples</button>
-          <button onClick={() => scrollToSection("problem")}>Problem</button>
-          <button onClick={() => scrollToSection("flow")}>How it works</button>
-          <button onClick={() => scrollToSection("pricing")}>Pricing</button>
-          <button onClick={() => scrollToSection("faq")}>FAQ</button>
-        </nav>
-
-        <div
-          className={`landing__actions${
-            isMobileMenuOpen ? " landing__actions--open" : ""
-          }`}
-        >
-          <button
-            className="landing__link"
-            onClick={handleHeaderAccountClick}
-          >
-            {authStatus === "signed_in" ? "Dashboard" : "Login"}
-          </button>
-          <button className="primary-button" onClick={handleStart}>
-            Start free
-          </button>
+          <div className="landing__actions">
+            <button
+              className="landing__dashboard"
+              onClick={() =>
+                authStatus === "signed_in"
+                  ? router.replace("/dashboard")
+                  : setShowAuthModal(true)
+              }
+            >
+              Log in
+            </button>
+            <button className="landing__start" onClick={handleStart}>
+              Start free
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="landing__main">
-        <section className="landing__hero">
-          <div className="landing__hero-copy">
-            <div className="landing__badge">Scene-consistent illustration</div>
-            <h1>Scene-Consistent Images in One Prompt</h1>
-            <p className="landing__lead">
-              Create multiple images with the same character across different
-              scenes. No prompt copying. No style drift. One textbox.
-            </p>
-            <div className="landing__cta">
-              <button className="primary-button" onClick={handleStart}>
-                Start with your scene
-              </button>
-              <button
-                className="landing__ghost-button"
-                onClick={() => scrollToSection("gallery")}
-              >
-                View examples
-              </button>
-            </div>
-            <div className="landing__proof">
-              {valuePoints.map((point) => (
-                <div className="proof-item" key={point.title}>
-                  <div className="proof-item__icon" aria-hidden="true">
-                    <span />
-                  </div>
-                  <div className="proof-item__copy">
-                    <p className="proof-item__title">{point.title}</p>
-                    <p className="proof-item__detail">{point.detail}</p>
-                  </div>
-                </div>
-              ))}
-              <div className="proof-item proof-item--note">
-                <div className="proof-item__icon" aria-hidden="true">
-                  <span />
-                </div>
-                <div className="proof-item__copy">
-                  <p className="proof-item__title">3 Free Images</p>
-                  <p className="proof-item__detail">
-                    Try it instantly. No credit card required.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="landing__hero-panel">
-            <div className="landing__form-card">
-              <div className="landing__form-row">
-                <div className="landing__label">Reference images</div>
-                <div
-                  className="landing__solid-upload"
-                  role="button"
-                  tabIndex={0}
-                  onClick={handleUploadClick}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleUploadClick();
-                    }
-                  }}
+        <section className="landing__hero" ref={heroRef}>
+          <p className="landing__hero-badge">
+            Try our new AI storyboard generator
+          </p>
+          <h1>Create your next storyboard with one click</h1>
+          <div className="landing__hero-steps">
+            {heroSteps.map((step) => (
+              <article key={step.number} className="landing__step-card">
+                <span
+                  className={`landing__step-number landing__step-number--${step.tone}`}
                 >
-                  <div className="landing__solid-top">
-                    <span className="landing__drop-icon">+</span>
-                    <div className="landing__drop-text">
-                      <strong>Click to upload</strong>
-                      <span className="landing__hint">
-                        Multiple images, PNG or JPG.
-                      </span>
-                    </div>
-                  </div>
-                  {uploadedFileName && (
-                    <div className="landing__upload-file">
-                      <span className="landing__upload-file-name">
-                        {uploadedFileName}
-                      </span>
-                      <span className="landing__upload-file-tag">Ready</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                  {step.number}
+                </span>
+                <h3>{step.title}</h3>
+                <p className="landing__step-detail">{step.detail}</p>
+              </article>
+            ))}
+          </div>
 
-              <div className="landing__form-row">
-                <div className="landing__label">Scene prompt</div>
-                <div className="landing__prompt landing__prompt--textarea">
-                  <p>Boy with a question mark around him</p>
-                  <p>Boy writing in a notebook</p>
-                  <p>Boy feeling annoyed at a noisy cafe.</p>
-                </div>
-              </div>
-
-              <button className="primary-button" onClick={handleStart}>
-                Generate
+          <div className="landing__hero-form">
+            <label className="landing__field">
+              <span>What do you want to create?</span>
+              <textarea placeholder="Describe your story scenes, target audience, and desired outcome..." />
+            </label>
+            <div className="landing__upload-row">
+              <button
+                className="landing__upload-square"
+                onClick={handleUploadClick}
+              >
+                <span className="landing__upload-plus">+</span>
+                <span>Upload image{uploadedFiles.length !== 1 ? "s" : ""}</span>
+                {uploadedFiles.length > 0 && (
+                  <small title={uploadedFiles.map((f) => f.name).join(", ")}>
+                    {uploadedFiles.length} file
+                    {uploadedFiles.length !== 1 ? "s" : ""} selected
+                  </small>
+                )}
               </button>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="gallery"
-          className="landing__section landing__section--gallery"
-        >
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">Example</p>
-          </div>
-          <div className="landing__mosaic">
-            <div className="mosaic__reference">
-              <div className="landing__card-label">Reference</div>
-              <div className="landing__image-frame">
-                <img
-                  src={referenceImage.src}
-                  alt={referenceImage.alt}
-                  loading="lazy"
-                />
-              </div>
-              <div className="mosaic__topic">Topic</div>
-              <div className="mosaic__topic-title">{referenceImage.topic}</div>
-              <p className="landing__hint">
-                This character will be used for all scenes.
-              </p>
-            </div>
-            <div className="mosaic__arrow" aria-hidden="true">
-              <span className="mosaic__arrow-line" />
-              <span className="mosaic__arrow-head" />
-            </div>
-            <div className="mosaic__output">
-              <div className="mosaic__tiles">
-                {generatedImages.map((image) => (
-                  <div className="mosaic__tile" key={image.prompt}>
-                    <div className="landing__image-frame landing__image-frame--glow">
-                      <img src={image.src} alt={image.prompt} loading="lazy" />
+              {uploadedPreviews.length > 0 && (
+                <div className="landing__upload-previews">
+                  {uploadedPreviews.map((preview, index) => (
+                    <div
+                      key={preview.url}
+                      className="landing__upload-preview"
+                      title={preview.name}
+                    >
+                      <img
+                        src={preview.url}
+                        alt={`Preview ${index + 1}`}
+                        title={preview.name}
+                      />
+                      <button
+                        type="button"
+                        className="landing__upload-preview-remove"
+                        onClick={() => removePreview(index)}
+                        aria-label={`Remove ${preview.name}`}
+                      >
+                        ×
+                      </button>
                     </div>
-                    <div className="mosaic__label">{image.prompt}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mosaic__captions">
-                <div className="mosaic__caption">
-                  <span className="mosaic__caption-label">TikTok</span>
-                  <span className="mosaic__caption-text">
-                    {socialCaptions.tiktok}
-                  </span>
+                  ))}
                 </div>
-                <div className="mosaic__caption">
-                  <span className="mosaic__caption-label">Instagram</span>
-                  <span className="mosaic__caption-text">
-                    {socialCaptions.instagram}
-                  </span>
-                </div>
-                <div className="mosaic__caption">
-                  <span className="mosaic__caption-label">Hashtags</span>
-                  <span className="mosaic__caption-text">
-                    {socialCaptions.hashtags}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
+            <button
+              type="button"
+              className="landing__hero-generate"
+              onClick={handleStart}
+            >
+              <FontAwesomeIcon
+                icon={faWandMagicSparkles}
+                style={{ width: 14, height: 14 }}
+              />
+              <span>Generate</span>
+            </button>
           </div>
         </section>
-
-        <div className="landing__section-divider" aria-hidden="true" />
 
         <section
           id="problem"
+          ref={sectionProblemRef}
           className="landing__section landing__section--problem"
         >
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">The problem</p>
-            <h2>Creating Consistent Visuals Is Painful</h2>
-          </div>
-          <div className="landing__problem-grid">
-            {problems.map((problem) => (
-              <div className="problem-card" key={problem.title}>
-                <div className="problem-card__icon" aria-hidden="true">
-                  <span />
-                </div>
-                <div className="problem-card__body">
-                  <p className="problem-card__title">{problem.title}</p>
-                  <p className="problem-card__detail">{problem.detail}</p>
-                </div>
-              </div>
-            ))}
+          <div className="landing__problem-layout">
+            <div className="landing__problem-left">
+              <h3>Why use StoryboardGen?</h3>
+              <p>
+                Create consistent multi-scene visuals and personalized social
+                content—complete with captions and hashtags—from one simple
+                prompt.
+              </p>
+            </div>
+            <div className="landing__problem-right">
+              {whyUseItems.map((item) => (
+                <article key={item.title} className="landing__problem-item">
+                  <span className="landing__problem-icon">
+                    <FontAwesomeIcon icon={item.icon as never} />
+                  </span>
+                  <div>
+                    <p className="landing__problem-title">{item.title}</p>
+                    <p className="landing__problem-detail">{item.detail}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section id="flow" className="landing__section landing__section--flow">
-          <div className="landing__section-head">
-            <p className="landing__eyebrow">How it works</p>
-            <h2>Just 3 Steps</h2>
+        <section
+          id="flow"
+          ref={sectionFlowRef}
+          className="landing__section landing__section--flow"
+        >
+          <div className="landing__section-head landing__section-head--flow">
+            <h2 className="landing__flow-title">
+              One tool, endless possibilities
+            </h2>
+            <p className="landing__flow-subtitle">
+              StoryboardGen helps you create and grow with AI across social
+              media, faster and simpler.
+            </p>
+            <button className="landing__flow-cta" onClick={handleStart}>
+              Get started for free
+            </button>
           </div>
-          <div className="landing__flow-grid">
-            {quickSteps.map((step, index) => (
-              <div className="flow-step" key={step.title}>
-                <div className="flow-step__number">0{index + 1}</div>
-                <h3>{step.title}</h3>
-                <p>{step.detail}</p>
+          <div className="landing__showcase">
+            <button
+              type="button"
+              className="landing__showcase-nav"
+              aria-label="Previous image"
+              onClick={() => emblaApi?.scrollPrev()}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </button>
+            <div className="landing__showcase-viewport embla" ref={emblaRef}>
+              <div className="landing__showcase-container embla__container">
+                {showcaseShots.map((src, index) => (
+                  <div
+                    key={src}
+                    className="landing__showcase-shot embla__slide"
+                  >
+                    <img src={src} alt={`Storyboard preview ${index + 1}`} />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <button
+              type="button"
+              className="landing__showcase-nav"
+              aria-label="Next image"
+              onClick={() => emblaApi?.scrollNext()}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
+            </button>
           </div>
         </section>
 
         <section
           id="pricing"
+          ref={sectionPricingRef}
           className="landing__section landing__section--pricing"
         >
           <div className="landing__section-head">
@@ -493,24 +500,16 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="pricing-grid">
             {pricingPlans.map((plan) => (
-              <div
-                className={`pricing-card ${
-                  plan.highlight ? "pricing-card--highlight" : ""
-                }`}
-                key={plan.badge}
-              >
+              <div className="pricing-card" key={plan.badge}>
                 <div className="pricing-card__badge">{plan.badge}</div>
                 <h3>{plan.title}</h3>
                 <p className="pricing-card__price">{plan.price}</p>
                 <p className="pricing-card__credits">{plan.credits}</p>
                 <p className="pricing-card__note">{plan.note}</p>
-                <ul className="pricing-card__list">
-                  {plan.perks.map((perk) => (
-                    <li key={perk}>{perk}</li>
-                  ))}
-                </ul>
                 <button
-                  className="primary-button"
+                  className={`pricing-card__button ${
+                    plan.badge === "Free" ? "pricing-card__button--accent" : ""
+                  }`}
                   onClick={() =>
                     handlePlanStart(
                       plan.badge.toLowerCase() as SubscriptionPlan
@@ -524,7 +523,11 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section id="faq" className="landing__section landing__section--faq">
+        <section
+          id="faq"
+          ref={sectionFaqRef}
+          className="landing__section landing__section--faq"
+        >
           <div className="landing__section-head">
             <p className="landing__eyebrow">FAQ</p>
             <h2>Quick Answers</h2>
@@ -543,7 +546,7 @@ const LandingPage: React.FC = () => {
                 How many images should I upload?
               </div>
               <div className="faq__answer">
-                We recomend uploading 1–3 reference images with to lock your
+                We recommend uploading 1–3 reference images to lock your
                 character and style.
               </div>
             </div>
