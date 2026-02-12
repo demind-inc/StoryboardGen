@@ -1,37 +1,33 @@
 import React from "react";
-import {
-  SceneIcon,
-  AIIcon,
-  PlusIcon,
-  SpinnerIcon,
-} from "./DashboardIcons";
+import { SceneIcon, AIIcon, PlusIcon, SpinnerIcon } from "./DashboardIcons";
 import SceneItem from "./SceneItem";
+import { Scene } from "../../types/scene";
 import styles from "./SceneCard.module.scss";
 
 export interface SceneCardProps {
-  promptList: string[];
+  scenes: Scene[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSavePrompt: (index: number, value: string) => void;
+  onSaveScene: (index: number, title: string, description: string) => void;
   previewImageUrl?: string;
   onOpenAutoGenerate?: () => void;
   isTopicGenerating?: boolean;
 }
 
 const SceneCard: React.FC<SceneCardProps> = ({
-  promptList,
+  scenes,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
   onRemoveScene,
-  onSavePrompt,
+  onSaveScene,
   onOpenAutoGenerate,
   isTopicGenerating = false,
 }) => {
   const canRemove = onRemoveScene != null;
-  const hasScenes = promptList.some((p) => p.trim().length > 0);
+  const hasScenes = scenes.length > 0;
 
   return (
     <section className={styles.card}>
@@ -42,9 +38,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
           </span>
           <div>
             <h2 className={styles.cardTitle}>Scenes</h2>
-            <p className={styles.cardDescription}>
-              Add scenes manually or auto-generate from a topic
-            </p>
           </div>
         </div>
         {hasScenes && (
@@ -110,16 +103,18 @@ const SceneCard: React.FC<SceneCardProps> = ({
         ) : (
           <>
             <div className={styles.sceneList}>
-              {promptList.map((prompt, idx) => (
+              {scenes.map((scene, idx) => (
                 <SceneItem
-                  key={`${idx}-${prompt.substring(0, 50)}`}
-                  prompt={prompt}
+                  key={scene.id}
+                  scene={scene}
                   index={idx}
                   isActive={idx === activeSceneIndex}
                   canRemove={canRemove}
                   onSelect={() => onSceneSelect(idx)}
                   onRemove={() => onRemoveScene?.(idx)}
-                  onSave={(newPrompt) => onSavePrompt(idx, newPrompt)}
+                  onSave={(title, description) =>
+                    onSaveScene(idx, title, description)
+                  }
                 />
               ))}
             </div>

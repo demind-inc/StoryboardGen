@@ -19,6 +19,13 @@ import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
 import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
 import { generateSceneSuggestions } from "../services/geminiService";
+import { 
+  Scene, 
+  generateSceneId, 
+  scenesToPrompts, 
+  promptsToScenes,
+  sceneToPrompt 
+} from "../types/scene";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
   basic: "$15/mo",
@@ -145,9 +152,14 @@ export const useDashboardManual = ({
     );
   }, [hashtags]);
 
-  const promptList = useMemo(
-    () => manualPrompts.split("\n").filter((p) => p.trim() !== ""),
+  const scenes = useMemo(
+    () => promptsToScenes(manualPrompts) || [],
     [manualPrompts]
+  );
+
+  const promptList = useMemo(
+    () => scenes.map(sceneToPrompt),
+    [scenes]
   );
 
   /** At least one tab (Scene 1) for the Scene Prompts UI. */
@@ -220,7 +232,7 @@ export const useDashboardManual = ({
     : undefined;
 
   const hasValidScenePrompts =
-    promptList.filter((p) => p.trim() !== "").length > 0;
+    scenes.some(scene => scene.title.trim() || scene.description.trim());
   const disableGenerate =
     isGenerating ||
     references.length === 0 ||
@@ -251,24 +263,53 @@ export const useDashboardManual = ({
   }, [userId]);
 
   const addScene = useCallback(() => {
-    const nextPrompt = "";
+    const newScene: Scene = {
+      id: generateSceneId(),
+      title: "",
+      description: "",
+    };
+    
     setManualPrompts((prev) => {
-      const trimmed = prev.trim();
-      return trimmed ? `${trimmed}\n${nextPrompt}` : nextPrompt;
+      const currentScenes = promptsToScenes(prev);
+      const updatedScenes = [...currentScenes, newScene];
+      return scenesToPrompts(updatedScenes);
     });
-    setActiveSceneIndex(promptList.length);
-  }, [promptList.length, setManualPrompts]);
+    
+    setActiveSceneIndex(scenes.length);
+  }, [scenes.length, setManualPrompts]);
 
   const removeScene = useCallback(
     (index: number) => {
-      handleRemovePrompt(index);
+      setManualPrompts((prev) => {
+        const currentScenes = promptsToScenes(prev);
+        const updatedScenes = currentScenes.filter((_, idx) => idx !== index);
+        return scenesToPrompts(updatedScenes);
+      });
+      
       setActiveSceneIndex((prev) => {
         if (prev === index) return Math.max(0, index - 1);
         if (prev > index) return prev - 1;
         return prev;
       });
     },
-    [handleRemovePrompt]
+    [setManualPrompts]
+  );
+
+  const saveScene = useCallback(
+    (index: number, title: string, description: string) => {
+      setManualPrompts((prev) => {
+        const currentScenes = promptsToScenes(prev);
+        if (index >= 0 && index < currentScenes.length) {
+          currentScenes[index] = {
+            ...currentScenes[index],
+            title,
+            description,
+          };
+        }
+        return scenesToPrompts(currentScenes);
+      });
+    },
+    [setManualPrompts]
   );
 
   const handleTopicChange = useCallback((value: string) => {
@@ -288,7 +329,16 @@ export const useDashboardManual = ({
       if (!suggestions.length) {
         throw new Error("No suggestions returned");
       }
-      setManualPrompts(suggestions.join("\n"));
+      
+      // Convert suggestions to Scene objects with IDs
+      const newScenes: Scene[] = suggestions.map(({ title, description }) => ({
+        id: generateSceneId(),
+        title,
+        description,
+      }));
+      
+      // Convert scenes to prompt string format
+      setManualPrompts(scenesToPrompts(newScenes));
       setActiveSceneIndex(0);
     } catch (error) {
       console.error("Failed to generate scene suggestions:", error);
@@ -320,10 +370,12 @@ export const useDashboardManual = ({
     manualPrompts,
     promptList,
     displayPromptList,
+    scenes,
     editingPromptIndex,
     handleSavePrompt,
     addScene,
     removeScene,
+    saveScene,
     activeSceneIndex,
     setActiveSceneIndex,
     rulesTab,

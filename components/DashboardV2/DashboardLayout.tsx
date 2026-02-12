@@ -20,12 +20,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onGenerateTopicScenes,
   isTopicGenerating,
   topicError,
-  promptList,
+  scenes,
   activeSceneIndex,
   onSceneSelect,
   onAddScene,
   onRemoveScene,
-  onSavePrompt,
+  onSaveScene,
   previewImageUrl,
   isGenerating,
   disableGenerate,
@@ -80,12 +80,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onProjectNameChange={onProjectNameChange}
         />
         <SceneCard
-          promptList={promptList}
+          scenes={scenes}
           activeSceneIndex={activeSceneIndex}
           onSceneSelect={onSceneSelect}
           onAddScene={onAddScene}
           onRemoveScene={onRemoveScene}
-          onSavePrompt={onSavePrompt}
+          onSaveScene={onSaveScene}
           previewImageUrl={previewImageUrl}
           onOpenAutoGenerate={() => setIsAutoGenerateOpen(true)}
           isTopicGenerating={isTopicGenerating}

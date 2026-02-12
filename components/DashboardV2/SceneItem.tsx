@@ -1,38 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { CloseIcon } from "./DashboardIcons";
+import { Scene } from "../../types/scene";
 import styles from "./SceneCard.module.scss";
 
 interface SceneItemProps {
-  prompt: string;
+  scene: Scene;
   index: number;
   isActive: boolean;
   canRemove: boolean;
   onSelect: () => void;
   onRemove: () => void;
-  onSave: (prompt: string) => void;
+  onSave: (title: string, description: string) => void;
 }
 
-// Parse the prompt to extract title and description
-const parsePrompt = (
-  prompt: string
-): { title: string; description: string } => {
-  if (!prompt) return { title: "", description: "" };
-
-  // Check if prompt has the format "Title: Description"
-  const separatorIndex = prompt.indexOf(": ");
-  if (separatorIndex > 0) {
-    return {
-      title: prompt.substring(0, separatorIndex).trim(),
-      description: prompt.substring(separatorIndex + 2).trim(),
-    };
-  }
-
-  // If no separator, treat entire prompt as description
-  return { title: "", description: prompt.trim() };
-};
-
 const SceneItem: React.FC<SceneItemProps> = ({
-  prompt,
+  scene,
   index,
   isActive,
   canRemove,
@@ -40,9 +22,8 @@ const SceneItem: React.FC<SceneItemProps> = ({
   onRemove,
   onSave,
 }) => {
-  const parsedItem = parsePrompt(prompt);
-  const [draftTitle, setDraftTitle] = useState(parsedItem.title);
-  const [draftDescription, setDraftDescription] = useState(parsedItem.description);
+  const [draftTitle, setDraftTitle] = useState(scene.title);
+  const [draftDescription, setDraftDescription] = useState(scene.description);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use refs to always have access to latest values
@@ -66,44 +47,26 @@ const SceneItem: React.FC<SceneItemProps> = ({
         clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = null;
       }
-      // Save directly without using the callback
-      const title = draftTitleRef.current.trim();
-      const description = draftDescriptionRef.current.trim();
-      const newPrompt =
-        title && description
-          ? `${title}: ${description}`
-          : title || description;
-      if (newPrompt) {
-        onSave(newPrompt);
-      }
+      // Save directly
+      onSave(draftTitleRef.current, draftDescriptionRef.current);
     }
     prevIsActiveRef.current = isActive;
   }, [isActive, onSave]);
 
-  // Update drafts when prompt changes from external source (not during typing)
-  const promptRef = useRef(prompt);
+  // Update drafts when scene changes from external source
+  const sceneIdRef = useRef(scene.id);
   useEffect(() => {
-    // Only update if this is a new prompt (e.g., from scene switch or removal)
-    if (promptRef.current !== prompt) {
-      const parsed = parsePrompt(prompt);
-      setDraftTitle(parsed.title);
-      setDraftDescription(parsed.description);
-      promptRef.current = prompt;
+    // Only update if this is a different scene (different ID)
+    if (sceneIdRef.current !== scene.id) {
+      setDraftTitle(scene.title);
+      setDraftDescription(scene.description);
+      sceneIdRef.current = scene.id;
     }
-  }, [prompt]);
+  }, [scene.id, scene.title, scene.description]);
 
   // Auto-save function that always uses latest values
   const saveCurrentPrompt = useCallback(() => {
-    const title = draftTitleRef.current.trim();
-    const description = draftDescriptionRef.current.trim();
-    const newPrompt =
-      title && description
-        ? `${title}: ${description}`
-        : title || description;
-
-    if (newPrompt) {
-      onSave(newPrompt);
-    }
+    onSave(draftTitleRef.current, draftDescriptionRef.current);
   }, [onSave]);
 
   // Debounced save
@@ -168,7 +131,7 @@ const SceneItem: React.FC<SceneItemProps> = ({
             type="text"
             className={styles.sceneItemTitleInput}
             placeholder="Scene title"
-            value={isActive ? draftTitle : parsedItem.title}
+            value={isActive ? draftTitle : scene.title}
             onChange={handleTitleChange}
             onBlur={handleBlur}
             onFocus={handleFocus}
@@ -178,7 +141,7 @@ const SceneItem: React.FC<SceneItemProps> = ({
             className={styles.sceneItemDescInput}
             placeholder="Scene description"
             value={
-              isActive ? draftDescription : parsedItem.description
+              isActive ? draftDescription : scene.description
             }
             onChange={handleDescriptionChange}
             onBlur={handleBlur}

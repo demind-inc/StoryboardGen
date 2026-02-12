@@ -5,6 +5,7 @@ import {
   ReferenceImage,
   SceneResult,
 } from "../../types";
+import { Scene } from "../../types/scene";
 
 export interface DashboardLayoutProps {
   projectName: string;
@@ -18,12 +19,12 @@ export interface DashboardLayoutProps {
   onGenerateTopicScenes: () => void;
   isTopicGenerating: boolean;
   topicError?: string | null;
-  promptList: string[];
+  scenes: Scene[];
   activeSceneIndex: number;
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSavePrompt: (index: number, value: string) => void;
+  onSaveScene: (index: number, title: string, description: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;
   disableGenerate: boolean;

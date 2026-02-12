@@ -36,9 +36,6 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
           </span>
           <div>
             <h2 className={styles.cardTitle}>Reference Images</h2>
-            <p className={styles.cardDescription}>
-              Upload style and subject references
-            </p>
           </div>
         </div>
         <div className={styles.headerActions}>
@@ -114,7 +111,9 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
             className={`pointer-events-auto ${styles.expandedPanel}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <DialogTitle className={styles.srOnly}>Expanded reference image</DialogTitle>
+            <DialogTitle className={styles.srOnly}>
+              Expanded reference image
+            </DialogTitle>
             <button
               type="button"
               className={styles.expandedClose}

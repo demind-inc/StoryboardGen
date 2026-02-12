@@ -18,8 +18,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--card-border-secondary, rgba(196, 181, 253, 0.1));
+  padding: 10px 20px;
+  border-bottom: 1px solid
+    var(--card-border-secondary, rgba(196, 181, 253, 0.1));
 }
 
 .cardTitleRow {

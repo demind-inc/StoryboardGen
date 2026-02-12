@@ -16,7 +16,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 20px;
+  padding: 10px 20px;
   gap: 16px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--card-border);
@@ -24,7 +24,7 @@
 
 .cardTitleRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
 }
 
