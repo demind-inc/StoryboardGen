@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import { ReferenceSet } from "../../types";
 import { useAuth } from "../../providers/AuthProvider";
 import { useReferenceLibrary } from "../../hooks/useLibraryService";
@@ -15,10 +16,16 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
   onClose,
   onSelect,
 }) => {
+  const router = useRouter();
   const { session, authStatus } = useAuth();
   const userId = session?.user?.id;
   const { data: items = [], isLoading, refetch } = useReferenceLibrary(userId);
   const [selectedSetIds, setSelectedSetIds] = useState<Set<string>>(new Set());
+
+  const handleOpenSettings = () => {
+    onClose();
+    router.push("/saved/image");
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -82,9 +89,33 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
             <p className={styles["dataset-modal__eyebrow"]}>
               Reference library
             </p>
-            <h3 className={styles["dataset-modal__title"]}>
-              Pick saved images
-            </h3>
+            <div className={styles["dataset-modal__title-row"]}>
+              <h3 className={styles["dataset-modal__title"]}>
+                Pick saved images
+              </h3>
+              <button
+                type="button"
+                className={styles["dataset-modal__settings-btn"]}
+                onClick={handleOpenSettings}
+                title="Manage saved images"
+                aria-label="Open saved images settings"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+              </button>
+            </div>
             <p className={styles["dataset-modal__subtitle"]}>
               Reuse your stored character shots to keep scenes consistent.
             </p>

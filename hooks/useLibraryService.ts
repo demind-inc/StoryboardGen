@@ -7,6 +7,7 @@ import {
   savePromptPreset,
   updatePromptPreset,
   updateReferenceSetLabel,
+  addImagesToReferenceSet,
   deleteReferenceSet,
   deletePromptPreset,
 } from "../services/libraryService";
@@ -92,6 +93,23 @@ export function useUpdateReferenceSetLabel() {
       label: string;
     }) =>
       updateReferenceSetLabel(params.userId, params.setId, params.label),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.referenceLibrary(variables.userId),
+      });
+    },
+  });
+}
+
+export function useAddImagesToReferenceSet() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: {
+      userId: string;
+      setId: string;
+      references: ReferenceImage[];
+    }) =>
+      addImagesToReferenceSet(params.userId, params.setId, params.references),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.referenceLibrary(variables.userId),

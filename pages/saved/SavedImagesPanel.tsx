@@ -5,6 +5,7 @@ import {
   useReferenceLibrary,
   useSaveReferenceImages,
   useUpdateReferenceSetLabel,
+  useAddImagesToReferenceSet,
   useDeleteReferenceSet,
 } from "../../hooks/useLibraryService";
 import styles from "./SavedImagesPanel.module.scss";
@@ -82,6 +83,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
   const { data: referenceLibrary = [], isLoading } = useReferenceLibrary(userId);
   const saveReferencesMutation = useSaveReferenceImages();
   const updateLabelMutation = useUpdateReferenceSetLabel();
+  const addImagesToSetMutation = useAddImagesToReferenceSet();
   const deleteSetMutation = useDeleteReferenceSet();
   const [isAddingNewSet, setIsAddingNewSet] = useState(false);
   const [newSetImages, setNewSetImages] = useState<ReferenceImage[]>([]);
@@ -89,9 +91,12 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const [editingSetId, setEditingSetId] = useState<string | null>(null);
   const [editingSetLabel, setEditingSetLabel] = useState("");
+  const [addingToSetId, setAddingToSetId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const addToSetInputRef = useRef<HTMLInputElement>(null);
   const isSaving = saveReferencesMutation.isPending;
   const isUpdatingSet = updateLabelMutation.isPending;
+  const isAddingToSet = addImagesToSetMutation.isPending;
 
   const sortedSets = useMemo(() => {
     return [...referenceLibrary].sort((a, b) => {
@@ -100,16 +105,6 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
       return sortDirection === "newest" ? bTime - aTime : aTime - bTime;
     });
   }, [referenceLibrary, sortDirection]);
-
-  const flatImages = useMemo(() => {
-    return sortedSets.flatMap((set) =>
-      set.images.map((image, index) => ({
-        image,
-        index,
-        set,
-      }))
-    );
-  }, [sortedSets]);
 
   const formatSetDate = (set: ReferenceSet) =>
     set.createdAt ? new Date(set.createdAt).toLocaleDateString() : "";
@@ -124,6 +119,53 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
     if (set.label) return set.label;
     const dateLabel = formatSetDate(set);
     return dateLabel ? `Reference set • ${dateLabel}` : "Reference set";
+  };
+
+  const handleAddImagesToSet = (setId: string) => {
+    setAddingToSetId(setId);
+    setTimeout(() => addToSetInputRef.current?.click(), 0);
+  };
+
+  const handleAddToSetFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !addingToSetId) return;
+
+    const newImages: ReferenceImage[] = [];
+
+    for (const file of Array.from(files)) {
+      const reader = new FileReader();
+      await new Promise<void>((resolve) => {
+        reader.onloadend = () => {
+          newImages.push({
+            id: Math.random().toString(36).substr(2, 9),
+            data: reader.result as string,
+            mimeType: file.type,
+          });
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    if (!userId) {
+      alert("Unable to verify your account. Please sign in again.");
+      setAddingToSetId(null);
+      return;
+    }
+
+    try {
+      await addImagesToSetMutation.mutateAsync({
+        userId,
+        setId: addingToSetId,
+        references: newImages,
+      });
+    } catch (error) {
+      console.error("Failed to add images to set:", error);
+      alert("Could not add images to set. Please try again.");
+    } finally {
+      setAddingToSetId(null);
+      e.target.value = "";
+    }
   };
 
   const handleUploadClick = () => {
@@ -299,19 +341,27 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
           <p className={styles.empty}>Loading saved images...</p>
         ) : (
           <>
-            <div className={styles.grid}>
+            <input
+              type="file"
+              ref={addToSetInputRef}
+              multiple
+              className="hidden-input"
+              accept="image/*"
+              onChange={handleAddToSetFileUpload}
+            />
+            <div className={styles.setsList}>
               {isAddingNewSet && (
-                <div className={styles.newSetCard}>
-                  <div className={styles.newSetHeader}>
+                <div className={styles.setCard}>
+                  <div className={styles.setCardHeader}>
                     <input
                       type="text"
-                      className={styles.newSetInput}
+                      className={styles.setCardInput}
                       placeholder="Set name (required)"
                       value={newSetLabel}
                       onChange={(e) => setNewSetLabel(e.target.value)}
                       required
                     />
-                    <div className={styles.newSetActions}>
+                    <div className={styles.setCardHeaderActions}>
                       <button
                         onClick={handleSaveNewSet}
                         disabled={
@@ -319,26 +369,30 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                           newSetImages.length === 0 ||
                           !newSetLabel.trim()
                         }
-                        className={styles.newSetActionPrimary}
+                        className={styles.setCardActionPrimary}
                       >
                         {isSaving ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={handleCancelNewSet}
                         disabled={isSaving}
-                        className={styles.newSetActionGhost}
+                        className={styles.setCardActionGhost}
                       >
                         Cancel
                       </button>
                     </div>
                   </div>
-                  <div className={styles.newSetGrid}>
+                  <div className={styles.setCardImages}>
                     {newSetImages.map((img) => (
-                      <div key={img.id} className={styles.newSetThumb}>
-                        <img src={img.data} alt="New reference" />
+                      <div key={img.id} className={styles.setCardImageWrapper}>
+                        <img
+                          src={img.data}
+                          alt="New reference"
+                          className={styles.setCardImage}
+                        />
                         <button
                           onClick={() => removeNewSetImage(img.id)}
-                          className={styles.newSetRemove}
+                          className={styles.setCardImageRemove}
                           aria-label="Remove image"
                         >
                           <svg
@@ -359,7 +413,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                     ))}
                     <button
                       onClick={handleUploadClick}
-                      className={styles.newSetUpload}
+                      className={styles.setCardImageAdd}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -381,55 +435,17 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                   </div>
                 </div>
               )}
-              {flatImages.length === 0 && !isAddingNewSet ? (
+              {sortedSets.length === 0 && !isAddingNewSet ? (
                 <p className={styles.empty}>No saved reference images.</p>
               ) : (
-                flatImages.map(({ image, set, index }) => (
-                  <div key={image.id} className={styles.tile}>
-                    <button
-                      className={styles.tileButton}
-                      onClick={() => {
-                        if (editingSetId === set.setId) return;
-                        onSelectReferenceSet([set]);
-                      }}
-                      title={set.label || "Reference set"}
-                    >
-                      <img
-                        src={image.url}
-                        alt={set.label || "Reference"}
-                        className={styles.tileImage}
-                      />
-                      <span className={styles.tileOverlay} />
-                    </button>
-                    <button
-                      className={styles.expandButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedImage(image.url);
-                      }}
-                      title="Expand image"
-                      aria-label="Expand image"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                      </svg>
-                    </button>
-                    <div className={styles.captionRow}>
+                sortedSets.map((set) => (
+                  <div key={set.setId} className={styles.setCard}>
+                    <div className={styles.setCardHeader}>
                       {editingSetId === set.setId ? (
                         <>
                           <input
                             type="text"
-                            className={styles.captionInput}
+                            className={styles.setCardInput}
                             placeholder="Set name"
                             value={editingSetLabel}
                             onChange={(event) =>
@@ -437,10 +453,10 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                             }
                             disabled={isUpdatingSet}
                           />
-                          <div className={styles.captionActions}>
+                          <div className={styles.setCardHeaderActions}>
                             <button
                               type="button"
-                              className={styles.captionActionPrimary}
+                              className={styles.setCardActionPrimary}
                               onClick={handleSaveEditedSet}
                               disabled={
                                 isUpdatingSet || !editingSetLabel.trim()
@@ -450,7 +466,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                             </button>
                             <button
                               type="button"
-                              className={styles.captionAction}
+                              className={styles.setCardActionGhost}
                               onClick={handleCancelEditSet}
                               disabled={isUpdatingSet}
                             >
@@ -460,13 +476,52 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                         </>
                       ) : (
                         <>
-                          <p className={styles.caption}>
-                            {formatImageCaption(set)}
-                          </p>
-                          <div className={styles.captionActions}>
+                          <div className={styles.setCardTitle}>
+                            <h3>{formatSetTitle(set)}</h3>
+                            <span className={styles.setCardImageCount}>
+                              {set.images.length}{" "}
+                              {set.images.length === 1 ? "image" : "images"}
+                            </span>
+                          </div>
+                          <div className={styles.setCardHeaderActions}>
                             <button
                               type="button"
-                              className={styles.captionAction}
+                              className={styles.setCardAction}
+                              onClick={() => handleAddImagesToSet(set.setId)}
+                              disabled={
+                                isSaving ||
+                                isUpdatingSet ||
+                                isAddingNewSet ||
+                                isAddingToSet
+                              }
+                              title="Add more images to this set"
+                            >
+                              {isAddingToSet && addingToSetId === set.setId ? (
+                                "Adding..."
+                              ) : (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                  Add Images
+                                </>
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.setCardAction}
                               onClick={() => startEditingSet(set)}
                               disabled={
                                 isSaving || isUpdatingSet || isAddingNewSet
@@ -476,7 +531,7 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                             </button>
                             <button
                               type="button"
-                              className={`${styles.captionAction} ${styles.captionActionDelete}`}
+                              className={`${styles.setCardAction} ${styles.setCardActionDelete}`}
                               onClick={() => handleDeleteSet(set.setId)}
                               disabled={
                                 isSaving || isUpdatingSet || isAddingNewSet
@@ -487,6 +542,52 @@ const SavedImagesPanel: React.FC<SavedImagesPanelProps> = ({
                           </div>
                         </>
                       )}
+                    </div>
+                    <div className={styles.setCardImages}>
+                      {set.images.map((image) => (
+                        <div
+                          key={image.id}
+                          className={styles.setCardImageWrapper}
+                        >
+                          <button
+                            className={styles.setCardImageButton}
+                            onClick={() => {
+                              if (editingSetId === set.setId) return;
+                              onSelectReferenceSet([set]);
+                            }}
+                            title={`Use ${set.label || "reference set"}`}
+                          >
+                            <img
+                              src={image.url}
+                              alt={set.label || "Reference"}
+                              className={styles.setCardImage}
+                            />
+                          </button>
+                          <button
+                            className={styles.setCardImageExpand}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedImage(image.url);
+                            }}
+                            title="Expand image"
+                            aria-label="Expand image"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))
