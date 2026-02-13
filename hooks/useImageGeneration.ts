@@ -180,24 +180,27 @@ export const useImageGeneration = ({
       mergedHashtags
     );
 
-    const nextCaptionStore = {
-      ...captionStore,
-      [platform]: response,
-    };
-    setCaptionStore(nextCaptionStore);
-    setCaptions({
-      tiktok: formatCaptionDisplay(nextCaptionStore.tiktok),
-      instagram: formatCaptionDisplay(nextCaptionStore.instagram),
+    // Use functional update so the other platform's captions are never overwritten
+    // when TikTok and Instagram generation run independently (e.g. one finishes after the other).
+    const nextCaptionsRef: { current: { tiktok: string[]; instagram: string[] } | null } = { current: null };
+    setCaptionStore((prev) => {
+      const next = { ...prev, [platform]: response };
+      nextCaptionsRef.current = next;
+      setCaptions({
+        tiktok: formatCaptionDisplay(next.tiktok),
+        instagram: formatCaptionDisplay(next.instagram),
+      });
+      return next;
     });
 
-    if (userId && manualResults.length > 0) {
+    if (userId && manualResults.length > 0 && nextCaptionsRef.current) {
       try {
         const savedProjectId = await saveProjectMutation.mutateAsync({
           userId,
           projectId: projectId ?? undefined,
           projectName,
           prompts: manualResults.map((result) => result.prompt),
-          captions: nextCaptionStore,
+          captions: nextCaptionsRef.current,
           results: manualResults,
         });
         setProjectId(savedProjectId);
@@ -425,43 +428,68 @@ export const useImageGeneration = ({
     setCaptionStore(emptyCaptions);
     setCaptions({ tiktok: "", instagram: "" });
 
-    for (let i = 0; i < initialManualResults.length; i++) {
-      try {
-        const imageUrl = await generateCharacterScene(
-          promptList[i],
+    // Run all image generations in parallel so results can be shown together
+    const settled = await Promise.allSettled(
+      promptList.map((prompt) =>
+        generateCharacterScene(
+          prompt,
           references,
           size,
           guidelines,
           { transparentBackground }
-        );
-        const updatedUsage = await recordGenerationMutation.mutateAsync({
-          userId,
-          amount: 1,
-          planType: planType as any,
-        });
-        setUsage(updatedUsage);
-        markFirstGenerationComplete();
+        )
+      )
+    );
+
+    let hitMonthlyLimit = false;
+    const usageUpdates: Promise<MonthlyUsage>[] = [];
+
+    for (let i = 0; i < settled.length; i++) {
+      const outcome = settled[i];
+      if (outcome.status === "fulfilled") {
         generatedResults[i] = {
           ...generatedResults[i],
-          imageUrl,
+          imageUrl: outcome.value,
           isLoading: false,
         };
-        setManualResults([...generatedResults]);
-      } catch (error: any) {
+        markFirstGenerationComplete();
+        usageUpdates.push(
+          recordGenerationMutation.mutateAsync({
+            userId,
+            amount: 1,
+            planType: planType as any,
+          })
+        );
+      } else {
+        const error = outcome.reason as any;
         console.error("Manual generation error:", error);
         if (error?.message === "MONTHLY_LIMIT_REACHED") {
-          await refreshUsage(userId);
-          alert("Monthly credit limit reached. Please upgrade for more.");
-          break;
+          hitMonthlyLimit = true;
         }
         generatedResults[i] = {
           ...generatedResults[i],
-          error: error.message,
+          error: error?.message || "Generation failed",
           isLoading: false,
         };
-        setManualResults([...generatedResults]);
       }
     }
+
+    if (hitMonthlyLimit) {
+      await refreshUsage(userId);
+      alert("Monthly credit limit reached. Please upgrade for more.");
+    }
+
+    // Apply latest usage from the last successful record (or refresh)
+    if (usageUpdates.length > 0) {
+      try {
+        const usages = await Promise.all(usageUpdates);
+        if (usages.length > 0) setUsage(usages[usages.length - 1]);
+      } catch (e) {
+        console.error("Failed to record some usage", e);
+      }
+    }
+
+    setManualResults([...generatedResults]);
 
     const isFinished = generatedResults.every((result) => !result.isLoading);
     const hasAnyOutput = generatedResults.some((result) => result.imageUrl);

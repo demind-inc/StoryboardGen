@@ -56,15 +56,6 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
 
   const activePreviewUrl = manualResults[activeSceneIndex]?.imageUrl;
 
-  if (isGenerating && manualResults.length === 0) {
-    return (
-      <div className="loadingScreen">
-        <div className="loadingScreen__spinner" />
-        <p className="loadingScreen__text">Generating your scenes...</p>
-      </div>
-    );
-  }
-
   return (
     <>
       <input
