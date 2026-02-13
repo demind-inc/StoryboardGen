@@ -5,6 +5,11 @@ import { useAuth } from "../../providers/AuthProvider";
 import { useReferenceLibrary } from "../../hooks/useLibraryService";
 import styles from "./DatasetModal.module.scss";
 
+function preloadImage(url: string): void {
+  const img = new Image();
+  img.src = url;
+}
+
 interface ReferenceLibraryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -38,6 +43,15 @@ const ReferenceLibraryModal: React.FC<ReferenceLibraryModalProps> = ({
       refetch();
     }
   }, [isOpen, authStatus, userId, refetch]);
+
+  // Preload thumbnails so cards show images quickly when the modal is open
+  useEffect(() => {
+    if (!isOpen || !items.length) return;
+    items.forEach((set) => {
+      const first = set.images[0];
+      if (first?.url) preloadImage(first.url);
+    });
+  }, [isOpen, items]);
 
   const toggleSelection = (setId: string) => {
     setSelectedSetIds((prev) => {

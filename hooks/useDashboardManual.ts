@@ -93,6 +93,12 @@ export const useDashboardManual = ({
     handleAddReferencesFromLibrary,
   } = referencesHook;
 
+  // Only refs with loaded data are used for generation (library refs stream in)
+  const referencesWithData = useMemo(
+    () => references.filter((r) => r.data),
+    [references]
+  );
+
   const promptsHook = usePrompts(userId, () => {});
   const {
     manualPrompts,
@@ -177,7 +183,7 @@ export const useDashboardManual = ({
   const imageGenerationHook = useImageGeneration({
     mode: "manual",
     userId,
-    references,
+    references: referencesWithData,
     manualPrompts,
     projectName,
     size: "1K",
@@ -234,7 +240,7 @@ export const useDashboardManual = ({
   );
   const disableGenerate =
     isGenerating ||
-    references.length === 0 ||
+    referencesWithData.length === 0 ||
     !hasValidScenePrompts ||
     (!!usage && usage.remaining <= 0) ||
     !!usageError;

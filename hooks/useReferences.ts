@@ -65,7 +65,8 @@ export const useReferences = (
       return;
     }
 
-    if (references.length === 0) {
+    const refsWithData = references.filter((r) => r.data);
+    if (refsWithData.length === 0) {
       alert("Upload a reference image first.");
       return;
     }
@@ -73,7 +74,7 @@ export const useReferences = (
     try {
       await saveReferencesMutation.mutateAsync({
         userId,
-        references,
+        references: refsWithData,
         label,
       });
     } catch (error) {
@@ -84,35 +85,39 @@ export const useReferences = (
 
   const handleAddReferencesFromLibrary = async (sets: ReferenceSet[]) => {
     if (!sets.length) return;
-    // Flatten all images from selected sets
     const allImages = sets.flatMap((set) => set.images);
 
-    // Convert URLs to base64 data URLs for ReferenceImage (needed for Gemini API)
-    const mapped = await Promise.all(
-      allImages.map(async (item): Promise<ReferenceImage> => {
-        try {
-          const response = await fetch(item.url);
-          const blob = await response.blob();
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              resolve({
-                id: Math.random().toString(36).substring(2, 9),
-                data: reader.result as string,
-                mimeType: item.mimeType,
-              });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch (error) {
-          console.error("Failed to load image from storage:", error);
-          throw error;
-        }
-      })
-    );
+    // Add placeholders immediately so the grid updates and shows loading slots
+    const placeholders: ReferenceImage[] = allImages.map((item) => ({
+      id: item.id,
+      data: "",
+      mimeType: item.mimeType,
+      url: item.url,
+    }));
+    setReferences((prev) => [...prev, ...placeholders]);
 
-    setReferences((prev) => [...prev, ...mapped]);
+    // Load each image in parallel and update that slot when ready (stream in)
+    const loadOne = async (item: (typeof allImages)[0]): Promise<void> => {
+      try {
+        const response = await fetch(item.url);
+        const blob = await response.blob();
+        const data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        setReferences((prev) =>
+          prev.map((r) =>
+            r.id === item.id ? { ...r, data, url: undefined } : r
+          )
+        );
+      } catch (error) {
+        console.error("Failed to load image from storage:", error);
+        setReferences((prev) => prev.filter((r) => r.id !== item.id));
+      }
+    };
+    allImages.forEach((item) => void loadOne(item));
   };
 
   const handleUpdateReferenceSetLabel = async (

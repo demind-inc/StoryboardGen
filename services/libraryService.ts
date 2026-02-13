@@ -98,32 +98,33 @@ export async function fetchReferenceLibrary(
 
   // Group images by set_id
   const setsMap = new Map<string, ReferenceSet>();
+  const items = data as any[];
+  const filePaths = items.map((item) => item.file_path);
 
-  // Generate signed URLs for all images (private bucket requires signed URLs)
-  // Signed URLs expire after 1 hour (3600 seconds)
-  const signedUrlPromises = (data as any[]).map(async (item) => {
-    const { data: signedUrlData, error: urlError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .createSignedUrl(item.file_path, 3600); // 1 hour expiration
+  // Create signed URLs in a single batch request to reduce time-to-render.
+  const { data: signedUrlsData, error: signedUrlsError } = await (
+    supabase.storage.from(STORAGE_BUCKET) as any
+  ).createSignedUrls(filePaths, 3600);
 
-    if (urlError) {
-      console.error(
-        "Failed to create signed URL for file:",
-        item.file_path,
-        urlError
-      );
-      return { item, signedUrl: null };
+  if (signedUrlsError) {
+    throw signedUrlsError;
+  }
+
+  const signedUrlByPath = new Map<string, string>();
+  (signedUrlsData ?? []).forEach((entry: any, index: number) => {
+    const signedUrl = entry?.signedUrl;
+    const path = filePaths[index];
+    if (!signedUrl || !path) {
+      if (path) {
+        console.error("Missing signed URL for file:", path);
+      }
+      return;
     }
-
-    return {
-      item,
-      signedUrl: signedUrlData?.signedUrl || null,
-    };
+    signedUrlByPath.set(path, signedUrl);
   });
 
-  const urlResults = await Promise.all(signedUrlPromises);
-
-  for (const { item, signedUrl } of urlResults) {
+  for (const item of items) {
+    const signedUrl = signedUrlByPath.get(item.file_path);
     if (!signedUrl) {
       console.error("Skipping item due to missing signed URL:", item.file_path);
       continue;
