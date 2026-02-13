@@ -308,6 +308,76 @@ export async function deleteReferenceSet(
   }
 }
 
+export async function addImagesToReferenceSet(
+  userId: string,
+  setId: string,
+  references: ReferenceImage[]
+): Promise<void> {
+  if (!references.length) return;
+
+  const supabase = getSupabaseClient();
+
+  const { data: existingData, error: fetchError } = await supabase
+    .from("reference_library")
+    .select("label")
+    .eq("set_id", setId)
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+
+  if (fetchError) {
+    throw fetchError;
+  }
+
+  const label = existingData?.label || DEFAULT_REFERENCE_LABEL;
+
+  const { data: countData, error: countError } = await supabase
+    .from("reference_library")
+    .select("file_path")
+    .eq("set_id", setId)
+    .eq("user_id", userId);
+
+  if (countError) {
+    throw countError;
+  }
+
+  const startIndex = countData?.length || 0;
+
+  const uploadPromises = references.map(async (ref, index) => {
+    const fileExtension = ref.mimeType.split("/")[1] || "png";
+    const fileName = `${userId}/${setId}/${startIndex + index}.${fileExtension}`;
+    const blob = dataURLtoBlob(ref.data);
+
+    const { error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(fileName, blob, {
+        contentType: ref.mimeType,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    return {
+      user_id: userId,
+      set_id: setId,
+      label,
+      file_path: fileName,
+      mime_type: ref.mimeType,
+    };
+  });
+
+  const payload = await Promise.all(uploadPromises);
+
+  const { error } = await supabase
+    .from("reference_library")
+    .insert(payload as any);
+  if (error) {
+    throw error;
+  }
+}
+
 export async function deletePromptPreset(
   userId: string,
   presetId: string
