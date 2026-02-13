@@ -153,8 +153,8 @@ ${topic}
 
 Output JSON only as an array of objects with "title" and "description" fields, e.g.
 [
-  {"title": "Opening Scene", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
-  {"title": "The Problem", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
+  {"title": "Boy writing a note in a cafe", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
+  {"title": "Woman reading by a window", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
 ]
 `.trim();
 
