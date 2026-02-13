@@ -316,7 +316,11 @@ export const useDashboardManual = ({
   }, []);
 
   const generateTopicScenes = useCallback(
-    async (topicOverride?: string, count: number = 4) => {
+    async (
+      topicOverride?: string,
+      count: number = 4,
+      customGuideline?: string
+    ) => {
       const topicToUse = topicOverride !== undefined ? topicOverride : topic;
       const trimmed = topicToUse.trim();
       if (!trimmed || isTopicGenerating) return;
@@ -325,7 +329,11 @@ export const useDashboardManual = ({
       setTopicError(null);
 
       try {
-        const suggestions = await generateSceneSuggestions(trimmed, count);
+        const suggestions = await generateSceneSuggestions(
+          trimmed,
+          count,
+          customGuideline
+        );
         if (!suggestions.length) {
           throw new Error("No suggestions returned");
         }
