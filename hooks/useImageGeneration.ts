@@ -20,7 +20,7 @@ import {
   setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
 } from "../services/authService";
 import { trackImageGeneration, trackImageRegeneration } from "../lib/analytics";
-import { promptToScene } from "../types/scene";
+import { promptToScene, sceneToImagePrompt } from "../types/scene";
 
 interface UseImageGenerationProps {
   mode: AppMode;
@@ -430,15 +430,17 @@ export const useImageGeneration = ({
 
     // Run all image generations in parallel so results can be shown together
     const settled = await Promise.allSettled(
-      promptList.map((prompt) =>
-        generateCharacterScene(
-          prompt,
+      promptList.map((prompt) => {
+        const scene = promptToScene(prompt);
+        const imagePrompt = sceneToImagePrompt(scene);
+        return generateCharacterScene(
+          imagePrompt,
           references,
           size,
           guidelines,
           { transparentBackground }
-        )
-      )
+        );
+      })
     );
 
     let hitMonthlyLimit = false;
