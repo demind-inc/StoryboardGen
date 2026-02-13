@@ -37,9 +37,7 @@ export async function generateCharacterScene(
     },
   }));
 
-  const guidelineList = guidelines
-    .map((group) => `- ${group.rule}`)
-    .join("\n");
+  const guidelineList = guidelines.map((group) => `- ${group.rule}`).join("\n");
   const transparentBackground = options.transparentBackground ?? true;
   const backgroundPrompt = transparentBackground
     ? DEFAULT_CHARACTER_BACKGROUND_TRANSPARENT
@@ -119,7 +117,8 @@ const extractJsonArray = (rawText: string): string => {
 
 export async function generateSceneSuggestions(
   topic: string,
-  count = 4
+  count = 4,
+  customGuideline?: string
 ): Promise<Array<{ title: string; description: string }>> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -127,12 +126,20 @@ export async function generateSceneSuggestions(
   }
   const ai = new GoogleGenAI({ apiKey });
 
+  const guidelineBlock = customGuideline?.trim()
+    ? `
+
+Additional guidelines (follow these and override the default guidelines when generating scenes, if provided):
+${customGuideline.trim()}
+`
+    : "";
+
   const prompt = `
 You are a storyboard creator for visual slideshows and presentations.
 Generate ${count} sequential scenes that tell a cohesive visual story about the topic below.
 
 Each scene should have:
-- A concise, narrative title (2-4 words) that flows sequentially (e.g., "Scene 1:", "Opening:", "The Discovery:", etc.)
+- A concise title that summarizes what is shown in the scene (e.g., "Boy writing a note in a cafe", "Woman reading by a window") - not a narrative label, but a short summary of the visual content
 - A vivid visual description (1-2 sentences) written in present tense, focusing on what viewers will SEE in this slideshow frame - include specific visual elements, colors, composition, mood, and camera angles
 
 The scenes should:
@@ -140,14 +147,14 @@ The scenes should:
 - Be optimized for still image generation (describe a single frozen moment, not continuous action)
 - Use cinematic, descriptive language suitable for visual storytelling
 - Create variety in composition, perspective, and mood across scenes
-
+${guidelineBlock}
 Topic:
 ${topic}
 
 Output JSON only as an array of objects with "title" and "description" fields, e.g.
 [
-  {"title": "Opening Scene", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
-  {"title": "The Problem", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
+  {"title": "Boy writing a note in a cafe", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
+  {"title": "Woman reading by a window", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
 ]
 `.trim();
 
@@ -211,9 +218,7 @@ export async function generateSceneCaptions(
   const instagramRules = rules.instagram
     .map((group) => `- ${group.rule}`)
     .join("\n");
-  const guidelineList = guidelines
-    .map((group) => `- ${group.rule}`)
-    .join("\n");
+  const guidelineList = guidelines.map((group) => `- ${group.rule}`).join("\n");
   const hashtagList = hashtags.length ? hashtags.join(" ") : "(none)";
 
   const captionPrompt = `
@@ -374,9 +379,7 @@ export async function generateSceneSummaries(
   const sceneList = prompts
     .map((scene, idx) => `${idx + 1}. ${scene}`)
     .join("\n");
-  const guidelineList = guidelines
-    .map((group) => `- ${group.rule}`)
-    .join("\n");
+  const guidelineList = guidelines.map((group) => `- ${group.rule}`).join("\n");
 
   const summaryPrompt = `
 You are a storyboard assistant.
@@ -418,9 +421,7 @@ Requirements:
     }
 
     return {
-      titles: prompts.map((_, idx) =>
-        String(parsed[idx]?.title ?? "").trim()
-      ),
+      titles: prompts.map((_, idx) => String(parsed[idx]?.title ?? "").trim()),
       descriptions: prompts.map((_, idx) =>
         String(parsed[idx]?.description ?? "").trim()
       ),

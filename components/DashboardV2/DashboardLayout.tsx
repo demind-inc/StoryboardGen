@@ -49,12 +49,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const [isAutoGenerateOpen, setIsAutoGenerateOpen] = useState(false);
 
-  const handleAutoGenerate = (topic: string, count: number, guideline?: string) => {
+  const handleAutoGenerate = (
+    topic: string,
+    count: number,
+    guideline?: string
+  ) => {
     onTopicChange(topic);
     setIsAutoGenerateOpen(false);
-    // Pass the topic and count directly to avoid state update race condition
-    onGenerateTopicScenes(topic, count);
-    // TODO: Use guideline if needed in the future
+    // Pass the topic, count, and optional guideline to avoid state update race condition
+    onGenerateTopicScenes(topic, count, guideline?.trim() || undefined);
   };
 
   if (results.length) {

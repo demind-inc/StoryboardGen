@@ -18,7 +18,14 @@ export function InlineSpinner({
   className?: string;
 }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+      }}
+    >
       <span
         className={[styles.spinner, className].filter(Boolean).join(" ")}
         style={SIZE_VARS[size]}
@@ -28,4 +35,3 @@ export function InlineSpinner({
     </span>
   );
 }
-

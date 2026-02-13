@@ -29,9 +29,14 @@ const heroSteps = [
   {
     number: "2",
     title: "Generate",
-    detail:
-      "With one click, generate engaging posts,\nimages, captions and hashtags",
+    detail: "Generate your multi-scene images\nin one click.",
     tone: "amber",
+  },
+  {
+    number: "3",
+    title: "Post",
+    detail: "Generate captions and hashtags\nfor TikTok and Instagram",
+    tone: "mint",
   },
 ];
 
@@ -336,7 +341,11 @@ const LandingPage: React.FC = () => {
           <p className="landing__hero-badge">
             Try our new AI storyboard generator
           </p>
-          <h1>Create your next storyboard with one click</h1>
+          <h1>
+            Create your next storyboard
+            <br />
+            with one click
+          </h1>
           <div className="landing__hero-steps">
             {heroSteps.map((step) => (
               <article key={step.number} className="landing__step-card">

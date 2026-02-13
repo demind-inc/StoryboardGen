@@ -10,6 +10,7 @@ import {
 import styles from "./Results.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 
 interface ResultsProps {
   mode: AppMode;
@@ -54,8 +55,8 @@ const Results: React.FC<ResultsProps> = ({
   const [captionModalPlatform, setCaptionModalPlatform] = React.useState<
     "tiktok" | "instagram" | null
   >(null);
-  const [captionGeneratingPlatform, setCaptionGeneratingPlatform] =
-    React.useState<"tiktok" | "instagram" | null>(null);
+  const [captionGeneratingPlatforms, setCaptionGeneratingPlatforms] =
+    React.useState<Set<"tiktok" | "instagram">>(() => new Set());
   const [selectedRuleIndex, setSelectedRuleIndex] = React.useState({
     tiktok: 0,
     instagram: 0,
@@ -81,7 +82,11 @@ const Results: React.FC<ResultsProps> = ({
   };
 
   const closeCaptionModal = () => {
-    if (captionGeneratingPlatform) return;
+    if (
+      captionModalPlatform &&
+      captionGeneratingPlatforms.has(captionModalPlatform)
+    )
+      return;
     setCaptionModalPlatform(null);
   };
 
@@ -107,7 +112,7 @@ const Results: React.FC<ResultsProps> = ({
     const selectedRule = ruleOptions[platform][selectedRuleIndex[platform]];
     const hashtags = selectedHashtags[platform];
 
-    setCaptionGeneratingPlatform(platform);
+    setCaptionGeneratingPlatforms((prev) => new Set([...prev, platform]));
     setCaptionModalPlatform(null);
     try {
       await onGenerateCaption(platform, {
@@ -117,7 +122,11 @@ const Results: React.FC<ResultsProps> = ({
     } catch (error) {
       console.error("Failed to generate caption:", error);
     } finally {
-      setCaptionGeneratingPlatform(null);
+      setCaptionGeneratingPlatforms((prev) => {
+        const next = new Set(prev);
+        next.delete(platform);
+        return next;
+      });
     }
   };
 
@@ -127,7 +136,7 @@ const Results: React.FC<ResultsProps> = ({
     Icon: React.ComponentType
   ) => {
     const hasCaption = Boolean(captionValues[platform]?.trim());
-    const isGeneratingPlatform = captionGeneratingPlatform === platform;
+    const isGeneratingPlatform = captionGeneratingPlatforms.has(platform);
 
     if (!hasCaption) {
       return (
@@ -287,148 +296,148 @@ const Results: React.FC<ResultsProps> = ({
                 ];
               return (
                 <>
-            <label
-              className={styles.captionModalLabelRow}
-              htmlFor="caption-rule-select"
-            >
-              <span className={styles.captionModalLabel}>Rule</span>
-              <button
-                type="button"
-                className={styles.captionModalSettingButton}
-                title="Open rule settings"
-                aria-label="Open rule settings"
-                onClick={() =>
-                  router.push(
-                    captionModalPlatform === "tiktok"
-                      ? "/rules/tiktok"
-                      : "/rules/instagram"
-                  )
-                }
-              >
-                <SettingsIcon />
-              </button>
-            </label>
-            <Listbox
-              value={selectedRuleIndex[captionModalPlatform]}
-              onChange={(value: number) =>
-                setSelectedRuleIndex((prev) => ({
-                  ...prev,
-                  [captionModalPlatform]: value,
-                }))
-              }
-            >
-              <div className={styles.listbox}>
-                <Listbox.Button
-                  id="caption-rule-select"
-                  className={styles.listboxButton}
-                >
-                  {ruleOptions[captionModalPlatform][
-                    selectedRuleIndex[captionModalPlatform]
-                  ]?.name || "Select rule"}
-                </Listbox.Button>
-                <Listbox.Options className={styles.listboxOptions}>
-                  {ruleOptions[captionModalPlatform].map((rule, idx) => (
-                    <Listbox.Option
-                      key={`${captionModalPlatform}-${rule.name}-${idx}`}
-                      value={idx}
-                      className={({ active, selected }) =>
-                        [
-                          styles.listboxOption,
-                          active ? styles.listboxOptionActive : "",
-                          selected ? styles.listboxOptionSelected : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" ")
+                  <label
+                    className={styles.captionModalLabelRow}
+                    htmlFor="caption-rule-select"
+                  >
+                    <span className={styles.captionModalLabel}>Rule</span>
+                    <button
+                      type="button"
+                      className={styles.captionModalSettingButton}
+                      title="Open rule settings"
+                      aria-label="Open rule settings"
+                      onClick={() =>
+                        router.push(
+                          captionModalPlatform === "tiktok"
+                            ? "/rules/tiktok"
+                            : "/rules/instagram"
+                        )
                       }
                     >
-                      {rule.name}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </div>
-            </Listbox>
+                      <SettingsIcon />
+                    </button>
+                  </label>
+                  <Listbox
+                    value={selectedRuleIndex[captionModalPlatform]}
+                    onChange={(value: number) =>
+                      setSelectedRuleIndex((prev) => ({
+                        ...prev,
+                        [captionModalPlatform]: value,
+                      }))
+                    }
+                  >
+                    <div className={styles.listbox}>
+                      <Listbox.Button
+                        id="caption-rule-select"
+                        className={styles.listboxButton}
+                      >
+                        {ruleOptions[captionModalPlatform][
+                          selectedRuleIndex[captionModalPlatform]
+                        ]?.name || "Select rule"}
+                      </Listbox.Button>
+                      <Listbox.Options className={styles.listboxOptions}>
+                        {ruleOptions[captionModalPlatform].map((rule, idx) => (
+                          <Listbox.Option
+                            key={`${captionModalPlatform}-${rule.name}-${idx}`}
+                            value={idx}
+                            className={({ active, selected }) =>
+                              [
+                                styles.listboxOption,
+                                active ? styles.listboxOptionActive : "",
+                                selected ? styles.listboxOptionSelected : "",
+                              ]
+                                .filter(Boolean)
+                                .join(" ")
+                            }
+                          >
+                            {rule.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                   <div className={styles.captionRuleDescription}>
                     {selectedRule?.rule || "No rule description available."}
                   </div>
-            <label
-              className={styles.captionModalLabelRow}
-              htmlFor="caption-hashtag-selector"
-            >
-              <span className={styles.captionModalLabel}>Hashtags</span>
-              <button
-                type="button"
-                className={styles.captionModalSettingButton}
-                title="Open hashtag settings"
-                aria-label="Open hashtag settings"
-                onClick={() => router.push("/rules/hashtags")}
-              >
-                <SettingsIcon />
-              </button>
-            </label>
+                  <label
+                    className={styles.captionModalLabelRow}
+                    htmlFor="caption-hashtag-selector"
+                  >
+                    <span className={styles.captionModalLabel}>Hashtags</span>
+                    <button
+                      type="button"
+                      className={styles.captionModalSettingButton}
+                      title="Open hashtag settings"
+                      aria-label="Open hashtag settings"
+                      onClick={() => router.push("/rules/hashtags")}
+                    >
+                      <SettingsIcon />
+                    </button>
+                  </label>
                   <div className={styles.captionModalHint}>
                     Select hashtags to apply (multi-select supported).
                   </div>
-            {captionHashtagOptions.length > 0 ? (
-              <Listbox
-                value={selectedHashtags[captionModalPlatform]}
-                onChange={(value: string[]) =>
-                  setSelectedHashtags((prev) => ({
-                    ...prev,
-                    [captionModalPlatform]: value,
-                  }))
-                }
-                multiple
-              >
-                <div className={styles.listbox}>
-                  <Listbox.Button
-                    id="caption-hashtag-selector"
-                    className={styles.listboxButton}
-                  >
-                    {selectedHashtags[captionModalPlatform].length > 0
-                      ? selectedHashtags[captionModalPlatform].join(" ")
-                      : "Select hashtags"}
-                  </Listbox.Button>
-                  <Listbox.Options className={styles.listboxOptions}>
-                    {captionHashtagOptions.map((tag) => (
-                      <Listbox.Option
-                        key={`${captionModalPlatform}-${tag}`}
-                        value={tag}
-                        className={({ active, selected }) =>
-                          [
-                            styles.listboxOption,
-                            active ? styles.listboxOptionActive : "",
-                            selected ? styles.listboxOptionSelected : "",
-                          ]
-                            .filter(Boolean)
-                            .join(" ")
-                        }
-                      >
-                        {({ selected }) => (
-                          <div className={styles.listboxOptionInner}>
-                            <span className={styles.listboxOptionLabel}>
-                              {tag}
-                            </span>
-                            <span
-                              className={
-                                selected
-                                  ? styles.listboxOptionCheckActive
-                                  : styles.listboxOptionCheck
+                  {captionHashtagOptions.length > 0 ? (
+                    <Listbox
+                      value={selectedHashtags[captionModalPlatform]}
+                      onChange={(value: string[]) =>
+                        setSelectedHashtags((prev) => ({
+                          ...prev,
+                          [captionModalPlatform]: value,
+                        }))
+                      }
+                      multiple
+                    >
+                      <div className={styles.listbox}>
+                        <Listbox.Button
+                          id="caption-hashtag-selector"
+                          className={styles.listboxButton}
+                        >
+                          {selectedHashtags[captionModalPlatform].length > 0
+                            ? selectedHashtags[captionModalPlatform].join(" ")
+                            : "Select hashtags"}
+                        </Listbox.Button>
+                        <Listbox.Options className={styles.listboxOptions}>
+                          {captionHashtagOptions.map((tag) => (
+                            <Listbox.Option
+                              key={`${captionModalPlatform}-${tag}`}
+                              value={tag}
+                              className={({ active, selected }) =>
+                                [
+                                  styles.listboxOption,
+                                  active ? styles.listboxOptionActive : "",
+                                  selected ? styles.listboxOptionSelected : "",
+                                ]
+                                  .filter(Boolean)
+                                  .join(" ")
                               }
                             >
-                              {selected ? "Selected" : "Select"}
-                            </span>
-                          </div>
-                        )}
-                      </Listbox.Option>
-                    ))}
-                  </Listbox.Options>
-                </div>
-              </Listbox>
-            ) : (
-              <div className={styles.captionModalHint}>
-                No hashtag options available.
-              </div>
-            )}
+                              {({ selected }) => (
+                                <div className={styles.listboxOptionInner}>
+                                  <span className={styles.listboxOptionLabel}>
+                                    {tag}
+                                  </span>
+                                  <span
+                                    className={
+                                      selected
+                                        ? styles.listboxOptionCheckActive
+                                        : styles.listboxOptionCheck
+                                    }
+                                  >
+                                    {selected ? "Selected" : "Select"}
+                                  </span>
+                                </div>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </div>
+                    </Listbox>
+                  ) : (
+                    <div className={styles.captionModalHint}>
+                      No hashtag options available.
+                    </div>
+                  )}
                 </>
               );
             })()}
@@ -437,7 +446,6 @@ const Results: React.FC<ResultsProps> = ({
                 className={styles.captionModalCancel}
                 type="button"
                 onClick={closeCaptionModal}
-                disabled={Boolean(captionGeneratingPlatform)}
               >
                 Cancel
               </button>
@@ -445,9 +453,15 @@ const Results: React.FC<ResultsProps> = ({
                 className={styles.captionModalGenerate}
                 type="button"
                 onClick={handleGenerateCaption}
-                disabled={Boolean(captionGeneratingPlatform)}
+                disabled={
+                  captionModalPlatform != null &&
+                  captionGeneratingPlatforms.has(captionModalPlatform)
+                }
               >
-                {captionGeneratingPlatform ? "Generating..." : "Generate"}
+                {captionModalPlatform != null &&
+                captionGeneratingPlatforms.has(captionModalPlatform)
+                  ? "Generating..."
+                  : "Generate"}
               </button>
             </div>
           </div>
@@ -468,7 +482,10 @@ const Results: React.FC<ResultsProps> = ({
                 <div key={idx} className={styles.resultCard}>
                   <div className={styles.resultImage}>
                     {result.isLoading ? (
-                      <div className={styles.resultOverlay}>Rendering...</div>
+                      <div className={styles.resultOverlay}>
+                        <InlineSpinner size="md" label="Generating" />
+                        <span>Generating</span>
+                      </div>
                     ) : result.error ? (
                       <div className={styles.resultOverlayError}>
                         <div>Error</div>

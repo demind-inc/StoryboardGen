@@ -7884,11 +7884,12 @@
         {
           "type": "text",
           "id": "LpH2",
-          "x": 272,
+          "x": 372,
           "y": 168,
           "name": "heroTitle",
           "fill": "#F8FAFC",
-          "content": "Create your next storyboard with one click",
+          "content": "Create your next storyboard\nwith one click",
+          "textAlign": "center",
           "fontFamily": "Inter",
           "fontSize": 44,
           "fontWeight": "700"
@@ -7896,10 +7897,10 @@
         {
           "type": "frame",
           "id": "LpV1",
-          "x": 180,
+          "x": 130,
           "y": 270,
           "name": "value1",
-          "width": 500,
+          "width": 360,
           "height": 136,
           "fill": "#111827",
           "cornerRadius": 14
@@ -7907,7 +7908,7 @@
         {
           "type": "text",
           "id": "LpV1t",
-          "x": 390,
+          "x": 270,
           "y": 308,
           "name": "value1Title",
           "fill": "#F8FAFC",
@@ -7920,7 +7921,7 @@
         {
           "type": "text",
           "id": "LpV1b",
-          "x": 320,
+          "x": 200,
           "y": 340,
           "name": "value1Body",
           "fill": "#94A3B8",
@@ -7959,10 +7960,10 @@
         {
           "type": "frame",
           "id": "LpV2",
-          "x": 720,
+          "x": 510,
           "y": 270,
           "name": "value2",
-          "width": 500,
+          "width": 360,
           "height": 136,
           "fill": "#111827",
           "cornerRadius": 14
@@ -7970,7 +7971,7 @@
         {
           "type": "text",
           "id": "LpV2t",
-          "x": 916,
+          "x": 636,
           "y": 309,
           "name": "value2Title",
           "fill": "#F8FAFC",
@@ -7998,11 +7999,11 @@
         {
           "type": "text",
           "id": "LpV2b",
-          "x": 810,
+          "x": 560,
           "y": 343,
           "name": "value2Body",
           "fill": "#94A3B8",
-          "content": "With one click, generate engaging posts,\nimages, captions and hashtags",
+          "content": "Generate your multi-scene images\nin one click.",
           "textAlign": "center",
           "fontFamily": "Inter",
           "fontSize": 16,
@@ -9025,7 +9026,7 @@
         {
           "type": "frame",
           "id": "tCzJh",
-          "x": 406,
+          "x": 298,
           "y": 274,
           "name": "hero-step-1-circle",
           "width": 24,
@@ -9036,7 +9037,7 @@
         {
           "type": "text",
           "id": "kSlca",
-          "x": 414,
+          "x": 306,
           "y": 276,
           "name": "hero-step-1-num",
           "fill": "#111827",
@@ -9048,7 +9049,7 @@
         {
           "type": "frame",
           "id": "I3wmo",
-          "x": 946,
+          "x": 678,
           "y": 274,
           "name": "hero-step-2-circle",
           "width": 24,
@@ -9059,7 +9060,7 @@
         {
           "type": "text",
           "id": "3YhLH",
-          "x": 953,
+          "x": 685,
           "y": 275,
           "name": "hero-step-2-num",
           "fill": "#111827",
@@ -9160,6 +9161,103 @@
               "fontWeight": "600"
             }
           ]
+        },
+        {
+          "type": "frame",
+          "id": "RnEOk",
+          "x": 1058,
+          "y": 274,
+          "name": "hero-step-3-circle",
+          "width": 24,
+          "height": 24,
+          "fill": "#86EFAC",
+          "cornerRadius": 24
+        },
+        {
+          "type": "text",
+          "id": "qhDyi",
+          "x": 1065,
+          "y": 275,
+          "name": "hero-step-3-num",
+          "fill": "#111827",
+          "content": "3",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "fpLSZ",
+          "x": 890,
+          "y": 270,
+          "name": "value5",
+          "width": 360,
+          "height": 136,
+          "fill": "#111827",
+          "cornerRadius": 14,
+          "children": [
+            {
+              "type": "text",
+              "id": "RZZ7r",
+              "name": "hero-step-2-num",
+              "fill": "#111827",
+              "content": "2",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IPXEV",
+          "x": 1041,
+          "y": 270,
+          "name": "hero-step-2-circle",
+          "width": 24,
+          "height": 24,
+          "fill": "#86f196ff",
+          "cornerRadius": 24,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "P72qK",
+              "name": "hero-step-2-num",
+              "fill": "#111827",
+              "content": "3",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "sHh9q",
+          "x": 1030,
+          "y": 309,
+          "name": "value5Title",
+          "fill": "#F8FAFC",
+          "content": "Post",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "I03PE",
+          "x": 910,
+          "y": 343,
+          "name": "value5Body",
+          "fill": "#94A3B8",
+          "content": "Generate captions and hashtags\nfor TikTok and Instagram",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "normal"
         }
       ]
     },
