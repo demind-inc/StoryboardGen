@@ -29,9 +29,14 @@ const heroSteps = [
   {
     number: "2",
     title: "Generate",
-    detail:
-      "With one click, generate engaging posts,\nimages, captions and hashtags",
+    detail: "Generate your multi-scene images\nin one click.",
     tone: "amber",
+  },
+  {
+    number: "3",
+    title: "Post",
+    detail: "Generate captions and hashtags\nfor TikTok and Instagram",
+    tone: "mint",
   },
 ];
 
