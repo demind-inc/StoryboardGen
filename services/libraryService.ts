@@ -1,5 +1,9 @@
 import { getSupabaseClient } from "./supabaseClient";
-import { PromptLibraryInsert, ReferenceLibraryInsert } from "../database.types";
+import {
+  PromptLibraryInsert,
+  ReferenceLibraryInsert,
+  ReferenceLibraryRow,
+} from "../database.types";
 import {
   PromptPreset,
   ReferenceImage,
@@ -329,7 +333,9 @@ export async function addImagesToReferenceSet(
     throw fetchError;
   }
 
-  const label = existingData?.label || DEFAULT_REFERENCE_LABEL;
+  const label =
+    (existingData as Pick<ReferenceLibraryRow, "label"> | null)?.label ||
+    DEFAULT_REFERENCE_LABEL;
 
   const { data: countData, error: countError } = await supabase
     .from("reference_library")

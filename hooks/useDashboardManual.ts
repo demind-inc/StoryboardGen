@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SubscriptionPlan } from "../types";
 import { useSubscription } from "../providers/SubscriptionProvider";
 import { useReferences } from "./useReferences";
@@ -19,11 +19,12 @@ import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
 import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
 import { generateSceneSuggestions } from "../services/geminiService";
-import { 
-  Scene, 
-  scenesToPrompts, 
+import {
+  Scene,
+  scenesToPrompts,
   promptsToScenes,
-  sceneToPrompt 
+  sceneToPrompt,
+  generateSceneId,
 } from "../types/scene";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
@@ -121,8 +122,9 @@ export const useDashboardManual = ({
   const [isTopicGenerating, setIsTopicGenerating] = useState(false);
   const [topicError, setTopicError] = useState<string | null>(null);
   const [transparentBackground, setTransparentBackground] = useState(true);
-  const [guidelines, setGuidelines] =
-    useState<CustomGuidelines>(DEFAULT_CUSTOM_GUIDELINES);
+  const [guidelines, setGuidelines] = useState<CustomGuidelines>(
+    DEFAULT_CUSTOM_GUIDELINES
+  );
   const [rules, setRules] = useState<CaptionRules>(DEFAULT_CAPTION_RULES);
   const [hashtags, setHashtags] = useState<Hashtags>(DEFAULT_HASHTAGS);
   const [selectedHashtags, setSelectedHashtags] = useState<Hashtags>([]);
@@ -146,9 +148,7 @@ export const useDashboardManual = ({
   }, [captionSettingsQuery.isError]);
 
   useEffect(() => {
-    setSelectedHashtags((prev) =>
-      prev.filter((tag) => hashtags.includes(tag))
-    );
+    setSelectedHashtags((prev) => prev.filter((tag) => hashtags.includes(tag)));
   }, [hashtags]);
 
   const scenes = useMemo(
@@ -156,10 +156,11 @@ export const useDashboardManual = ({
     [manualPrompts]
   );
 
-  const promptList = useMemo(
-    () => scenes.map(sceneToPrompt),
-    [scenes]
-  );
+  // Ref so async generateTopicScenes always sees latest prompts (avoids stale closure)
+  const manualPromptsRef = useRef(manualPrompts);
+  manualPromptsRef.current = manualPrompts;
+
+  const promptList = useMemo(() => scenes.map(sceneToPrompt), [scenes]);
 
   /** At least one tab (Scene 1) for the Scene Prompts UI. */
   const displayPromptList = useMemo(
@@ -228,8 +229,9 @@ export const useDashboardManual = ({
     ? usage?.remaining ?? planCreditLimit
     : undefined;
 
-  const hasValidScenePrompts =
-    scenes.some(scene => scene.title.trim() || scene.description.trim());
+  const hasValidScenePrompts = scenes.some(
+    (scene) => scene.title.trim() || scene.description.trim()
+  );
   const disableGenerate =
     isGenerating ||
     references.length === 0 ||
@@ -270,7 +272,7 @@ export const useDashboardManual = ({
       const updatedScenes = [...currentScenes, newScene];
       return scenesToPrompts(updatedScenes);
     });
-    
+
     setActiveSceneIndex(scenes.length);
   }, [scenes.length, setManualPrompts]);
 
@@ -281,7 +283,7 @@ export const useDashboardManual = ({
         const updatedScenes = currentScenes.filter((_, idx) => idx !== index);
         return scenesToPrompts(updatedScenes);
       });
-      
+
       setActiveSceneIndex((prev) => {
         if (prev === index) return Math.max(0, index - 1);
         if (prev > index) return prev - 1;
@@ -313,37 +315,45 @@ export const useDashboardManual = ({
     setTopicError(null);
   }, []);
 
-  const generateTopicScenes = useCallback(async (topicOverride?: string, count: number = 4) => {
-    const topicToUse = topicOverride !== undefined ? topicOverride : topic;
-    const trimmed = topicToUse.trim();
-    if (!trimmed || isTopicGenerating) return;
+  const generateTopicScenes = useCallback(
+    async (topicOverride?: string, count: number = 4) => {
+      const topicToUse = topicOverride !== undefined ? topicOverride : topic;
+      const trimmed = topicToUse.trim();
+      if (!trimmed || isTopicGenerating) return;
 
-    setIsTopicGenerating(true);
-    setTopicError(null);
+      setIsTopicGenerating(true);
+      setTopicError(null);
 
-    try {
-      const suggestions = await generateSceneSuggestions(trimmed, count);
-      if (!suggestions.length) {
-        throw new Error("No suggestions returned");
+      try {
+        const suggestions = await generateSceneSuggestions(trimmed, count);
+        if (!suggestions.length) {
+          throw new Error("No suggestions returned");
+        }
+
+        // New scenes use unique IDs so they don't conflict with existing ones
+        const newScenes: Scene[] = suggestions.map(
+          ({ title, description }) => ({
+            id: generateSceneId(),
+            title,
+            description,
+          })
+        );
+
+        // Prepend new scenes on top of existing ones (use ref for latest prompts after await)
+        const currentPrompts = manualPromptsRef.current;
+        const existingScenes = promptsToScenes(currentPrompts);
+        const combinedScenes = [...newScenes, ...existingScenes];
+        setManualPrompts(scenesToPrompts(combinedScenes));
+        setActiveSceneIndex(0);
+      } catch (error) {
+        console.error("Failed to generate scene suggestions:", error);
+        setTopicError("Couldn't generate scenes. Please try again.");
+      } finally {
+        setIsTopicGenerating(false);
       }
-      
-      // Convert suggestions to Scene objects with stable index-based IDs
-      const newScenes: Scene[] = suggestions.map(({ title, description }, index) => ({
-        id: `scene_${index}`,
-        title,
-        description,
-      }));
-      
-      // Convert scenes to prompt string format
-      setManualPrompts(scenesToPrompts(newScenes));
-      setActiveSceneIndex(0);
-    } catch (error) {
-      console.error("Failed to generate scene suggestions:", error);
-      setTopicError("Couldn't generate scenes. Please try again.");
-    } finally {
-      setIsTopicGenerating(false);
-    }
-  }, [topic, isTopicGenerating, setActiveSceneIndex, setManualPrompts]);
+    },
+    [topic, isTopicGenerating, setActiveSceneIndex, setManualPrompts]
+  );
 
   return {
     usage,
