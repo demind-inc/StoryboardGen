@@ -9,12 +9,9 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faBars,
-  faChevronLeft,
-  faChevronRight,
   faWandMagicSparkles,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import useEmblaCarousel from "embla-carousel-react";
 import { useAuth } from "../providers/AuthProvider";
 import { SubscriptionPlan } from "../types";
 import AuthShell from "../components/AuthShell/AuthShell";
@@ -72,11 +69,6 @@ const whyUseItems = [
     detail:
       "Create customized multi-image posts and slideshows, complete with captions and relevant hashtags.",
   },
-];
-
-const showcaseShots = [
-  "/assets/showcase/storyboard-input.png",
-  "/assets/showcase/storyboard-output.png",
 ];
 
 const pricingPlans = [
@@ -155,6 +147,8 @@ const LandingPage: React.FC = () => {
   const sectionFlowRef = useRef<HTMLElement>(null);
   const sectionPricingRef = useRef<HTMLElement>(null);
   const sectionFaqRef = useRef<HTMLElement>(null);
+  const showcaseRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const fadeInRefs = useMemo(
     () => [
       heroRef,
@@ -165,11 +159,6 @@ const LandingPage: React.FC = () => {
     ],
     []
   );
-
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: "start",
-  });
 
   useEffect(() => {
     if (authStatus === "signed_in") {
@@ -199,6 +188,26 @@ const LandingPage: React.FC = () => {
     });
     return () => observer.disconnect();
   }, [fadeInRefs]);
+
+  useEffect(() => {
+    const el = showcaseRef.current;
+    const video = videoRef.current;
+    if (!el || !video) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.25, rootMargin: "0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const handleStart = () => {
     setMobileMenuOpen(false);
@@ -466,35 +475,19 @@ const LandingPage: React.FC = () => {
               Get started for free
             </button>
           </div>
-          <div className="landing__showcase">
-            <button
-              type="button"
-              className="landing__showcase-nav"
-              aria-label="Previous image"
-              onClick={() => emblaApi?.scrollPrev()}
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </button>
-            <div className="landing__showcase-viewport embla" ref={emblaRef}>
-              <div className="landing__showcase-container embla__container">
-                {showcaseShots.map((src, index) => (
-                  <div
-                    key={src}
-                    className="landing__showcase-shot embla__slide"
-                  >
-                    <img src={src} alt={`Storyboard preview ${index + 1}`} />
-                  </div>
-                ))}
-              </div>
+          <div className="landing__showcase" ref={showcaseRef}>
+            <div className="landing__showcase-video-wrap">
+              <video
+                ref={videoRef}
+                className="landing__showcase-video"
+                src="/assets/demo/storyboardgen-demo-2026-0213.mp4"
+                playsInline
+                muted
+                loop
+              >
+                Your browser does not support the video tag.
+              </video>
             </div>
-            <button
-              type="button"
-              className="landing__showcase-nav"
-              aria-label="Next image"
-              onClick={() => emblaApi?.scrollNext()}
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </button>
           </div>
         </section>
 
