@@ -341,7 +341,11 @@ const LandingPage: React.FC = () => {
           <p className="landing__hero-badge">
             Try our new AI storyboard generator
           </p>
-          <h1>Create your next storyboard with one click</h1>
+          <h1>
+            Create your next storyboard
+            <br />
+            with one click
+          </h1>
           <div className="landing__hero-steps">
             {heroSteps.map((step) => (
               <article key={step.number} className="landing__step-card">

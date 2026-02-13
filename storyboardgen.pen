@@ -7884,11 +7884,12 @@
         {
           "type": "text",
           "id": "LpH2",
-          "x": 272,
+          "x": 372,
           "y": 168,
           "name": "heroTitle",
           "fill": "#F8FAFC",
-          "content": "Create your next storyboard with one click",
+          "content": "Create your next storyboard\nwith one click",
+          "textAlign": "center",
           "fontFamily": "Inter",
           "fontSize": 44,
           "fontWeight": "700"
