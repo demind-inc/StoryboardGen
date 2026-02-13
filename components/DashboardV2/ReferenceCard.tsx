@@ -1,16 +1,23 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { ReferenceImage } from "../../types";
 import { LibraryIcon, ImageIcon } from "./DashboardIcons";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 import styles from "./ReferenceCard.module.scss";
 export interface ReferenceCardProps {
   references: ReferenceImage[];
   onUpload: () => void;
   onOpenLibrary: () => void;
   onRemoveReference?: (id: string) => void;
+}
+
+/** Preload an image by URL/data so it’s cached when shown in the expanded view. */
+function preloadImage(data: string): void {
+  const img = new Image();
+  img.src = data;
 }
 
 const ReferenceCard: React.FC<ReferenceCardProps> = ({
@@ -22,6 +29,13 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const closeExpanded = useCallback(() => setExpandedId(null), []);
+
+  // Preload all reference images so the expanded view shows instantly when selected
+  useEffect(() => {
+    references.forEach((ref) => {
+      if (ref.data) preloadImage(ref.data);
+    });
+  }, [references]);
 
   const expandedRef = expandedId
     ? references.find((r) => r.id === expandedId)
@@ -68,15 +82,22 @@ const ReferenceCard: React.FC<ReferenceCardProps> = ({
               <button
                 type="button"
                 className={styles.referenceThumbWrap}
-                onClick={() => setExpandedId(ref.id)}
-                aria-label="Expand reference image"
-                title="Click to expand"
+                onClick={() => ref.data && setExpandedId(ref.id)}
+                aria-label={ref.data ? "Expand reference image" : "Loading"}
+                title={ref.data ? "Click to expand" : "Loading..."}
+                disabled={!ref.data}
               >
-                <img
-                  src={ref.data}
-                  alt="Reference"
-                  className={styles.referenceThumb}
-                />
+                {ref.data ? (
+                  <img
+                    src={ref.data}
+                    alt="Reference"
+                    className={styles.referenceThumb}
+                  />
+                ) : (
+                  <span className={styles.referenceThumbLoading}>
+                    <InlineSpinner size="sm" label="Loading image" />
+                  </span>
+                )}
               </button>
               {onRemoveReference && (
                 <button

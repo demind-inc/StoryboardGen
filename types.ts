@@ -14,8 +14,10 @@ export interface SceneResult {
 
 export interface ReferenceImage {
   id: string;
-  data: string; // base64
+  data: string; // base64; empty while loading from library
   mimeType: string;
+  /** Set while loading from library (before data is filled); used for streaming display. */
+  url?: string;
 }
 
 export interface ReferenceLibraryItem {
