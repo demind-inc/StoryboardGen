@@ -10,7 +10,7 @@ export interface SceneCardProps {
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSaveScene: (index: number, title: string, description: string) => void;
+  onSaveScene: (index: number, title: string, description: string, scenePrompt: string) => void;
   previewImageUrl?: string;
   onOpenAutoGenerate?: () => void;
   isTopicGenerating?: boolean;
@@ -112,8 +112,8 @@ const SceneCard: React.FC<SceneCardProps> = ({
                   canRemove={canRemove}
                   onSelect={() => onSceneSelect(idx)}
                   onRemove={() => onRemoveScene?.(idx)}
-                  onSave={(title, description) =>
-                    onSaveScene(idx, title, description)
+                  onSave={(title, description, scenePrompt) =>
+                    onSaveScene(idx, title, description, scenePrompt)
                   }
                 />
               ))}

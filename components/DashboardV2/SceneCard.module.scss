@@ -276,6 +276,66 @@
   }
 }
 
+
+.scenePromptCollapse {
+  margin-top: 4px;
+}
+
+.scenePromptSummary {
+  cursor: pointer;
+  color: var(--muted-light);
+  font-size: var(--fs-11);
+  font-weight: 600;
+  list-style: none;
+  user-select: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 6px;
+    transition: transform 0.15s ease;
+  }
+}
+
+.scenePromptCollapse[open] .scenePromptSummary::before {
+  transform: rotate(90deg);
+}
+
+.scenePromptInput {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-12);
+  line-height: 1.5;
+  resize: vertical;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+
+  &::placeholder {
+    color: var(--muted);
+  }
+
+  &:hover {
+    background: var(--input-bg-dark);
+    border-color: var(--card-border);
+  }
+
+  &:focus {
+    outline: none;
+    background: var(--input-bg-dark);
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.15);
+  }
+}
 .sceneItemDescInput {
   width: 100%;
   padding: 4px 8px;

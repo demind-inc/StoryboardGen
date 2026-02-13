@@ -28,7 +28,7 @@ export interface DashboardLayoutProps {
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSaveScene: (index: number, title: string, description: string) => void;
+  onSaveScene: (index: number, title: string, description: string, scenePrompt: string) => void;
   previewImageUrl?: string;
   isGenerating: boolean;
   disableGenerate: boolean;
