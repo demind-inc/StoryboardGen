@@ -2,6 +2,7 @@ export interface Scene {
   id: string;
   title: string;
   description: string;
+  scenePrompt: string;
 }
 
 export function generateSceneId(): string {
@@ -9,11 +10,12 @@ export function generateSceneId(): string {
 }
 
 export function sceneToPrompt(scene: Scene): string {
-  if (scene.title && scene.description) {
-    return `${scene.title}: ${scene.description}`;
+  const promptBody = scene.scenePrompt || scene.description;
+  if (scene.title && promptBody) {
+    return `${scene.title}: ${promptBody}`;
   }
   // Return a space for empty scenes to preserve them in the conversion cycle
-  return scene.title || scene.description || " ";
+  return scene.title || promptBody || " ";
 }
 
 export function scenesToPrompts(scenes: Scene[]): string {
@@ -24,7 +26,7 @@ export function promptToScene(prompt: string, id?: string): Scene {
   const sceneId = id || generateSceneId();
   
   if (!prompt || !prompt.trim()) {
-    return { id: sceneId, title: "", description: "" };
+    return { id: sceneId, title: "", description: "", scenePrompt: "" };
   }
 
   // Check if prompt has the format "Title: Description"
@@ -34,11 +36,17 @@ export function promptToScene(prompt: string, id?: string): Scene {
       id: sceneId,
       title: prompt.substring(0, separatorIndex).trim(),
       description: prompt.substring(separatorIndex + 2).trim(),
+      scenePrompt: prompt.substring(separatorIndex + 2).trim(),
     };
   }
 
   // If no separator, treat entire prompt as description
-  return { id: sceneId, title: "", description: prompt.trim() };
+  return {
+    id: sceneId,
+    title: "",
+    description: prompt.trim(),
+    scenePrompt: prompt.trim(),
+  };
 }
 
 export function promptsToScenes(prompts: string): Scene[] {

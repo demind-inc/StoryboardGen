@@ -119,7 +119,7 @@ export async function generateSceneSuggestions(
   topic: string,
   count = 4,
   customGuideline?: string
-): Promise<Array<{ title: string; description: string }>> {
+): Promise<Array<{ title: string; description: string; scenePrompt: string }>> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("KEY_NOT_FOUND");
@@ -140,7 +140,8 @@ Generate ${count} sequential scenes that tell a cohesive visual story about the 
 
 Each scene should have:
 - A concise title that summarizes what is shown in the scene (e.g., "Boy writing a note in a cafe", "Woman reading by a window") - not a narrative label, but a short summary of the visual content
-- A vivid visual description (1-2 sentences) written in present tense, focusing on what viewers will SEE in this slideshow frame - include specific visual elements, colors, composition, mood, and camera angles
+- A social-media-ready description (1-2 short sentences) with engaging, scroll-stopping copy that still clearly describes the scene
+- A separate scenePrompt field optimized for image generation with concrete visual details (subject, composition, camera framing, lighting, mood, colors, style)
 
 The scenes should:
 - Follow a natural narrative progression (beginning → middle → end)
@@ -151,10 +152,10 @@ ${guidelineBlock}
 Topic:
 ${topic}
 
-Output JSON only as an array of objects with "title" and "description" fields, e.g.
+Output JSON only as an array of objects with "title", "description", and "scenePrompt" fields, e.g.
 [
-  {"title": "Boy writing a note in a cafe", "description": "Wide establishing shot: A modern office building at sunrise with golden light reflecting off glass windows, creating a warm, professional atmosphere."},
-  {"title": "Woman reading by a window", "description": "Close-up of a stressed person staring at a cluttered desk with papers scattered, laptop open, coffee cup half-empty - overhead lighting casts dramatic shadows."}
+  {"title": "Boy writing a note in a cafe", "description": "POV: he is drafting the message that changes everything ✍️☕", "scenePrompt": "Cinematic medium shot of a young man in a cozy cafe writing a handwritten note at a wooden table, shallow depth of field, warm morning sunlight through window, steam rising from coffee cup, soft film grain"},
+  {"title": "Woman reading by a window", "description": "She pauses by the window, rereading every line like it means the world.", "scenePrompt": "Intimate close-up of a woman near a large window reading a folded note, natural side lighting, soft neutral palette, reflective mood, 50mm lens look, crisp facial detail"}
 ]
 `.trim();
 
@@ -180,6 +181,7 @@ Output JSON only as an array of objects with "title" and "description" fields, e
       .map((item: any) => ({
         title: String(item.title || "").trim(),
         description: String(item.description || "").trim(),
+        scenePrompt: String(item.scenePrompt || item.description || "").trim(),
       }))
       .filter((item) => item.title.length > 0 || item.description.length > 0)
       .slice(0, count);

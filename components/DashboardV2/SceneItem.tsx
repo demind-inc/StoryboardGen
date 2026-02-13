@@ -10,7 +10,7 @@ interface SceneItemProps {
   canRemove: boolean;
   onSelect: () => void;
   onRemove: () => void;
-  onSave: (title: string, description: string) => void;
+  onSave: (title: string, description: string, scenePrompt: string) => void;
 }
 
 const SceneItem: React.FC<SceneItemProps> = ({
@@ -24,52 +24,56 @@ const SceneItem: React.FC<SceneItemProps> = ({
 }) => {
   const [draftTitle, setDraftTitle] = useState(scene.title);
   const [draftDescription, setDraftDescription] = useState(scene.description);
+  const [draftScenePrompt, setDraftScenePrompt] = useState(scene.scenePrompt);
+  const [isScenePromptOpen, setIsScenePromptOpen] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Use refs to always have access to latest values
   const draftTitleRef = useRef(draftTitle);
   const draftDescriptionRef = useRef(draftDescription);
+  const draftScenePromptRef = useRef(draftScenePrompt);
 
-  // Keep refs in sync with state
   useEffect(() => {
     draftTitleRef.current = draftTitle;
     draftDescriptionRef.current = draftDescription;
-  }, [draftTitle, draftDescription]);
+    draftScenePromptRef.current = draftScenePrompt;
+  }, [draftTitle, draftDescription, draftScenePrompt]);
 
-  // Track previous isActive state
   const prevIsActiveRef = useRef(isActive);
 
-  // Save when becoming inactive (switching to another scene)
   useEffect(() => {
     if (prevIsActiveRef.current && !isActive) {
-      // Was active, now inactive - save pending changes immediately
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = null;
       }
-      // Save directly
-      onSave(draftTitleRef.current, draftDescriptionRef.current);
+      onSave(
+        draftTitleRef.current,
+        draftDescriptionRef.current,
+        draftScenePromptRef.current
+      );
     }
     prevIsActiveRef.current = isActive;
   }, [isActive, onSave]);
 
-  // Update drafts when scene changes from external source
   const sceneIdRef = useRef(scene.id);
   useEffect(() => {
-    // Only update if this is a different scene (different ID)
     if (sceneIdRef.current !== scene.id) {
       setDraftTitle(scene.title);
       setDraftDescription(scene.description);
+      setDraftScenePrompt(scene.scenePrompt);
+      setIsScenePromptOpen(false);
       sceneIdRef.current = scene.id;
     }
-  }, [scene.id, scene.title, scene.description]);
+  }, [scene.id, scene.title, scene.description, scene.scenePrompt]);
 
-  // Auto-save function that always uses latest values
   const saveCurrentPrompt = useCallback(() => {
-    onSave(draftTitleRef.current, draftDescriptionRef.current);
+    onSave(
+      draftTitleRef.current,
+      draftDescriptionRef.current,
+      draftScenePromptRef.current
+    );
   }, [onSave]);
 
-  // Debounced save
   const debouncedSave = useCallback(() => {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -79,7 +83,6 @@ const SceneItem: React.FC<SceneItemProps> = ({
     }, 1000);
   }, [saveCurrentPrompt]);
 
-  // Immediate save (cancel pending debounce and save now)
   const handleBlur = useCallback(() => {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -88,7 +91,6 @@ const SceneItem: React.FC<SceneItemProps> = ({
     saveCurrentPrompt();
   }, [saveCurrentPrompt]);
 
-  // Cleanup on unmount - only clear timeout, don't save
   useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
@@ -111,7 +113,27 @@ const SceneItem: React.FC<SceneItemProps> = ({
     if (!isActive) {
       onSelect();
     }
-    setDraftDescription(e.target.value);
+
+    const nextDescription = e.target.value;
+    const previousDescription = draftDescriptionRef.current;
+    const previousScenePrompt = draftScenePromptRef.current;
+
+    setDraftDescription(nextDescription);
+
+    if (!previousScenePrompt || previousScenePrompt === previousDescription) {
+      setDraftScenePrompt(nextDescription);
+    }
+
+    debouncedSave();
+  };
+
+  const handleScenePromptChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    if (!isActive) {
+      onSelect();
+    }
+    setDraftScenePrompt(e.target.value);
     debouncedSave();
   };
 
@@ -149,6 +171,26 @@ const SceneItem: React.FC<SceneItemProps> = ({
             onClick={(e) => e.stopPropagation()}
             rows={2}
           />
+
+          <details
+            className={styles.scenePromptCollapse}
+            open={isScenePromptOpen}
+            onToggle={(e) =>
+              setIsScenePromptOpen((e.currentTarget as HTMLDetailsElement).open)
+            }
+          >
+            <summary className={styles.scenePromptSummary}>Scene prompt</summary>
+            <textarea
+              className={styles.scenePromptInput}
+              placeholder="Scene prompt used for image generation"
+              value={isActive ? draftScenePrompt : scene.scenePrompt}
+              onChange={handleScenePromptChange}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              onClick={(e) => e.stopPropagation()}
+              rows={3}
+            />
+          </details>
         </div>
         <div className={styles.sceneItemActions}>
           {canRemove && (

@@ -274,6 +274,7 @@ export const useDashboardManual = ({
         id: `scene_${currentScenes.length}`, // Index-based stable ID
         title: "",
         description: "",
+        scenePrompt: "",
       };
       const updatedScenes = [...currentScenes, newScene];
       return scenesToPrompts(updatedScenes);
@@ -300,7 +301,7 @@ export const useDashboardManual = ({
   );
 
   const saveScene = useCallback(
-    (index: number, title: string, description: string) => {
+    (index: number, title: string, description: string, scenePrompt: string) => {
       setManualPrompts((prev) => {
         const currentScenes = promptsToScenes(prev);
         if (index >= 0 && index < currentScenes.length) {
@@ -308,6 +309,7 @@ export const useDashboardManual = ({
             ...currentScenes[index],
             title,
             description,
+            scenePrompt,
           };
         }
         return scenesToPrompts(currentScenes);
@@ -346,10 +348,11 @@ export const useDashboardManual = ({
 
         // New scenes use unique IDs so they don't conflict with existing ones
         const newScenes: Scene[] = suggestions.map(
-          ({ title, description }) => ({
+          ({ title, description, scenePrompt }) => ({
             id: generateSceneId(),
             title,
             description,
+            scenePrompt,
           })
         );
 
