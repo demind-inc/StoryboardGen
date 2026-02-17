@@ -126,36 +126,37 @@ export async function generateSceneSuggestions(
   }
   const ai = new GoogleGenAI({ apiKey });
 
-  const guidelineBlock = customGuideline?.trim()
-    ? `
+  const defaultGuideline = `You are generating TikTok and Instagram slideshow content about ${topic}`;
+  const effectiveGuideline = (customGuideline?.trim() || defaultGuideline).trim();
+  const guidelineBlock = `
 
 Additional guidelines (follow these and override the default guidelines when generating scenes, if provided):
-${customGuideline.trim()}
-`
-    : "";
+${effectiveGuideline}
+`;
 
   const prompt = `
-You are a storyboard creator for visual slideshows and presentations.
-Generate ${count} sequential scenes that tell a cohesive visual story about the topic below.
+You are creating content for TikTok and Instagram photo slideshows (carousel posts). Each slide is one image, often with a short line of text on it or a clear visual that illustrates one idea. The format is like popular educational/list-style posts: one punchy idea per slide, building a narrative or list.
 
-Each scene should have:
-- A concise title that summarizes what is shown in the scene (e.g., "Boy writing a note in a cafe", "Woman reading by a window") - not a narrative label, but a short summary of the visual content
-- A social-media-ready description (1-2 short sentences) with engaging, scroll-stopping copy that still clearly describes the scene
-- A separate scenePrompt field optimized for image generation with concrete visual details (subject, composition, camera framing, lighting, mood, colors, style)
+Generate ${count} sequential slides for a carousel about the topic below.
 
-The scenes should:
-- Follow a natural narrative progression (beginning → middle → end)
-- Be optimized for still image generation (describe a single frozen moment, not continuous action)
-- Use cinematic, descriptive language suitable for visual storytelling
-- Create variety in composition, perspective, and mood across scenes
+For each slide provide:
+- title: A short headline for this slide only (e.g. "Needing background noise", "Waiting for pressure to start"). Used as the slide label; keep it to a few words.
+- description: The main on-slide copy — one short, punchy line or sentence that would appear on the image or hook the viewer. Scroll-stopping, clear, one idea per slide. No filler.
+- scenePrompt: A concrete image-generation prompt for this slide: subject, composition, framing, lighting, mood, colors. Can be minimal/clean if the slide is text-led, or a clear illustration that matches the message. Optimized for still image generation.
+
+Style for the set:
+- One clear idea per slide; narrative or list that flows from start to end.
+- Hook in early slides; payoff or CTA in later ones if it fits the topic.
+- Copy is concise and shareable (TikTok/Instagram carousel style).
+- Variety in composition and mood across slides.
 ${guidelineBlock}
 Topic:
 ${topic}
 
-Output JSON only as an array of objects with "title", "description", and "scenePrompt" fields, e.g.
+Output JSON only as an array of objects with "title", "description", and "scenePrompt" fields. Example structure:
 [
-  {"title": "Boy writing a note in a cafe", "description": "POV: he is drafting the message that changes everything ✍️☕", "scenePrompt": "Cinematic medium shot of a young man in a cozy cafe writing a handwritten note at a wooden table, shallow depth of field, warm morning sunlight through window, steam rising from coffee cup, soft film grain"},
-  {"title": "Woman reading by a window", "description": "She pauses by the window, rereading every line like it means the world.", "scenePrompt": "Intimate close-up of a woman near a large window reading a folded note, natural side lighting, soft neutral palette, reflective mood, 50mm lens look, crisp facial detail"}
+  {"title": "Needing background noise", "description": "Some behaviors look strange from the outside. But inside the brain, they make perfect sense.", "scenePrompt": "Minimal flat illustration of a person with headphones in a calm workspace, soft gradient background, modern educational style"},
+  {"title": "Waiting for pressure to start", "description": "Waiting for pressure to start.", "scenePrompt": "Simple conceptual image of a clock and a person at a desk, clean layout, muted colors, infographic style"}
 ]
 `.trim();
 

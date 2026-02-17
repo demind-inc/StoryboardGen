@@ -19,6 +19,9 @@ interface AutoGenerateSceneModalProps {
   error?: string;
 }
 
+const DEFAULT_GUIDELINE =
+  "You are generating TikTok and Instagram slideshow content about this topic";
+
 const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
   isOpen,
   onClose,
@@ -28,7 +31,7 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
   error,
 }) => {
   const [topic, setTopic] = useState(initialTopic);
-  const [guideline, setGuideline] = useState("");
+  const [guideline, setGuideline] = useState(DEFAULT_GUIDELINE);
   const [sceneCountInput, setSceneCountInput] = useState("4");
 
   // Update topic when initialTopic changes
@@ -53,7 +56,11 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
   const handleGenerate = () => {
     if (topic.trim()) {
       const count = validateAndClampSceneCount(sceneCountInput);
-      onGenerate(topic, count, guideline.trim() || undefined);
+      const resolvedGuideline = (guideline.trim() || DEFAULT_GUIDELINE).replace(
+        /\{topic\}/g,
+        topic.trim()
+      );
+      onGenerate(topic, count, resolvedGuideline);
     }
   };
 
@@ -82,8 +89,8 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
             Auto-Generate Scenes
           </DialogTitle>
           <p className={styles.modalSubtitle}>
-            Enter a topic, number of scenes, and optional guidelines to generate scenes
-            automatically.
+            Enter a topic, number of scenes, and optional guidelines to generate
+            scenes automatically.
           </p>
 
           <div className={styles.modalBody}>
@@ -114,7 +121,9 @@ const AutoGenerateSceneModal: React.FC<AutoGenerateSceneModalProps> = ({
                 <span className={styles.modalFieldIcon}>
                   <SceneIcon />
                 </span>
-                <label className={styles.modalFieldLabel}>Number of Scenes (1-10)</label>
+                <label className={styles.modalFieldLabel}>
+                  Number of Scenes (1-10)
+                </label>
               </div>
               <input
                 type="number"
