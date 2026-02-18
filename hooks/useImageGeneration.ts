@@ -232,6 +232,20 @@ export const useImageGeneration = ({
     instagram: string[];
   }>({ tiktok: [], instagram: [] });
 
+  const regenerateSingle = useRegenerateImage({
+    userId,
+    planType,
+    usage,
+    setUsage,
+    setUsageError,
+    isPaymentUnlocked,
+    openPaymentModal,
+    refreshUsage,
+    size,
+    guidelines,
+    transparentBackground,
+  });
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isGenerating) {
@@ -338,102 +352,26 @@ export const useImageGeneration = ({
       return;
     }
 
-    if (!userId) {
-      alert("Unable to verify your account. Please sign in again.");
-      return;
-    }
-
-    // Track regeneration event
-    trackImageRegeneration(mode, index);
-
     const currentList = manualResults;
     const targetResult = currentList[index];
-
     if (!targetResult) return;
 
+    trackImageRegeneration(mode, index);
     setManualResults((prev) =>
       prev.map((res, idx) =>
         idx === index ? { ...res, isLoading: true, error: undefined } : res
       )
     );
 
-    let latestUsage: MonthlyUsage | null = usage;
     try {
-      latestUsage = await getMonthlyUsage(userId, planType as any);
-      setUsage(latestUsage);
-      setUsageError(null);
-    } catch (error) {
-      console.error("Usage check error:", error);
-      setManualResults((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? {
-                ...res,
-                isLoading: false,
-                error: "Unable to check credit balance.",
-              }
-            : res
-        )
-      );
-      return;
-    }
-
-    if (
-      !isPaymentUnlocked &&
-      latestUsage &&
-      latestUsage.used >= FREE_CREDIT_CAP
-    ) {
-      openPaymentModal();
-      setManualResults((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? { ...res, isLoading: false, error: "Upgrade to keep generating." }
-            : res
-        )
-      );
-      return;
-    }
-
-    if (latestUsage && latestUsage.remaining <= 0) {
-      openPaymentModal();
-      setManualResults((prev) =>
-        prev.map((res, idx) =>
-          idx === index
-            ? {
-                ...res,
-                isLoading: false,
-                error: "Monthly credit limit reached.",
-              }
-            : res
-        )
-      );
-      return;
-    }
-
-    try {
-      // When rerunning, pass the current result image as reference for consistency
-      let referencesToUse = references;
-      if (targetResult.imageUrl) {
-        try {
-          const previousRef = await urlToReferenceImage(targetResult.imageUrl);
-          referencesToUse = [previousRef, ...references];
-        } catch (e) {
-          console.error("Failed to use previous image as reference", e);
-        }
-      }
-      const imageUrl = await generateCharacterScene(
-        targetResult.prompt,
-        referencesToUse,
+      const imageUrl = await regenerateSingle({
+        prompt: targetResult.prompt,
+        referenceImageUrl: targetResult.imageUrl ?? undefined,
+        extraReferences: references,
         size,
         guidelines,
-        { transparentBackground }
-      );
-      const updatedUsage = await recordGenerationMutation.mutateAsync({
-        userId,
-        amount: 1,
-        planType: planType as any,
+        transparentBackground,
       });
-      setUsage(updatedUsage);
       markFirstGenerationComplete();
       setManualResults((prev) =>
         prev.map((res, idx) =>
@@ -442,10 +380,6 @@ export const useImageGeneration = ({
       );
     } catch (error: any) {
       console.error("Regeneration error:", error);
-      if (error?.message === "MONTHLY_LIMIT_REACHED") {
-        await refreshUsage(userId);
-        openPaymentModal();
-      }
       setManualResults((prev) =>
         prev.map((res, idx) =>
           idx === index
