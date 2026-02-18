@@ -229,7 +229,8 @@ export const useDashboardManual = ({
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);
-  const planCreditLimit = PLAN_CREDITS[planTypeForUsage] ?? DEFAULT_MONTHLY_CREDITS;
+  const planCreditLimit =
+    PLAN_CREDITS[planTypeForUsage] ?? DEFAULT_MONTHLY_CREDITS;
   const displayUsageLimit = isPaymentUnlocked
     ? usage?.monthlyLimit ?? planCreditLimit
     : undefined;
@@ -240,12 +241,16 @@ export const useDashboardManual = ({
   const hasValidScenePrompts = scenes.some(
     (scene) => scene.title.trim() || scene.description.trim()
   );
+  const noCreditsRemaining = !!(usage && usage.remaining <= 0);
   const disableGenerate =
     isGenerating ||
     referencesWithData.length === 0 ||
     !hasValidScenePrompts ||
-    (!!usage && usage.remaining <= 0) ||
+    noCreditsRemaining ||
     !!usageError;
+  const generateDisabledTooltip = noCreditsRemaining
+    ? "No credits remaining. Upgrade for more."
+    : null;
 
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
@@ -303,7 +308,12 @@ export const useDashboardManual = ({
   );
 
   const saveScene = useCallback(
-    (index: number, title: string, description: string, scenePrompt: string) => {
+    (
+      index: number,
+      title: string,
+      description: string,
+      scenePrompt: string
+    ) => {
       setManualPrompts((prev) => {
         const currentScenes = promptsToScenes(prev);
         if (index >= 0 && index < currentScenes.length) {
@@ -433,6 +443,7 @@ export const useDashboardManual = ({
     handleGenerateCaption,
     projectId,
     disableGenerate,
+    generateDisabledTooltip,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,
     isPaymentModalOpen,
