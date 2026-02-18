@@ -59,6 +59,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const displayEmail = profile?.email || session?.user?.email || "";
 
+  const isEmailVerified = (user: User | null | undefined) =>
+    Boolean(user?.email_confirmed_at);
+
   // Redirect to /auth when signed out, except on auth and landing pages
   useEffect(() => {
     if (authStatus !== "signed_out" || !router.isReady) return;
@@ -89,6 +92,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           async (event, newSession) => {
             // Handle initial session restoration and subsequent auth changes
             if (newSession?.user) {
+              if (!isEmailVerified(newSession.user)) {
+                setSession(null);
+                setProfile(newSession.user);
+                setAuthStatus("signed_out");
+                setAuthMessage(
+                  "Please verify your email before accessing your dashboard."
+                );
+                setAuthError(null);
+                return;
+              }
+
               setSession(newSession);
               setProfile(newSession.user);
               setAuthStatus("signed_in");
@@ -183,6 +197,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Update auth state immediately after successful sign in
       if (data.session?.user) {
+        if (!isEmailVerified(data.session.user)) {
+          await supabase.auth.signOut();
+          setSession(null);
+          setProfile(data.session.user);
+          setAuthStatus("signed_out");
+          setAuthMessage(
+            "Please verify your email before signing in. Check your inbox for the verification link."
+          );
+          setAuthError(null);
+          return;
+        }
+
         setSession(data.session);
         setProfile(data.session.user);
         setAuthStatus("signed_in");
@@ -239,6 +265,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: authEmail.trim(),
         password: authPassword,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
           data: {
             full_name: authName.trim() || undefined,
           },
@@ -251,12 +278,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Update auth state immediately after successful sign up
       if (data.session?.user) {
-        setSession(data.session);
-        setProfile(data.session.user);
-        setAuthStatus("signed_in");
-        setAuthMessage("Account created successfully! You are now signed in.");
-        setAuthError(null);
-
         // Store user info in profiles table
         try {
           await upsertProfile({
@@ -270,13 +291,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Don't fail the sign up if profile creation fails
         }
 
+        if (!isEmailVerified(data.session.user)) {
+          await supabase.auth.signOut();
+          setSession(null);
+          setProfile(data.session.user);
+          setAuthStatus("signed_out");
+          setAuthMessage(
+            "Account created! Please verify your email before accessing the dashboard."
+          );
+          setAuthError(null);
+          setIsSignUpMode(false);
+          return;
+        }
+
+        setSession(data.session);
+        setProfile(data.session.user);
+        setAuthStatus("signed_in");
+        setAuthMessage("Account created successfully! You are now signed in.");
+        setAuthError(null);
+
         // Redirect to dashboard after successful sign up
         window.location.href = "/dashboard";
       } else if (data.user) {
         // If session is null but user exists (email confirmation required)
         // Still set the user but keep status as signed_out until confirmed
         setProfile(data.user);
-        setAuthMessage("Account created! Please check your email to confirm.");
+        setAuthStatus("signed_out");
+        setAuthMessage(
+          "Account created! Please check your email to verify your account before signing in."
+        );
+        setAuthError(null);
+        setIsSignUpMode(false);
 
         // Store user info in profiles table even if email confirmation is required
         try {
