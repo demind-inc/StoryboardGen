@@ -16,9 +16,7 @@ import {
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
 import { useSaveProjectWithOutputs } from "./useProjectService";
-import {
-  setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
-} from "../services/authService";
+import { setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB } from "../services/authService";
 import { trackImageGeneration, trackImageRegeneration } from "../lib/analytics";
 import { promptToScene, sceneToImagePrompt } from "../types/scene";
 
@@ -63,7 +61,9 @@ interface UseImageGenerationReturn {
 const FREE_CREDIT_CAP = 3;
 
 /** Convert an image URL (data, blob, or https) to ReferenceImage for API use. */
-export async function urlToReferenceImage(url: string): Promise<ReferenceImage> {
+export async function urlToReferenceImage(
+  url: string
+): Promise<ReferenceImage> {
   if (url.startsWith("data:")) {
     const match = url.match(/^data:(image\/[^;]+);base64,/);
     return {
@@ -142,7 +142,9 @@ export const useImageGeneration = ({
 
   const formatCaptionDisplay = (items: string[]) =>
     items
-      .map((caption, idx) => (items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption))
+      .map((caption, idx) =>
+        items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
+      )
       .join("\n\n");
 
   const handleGenerateCaption = async (
@@ -182,7 +184,9 @@ export const useImageGeneration = ({
 
     // Use functional update so the other platform's captions are never overwritten
     // when TikTok and Instagram generation run independently (e.g. one finishes after the other).
-    const nextCaptionsRef: { current: { tiktok: string[]; instagram: string[] } | null } = { current: null };
+    const nextCaptionsRef: {
+      current: { tiktok: string[]; instagram: string[] } | null;
+    } = { current: null };
     setCaptionStore((prev) => {
       const next = { ...prev, [platform]: response };
       nextCaptionsRef.current = next;
@@ -211,11 +215,6 @@ export const useImageGeneration = ({
   };
 
   const handleRegenerate = async (index: number) => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
     if (references.length === 0) {
       alert(
         "Please upload at least one reference image for character consistency."
@@ -346,11 +345,6 @@ export const useImageGeneration = ({
   };
 
   const startGeneration = async () => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
     if (references.length === 0) {
       alert(
         "Please upload at least one reference image for character consistency."
@@ -394,11 +388,15 @@ export const useImageGeneration = ({
     }
 
     if (latestUsage && scenesToGenerate > latestUsage.remaining) {
-      alert(
-        `You can generate ${latestUsage.remaining} more image${
-          latestUsage.remaining === 1 ? "" : "s"
-        } this month (credits ${latestUsage.monthlyLimit}).`
-      );
+      if (!isPaymentUnlocked) {
+        openPaymentModal();
+      } else {
+        alert(
+          `You can generate ${latestUsage.remaining} more image${
+            latestUsage.remaining === 1 ? "" : "s"
+          } this month (credits ${latestUsage.monthlyLimit}).`
+        );
+      }
       setIsGenerating(false);
       return;
     }
@@ -444,7 +442,7 @@ export const useImageGeneration = ({
     );
 
     let hitMonthlyLimit = false;
-    const usageUpdates: Promise<MonthlyUsage>[] = [];
+    let successfulCount = 0;
 
     for (let i = 0; i < settled.length; i++) {
       const outcome = settled[i];
@@ -455,13 +453,7 @@ export const useImageGeneration = ({
           isLoading: false,
         };
         markFirstGenerationComplete();
-        usageUpdates.push(
-          recordGenerationMutation.mutateAsync({
-            userId,
-            amount: 1,
-            planType: planType as any,
-          })
-        );
+        successfulCount += 1;
       } else {
         const error = outcome.reason as any;
         console.error("Manual generation error:", error);
@@ -478,16 +470,24 @@ export const useImageGeneration = ({
 
     if (hitMonthlyLimit) {
       await refreshUsage(userId);
-      alert("Monthly credit limit reached. Please upgrade for more.");
+      if (!isPaymentUnlocked) {
+        openPaymentModal();
+      } else {
+        alert("Monthly credit limit reached. Please upgrade for more.");
+      }
     }
 
-    // Apply latest usage from the last successful record (or refresh)
-    if (usageUpdates.length > 0) {
+    // Record total usage in one call (reduces total credits by successfulCount)
+    if (successfulCount > 0) {
       try {
-        const usages = await Promise.all(usageUpdates);
-        if (usages.length > 0) setUsage(usages[usages.length - 1]);
+        const updatedUsage = await recordGenerationMutation.mutateAsync({
+          userId,
+          amount: successfulCount,
+          planType: planType as any,
+        });
+        setUsage(updatedUsage);
       } catch (e) {
-        console.error("Failed to record some usage", e);
+        console.error("Failed to record usage", e);
       }
     }
 

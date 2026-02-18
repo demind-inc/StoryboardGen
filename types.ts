@@ -1,7 +1,7 @@
 export type ImageSize = "1K";
 export type AppMode = "manual";
 export type AuthStatus = "checking" | "signed_out" | "signed_in";
-export type SubscriptionPlan = "basic" | "pro" | "business";
+export type SubscriptionPlan = "free" | "basic" | "pro" | "business";
 
 export interface SceneResult {
   prompt: string;

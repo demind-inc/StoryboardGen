@@ -293,9 +293,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Sign-up error:", error);
-      setAuthError(
-        error.message || "Failed to create account. Please try again."
-      );
+      const errorMessage = String(error?.message || "");
+      if (
+        errorMessage.includes("email_normalized_unique_idx") ||
+        errorMessage.includes("already exists")
+      ) {
+        setAuthError(
+          "This email address matches an existing account. Please sign in instead."
+        );
+      } else {
+        setAuthError(
+          error.message || "Failed to create account. Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }

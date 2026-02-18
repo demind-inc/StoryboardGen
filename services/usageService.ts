@@ -4,6 +4,7 @@ import { getSupabaseClient } from "./supabaseClient";
 const USAGE_TABLE = "usage_limits";
 export const DEFAULT_MONTHLY_CREDITS = 60;
 export const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
+  free: 3,
   basic: 90,
   pro: 180,
   business: 600,
@@ -15,8 +16,8 @@ const getCurrentPeriodStart = () => {
   return startOfMonth.toISOString().split("T")[0];
 };
 
-const getPlanCredits = (planType?: SubscriptionPlan | null) =>
-  PLAN_CREDITS[planType || "basic"] ?? DEFAULT_MONTHLY_CREDITS;
+const getPlanCredits = (planType?: SubscriptionPlan | null): number =>
+  PLAN_CREDITS[planType ?? "free"] ?? DEFAULT_MONTHLY_CREDITS;
 
 const normalizeUsage = (record: any, fallbackLimit: number): MonthlyUsage => {
   const monthlyLimit = Math.max(

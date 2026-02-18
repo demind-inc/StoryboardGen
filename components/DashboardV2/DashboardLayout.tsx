@@ -29,6 +29,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   previewImageUrl,
   isGenerating,
   disableGenerate,
+  generateDisabledTooltip,
   onGenerateAll,
   onRegenerateActive,
   transparentBackground,
@@ -117,6 +118,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       </div>
       <FooterBar
         disableGenerate={disableGenerate}
+        generateDisabledTooltip={generateDisabledTooltip}
         isGenerating={isGenerating}
         onGenerateAll={onGenerateAll}
         projectName={projectName}

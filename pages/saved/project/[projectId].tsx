@@ -8,6 +8,7 @@ import SavedProjectsPanel from "../SavedProjectsPanel";
 import { useProjectDetail } from "../../../hooks/useProjectService";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
+  free: "Free",
   basic: "$15/mo",
   pro: "$29/mo",
   business: "$79/mo",
@@ -21,10 +22,8 @@ const SavedProjectDetailPage: React.FC = () => {
   const mode: AppMode = "manual";
   const userId = session?.user?.id;
   const id = typeof projectId === "string" ? projectId : projectId?.[0];
-  const { data: selectedProject, isLoading: isLoadingDetail } = useProjectDetail(
-    userId,
-    id
-  );
+  const { data: selectedProject, isLoading: isLoadingDetail } =
+    useProjectDetail(userId, id);
 
   if (authStatus === "checking") {
     return (
@@ -89,7 +88,9 @@ const SavedProjectDetailPage: React.FC = () => {
             projects={null}
             selectedProject={selectedProject ?? null}
             isLoadingDetail={isLoadingDetail}
-            onSelectProject={(projectId) => router.push("/saved/project/" + projectId)}
+            onSelectProject={(projectId) =>
+              router.push("/saved/project/" + projectId)
+            }
             userId={session?.user?.id}
             planType={subscription.planType}
           />
