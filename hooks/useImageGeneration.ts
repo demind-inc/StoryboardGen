@@ -215,11 +215,6 @@ export const useImageGeneration = ({
   };
 
   const handleRegenerate = async (index: number) => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
     if (references.length === 0) {
       alert(
         "Please upload at least one reference image for character consistency."
@@ -350,11 +345,6 @@ export const useImageGeneration = ({
   };
 
   const startGeneration = async () => {
-    if (hasGeneratedFreeImage && !isPaymentUnlocked) {
-      openPaymentModal();
-      return;
-    }
-
     if (references.length === 0) {
       alert(
         "Please upload at least one reference image for character consistency."
@@ -398,11 +388,15 @@ export const useImageGeneration = ({
     }
 
     if (latestUsage && scenesToGenerate > latestUsage.remaining) {
-      alert(
-        `You can generate ${latestUsage.remaining} more image${
-          latestUsage.remaining === 1 ? "" : "s"
-        } this month (credits ${latestUsage.monthlyLimit}).`
-      );
+      if (!isPaymentUnlocked) {
+        openPaymentModal();
+      } else {
+        alert(
+          `You can generate ${latestUsage.remaining} more image${
+            latestUsage.remaining === 1 ? "" : "s"
+          } this month (credits ${latestUsage.monthlyLimit}).`
+        );
+      }
       setIsGenerating(false);
       return;
     }
@@ -448,7 +442,7 @@ export const useImageGeneration = ({
     );
 
     let hitMonthlyLimit = false;
-    const usageUpdates: Promise<MonthlyUsage>[] = [];
+    let successfulCount = 0;
 
     for (let i = 0; i < settled.length; i++) {
       const outcome = settled[i];
@@ -459,13 +453,7 @@ export const useImageGeneration = ({
           isLoading: false,
         };
         markFirstGenerationComplete();
-        usageUpdates.push(
-          recordGenerationMutation.mutateAsync({
-            userId,
-            amount: 1,
-            planType: planType as any,
-          })
-        );
+        successfulCount += 1;
       } else {
         const error = outcome.reason as any;
         console.error("Manual generation error:", error);
@@ -482,16 +470,24 @@ export const useImageGeneration = ({
 
     if (hitMonthlyLimit) {
       await refreshUsage(userId);
-      alert("Monthly credit limit reached. Please upgrade for more.");
+      if (!isPaymentUnlocked) {
+        openPaymentModal();
+      } else {
+        alert("Monthly credit limit reached. Please upgrade for more.");
+      }
     }
 
-    // Apply latest usage from the last successful record (or refresh)
-    if (usageUpdates.length > 0) {
+    // Record total usage in one call (reduces total credits by successfulCount)
+    if (successfulCount > 0) {
       try {
-        const usages = await Promise.all(usageUpdates);
-        if (usages.length > 0) setUsage(usages[usages.length - 1]);
+        const updatedUsage = await recordGenerationMutation.mutateAsync({
+          userId,
+          amount: successfulCount,
+          planType: planType as any,
+        });
+        setUsage(updatedUsage);
       } catch (e) {
-        console.error("Failed to record some usage", e);
+        console.error("Failed to record usage", e);
       }
     }
 
