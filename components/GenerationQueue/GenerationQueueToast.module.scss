@@ -1,0 +1,61 @@
+.container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1200;
+  max-width: min(360px, calc(100vw - 32px));
+}
+
+.item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(18, 18, 24, 0.94);
+  color: #fff;
+  cursor: default;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.succeeded {
+  border-color: rgba(93, 233, 144, 0.55);
+}
+
+.failed {
+  border-color: rgba(255, 95, 95, 0.55);
+}
+
+.headlineRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.projectName {
+  font-size: 13px;
+}
+
+.dismiss {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.message {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.82);
+}

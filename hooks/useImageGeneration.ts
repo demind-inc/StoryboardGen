@@ -19,6 +19,7 @@ import { useSaveProjectWithOutputs } from "./useProjectService";
 import { setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB } from "../services/authService";
 import { trackImageGeneration, trackImageRegeneration } from "../lib/analytics";
 import { promptToScene, sceneToImagePrompt } from "../types/scene";
+import { useGenerationQueue } from "../providers/GenerationQueueProvider";
 
 interface UseImageGenerationProps {
   mode: AppMode;
@@ -227,6 +228,7 @@ export const useImageGeneration = ({
   const [manualResults, setManualResults] = useState<SceneResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const { enqueue, updateProgress, resolveItem } = useGenerationQueue();
   const [captionStore, setCaptionStore] = useState<{
     tiktok: string[];
     instagram: string[];
@@ -471,6 +473,10 @@ export const useImageGeneration = ({
       } as SceneResult;
     });
     setManualResults(initialManualResults);
+    const queueItemId = enqueue({
+      projectName: projectName.trim() || "Untitled project",
+      totalScenes: scenesToGenerate,
+    });
     const generatedResults = [...initialManualResults];
     const emptyCaptions = { tiktok: [], instagram: [] };
     setCaptionStore(emptyCaptions);
@@ -504,6 +510,7 @@ export const useImageGeneration = ({
         };
         markFirstGenerationComplete();
         successfulCount += 1;
+        updateProgress(queueItemId, i + 1);
       } else {
         const error = outcome.reason as any;
         console.error("Manual generation error:", error);
@@ -515,6 +522,7 @@ export const useImageGeneration = ({
           error: error?.message || "Generation failed",
           isLoading: false,
         };
+        updateProgress(queueItemId, i + 1);
       }
     }
 
@@ -556,10 +564,23 @@ export const useImageGeneration = ({
           results: generatedResults,
         });
         setProjectId(savedProjectId);
+        resolveItem(queueItemId, {
+          status: "succeeded",
+          projectId: savedProjectId,
+        });
       } catch (error) {
         console.error("Failed to save project outputs:", error);
         alert("Failed to save project outputs. Please try again.");
+        resolveItem(queueItemId, {
+          status: "failed",
+          error: "Failed to save project outputs.",
+        });
       }
+    } else {
+      resolveItem(queueItemId, {
+        status: "failed",
+        error: "Generation did not produce outputs.",
+      });
     }
     setIsGenerating(false);
   };
