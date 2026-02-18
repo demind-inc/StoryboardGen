@@ -60,6 +60,122 @@ interface UseImageGenerationReturn {
 
 const FREE_CREDIT_CAP = 3;
 
+export interface UseRegenerateImageParams {
+  userId: string | undefined;
+  planType: string;
+  usage: MonthlyUsage | null;
+  setUsage: React.Dispatch<React.SetStateAction<MonthlyUsage | null>>;
+  setUsageError: React.Dispatch<React.SetStateAction<string | null>>;
+  isPaymentUnlocked: boolean;
+  openPaymentModal: () => void;
+  refreshUsage: (userId: string) => Promise<void>;
+  size?: ImageSize;
+  guidelines?: CustomGuidelines;
+  transparentBackground?: boolean;
+}
+
+export interface RegenerateImageOptions {
+  prompt: string;
+  referenceImageUrl?: string | null;
+  /** Extra references to prepend (e.g. from dashboard). Omitted when only referenceImageUrl is used. */
+  extraReferences?: ReferenceImage[];
+  size?: ImageSize;
+  guidelines?: CustomGuidelines;
+  transparentBackground?: boolean;
+}
+
+/**
+ * Shared hook for regenerating a single image with usage checks and payment modal.
+ * Used by useImageGeneration (dashboard) and SavedProjectsPanel.
+ */
+export function useRegenerateImage({
+  userId,
+  planType,
+  usage,
+  setUsage,
+  setUsageError,
+  isPaymentUnlocked,
+  openPaymentModal,
+  refreshUsage,
+  size: defaultSize = "1K",
+  guidelines: defaultGuidelines = [],
+  transparentBackground: defaultTransparent = true,
+}: UseRegenerateImageParams) {
+  const recordGenerationMutation = useRecordGeneration();
+
+  return async function regenerateSingle(options: RegenerateImageOptions): Promise<string> {
+    const {
+      prompt,
+      referenceImageUrl,
+      extraReferences = [],
+      size = defaultSize,
+      guidelines = defaultGuidelines,
+      transparentBackground = defaultTransparent,
+    } = options;
+
+    if (!userId) {
+      throw new Error("Unable to verify your account. Please sign in again.");
+    }
+
+    let latestUsage: MonthlyUsage | null = usage;
+    try {
+      latestUsage = await getMonthlyUsage(userId, planType as any);
+      setUsage(latestUsage);
+      setUsageError(null);
+    } catch (error) {
+      console.error("Usage check error:", error);
+      throw new Error("Unable to check credit balance.");
+    }
+
+    if (
+      !isPaymentUnlocked &&
+      latestUsage &&
+      latestUsage.used >= FREE_CREDIT_CAP
+    ) {
+      openPaymentModal();
+      throw new Error("Upgrade to keep generating.");
+    }
+
+    if (latestUsage && latestUsage.remaining <= 0) {
+      openPaymentModal();
+      throw new Error("Monthly credit limit reached.");
+    }
+
+    let referencesToUse: ReferenceImage[] = [...extraReferences];
+    if (referenceImageUrl) {
+      try {
+        const previousRef = await urlToReferenceImage(referenceImageUrl);
+        referencesToUse = [previousRef, ...referencesToUse];
+      } catch (e) {
+        console.error("Failed to use previous image as reference", e);
+      }
+    }
+
+    try {
+      const imageUrl = await generateCharacterScene(
+        prompt,
+        referencesToUse,
+        size,
+        guidelines,
+        { transparentBackground }
+      );
+      const updatedUsage = await recordGenerationMutation.mutateAsync({
+        userId,
+        amount: 1,
+        planType: planType as any,
+      });
+      setUsage(updatedUsage);
+      return imageUrl;
+    } catch (error: any) {
+      if (error?.message === "MONTHLY_LIMIT_REACHED") {
+        await refreshUsage(userId);
+        openPaymentModal();
+      }
+      throw error;
+    }
+  };
+}
+
 /** Convert an image URL (data, blob, or https) to ReferenceImage for API use. */
 export async function urlToReferenceImage(
   url: string
@@ -279,6 +395,7 @@ export const useImageGeneration = ({
     }
 
     if (latestUsage && latestUsage.remaining <= 0) {
+      openPaymentModal();
       setManualResults((prev) =>
         prev.map((res, idx) =>
           idx === index
@@ -290,7 +407,6 @@ export const useImageGeneration = ({
             : res
         )
       );
-      alert("Monthly credit limit reached. Please upgrade for more.");
       return;
     }
 
@@ -328,7 +444,7 @@ export const useImageGeneration = ({
       console.error("Regeneration error:", error);
       if (error?.message === "MONTHLY_LIMIT_REACHED") {
         await refreshUsage(userId);
-        alert("Monthly credit limit reached. Please upgrade for more.");
+        openPaymentModal();
       }
       setManualResults((prev) =>
         prev.map((res, idx) =>
