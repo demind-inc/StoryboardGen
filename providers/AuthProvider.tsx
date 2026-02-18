@@ -261,6 +261,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const supabase = getSupabaseClient();
+      // RPC enforces normalized-email uniqueness (e.g. user+tag@domain = user@domain)
+      const { data: available, error: checkError } = await (
+        supabase as any
+      ).rpc("is_normalized_email_available", { raw_email: authEmail.trim() });
+      if (checkError) {
+        console.warn(
+          "Normalized email check failed, proceeding with sign-up:",
+          checkError
+        );
+      } else if (available === false) {
+        setAuthError(
+          "This email address matches an existing account. Please sign in instead."
+        );
+        setIsLoading(false);
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email: authEmail.trim(),
         password: authPassword,
