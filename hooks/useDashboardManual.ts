@@ -28,6 +28,7 @@ import {
 } from "../types/scene";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
+  free: "Free",
   basic: "$15/mo",
   pro: "$29/mo",
   business: "$79/mo",
@@ -61,6 +62,7 @@ export const useDashboardManual = ({
     isPaymentUnlocked,
     isPaymentModalOpen,
     planType,
+    planTypeForUsage,
     setUsage,
     setUsageError,
     setHasGeneratedFreeImage,
@@ -187,7 +189,7 @@ export const useDashboardManual = ({
     manualPrompts,
     projectName,
     size: "1K",
-    planType,
+    planType: planTypeForUsage,
     captionRules: rules,
     hashtags,
     guidelines,
@@ -227,7 +229,7 @@ export const useDashboardManual = ({
 
   const usedCredits = usage?.used ?? 0;
   const freeCreditsRemaining = Math.max(3 - usedCredits, 0);
-  const planCreditLimit = PLAN_CREDITS[planType] ?? DEFAULT_MONTHLY_CREDITS;
+  const planCreditLimit = PLAN_CREDITS[planTypeForUsage] ?? DEFAULT_MONTHLY_CREDITS;
   const displayUsageLimit = isPaymentUnlocked
     ? usage?.monthlyLimit ?? planCreditLimit
     : undefined;

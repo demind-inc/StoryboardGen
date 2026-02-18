@@ -9,6 +9,7 @@ import { useDashboardManual } from "../hooks/useDashboardManual";
 import styles from "./DashboardPage.module.scss";
 
 const PLAN_PRICE_LABEL: Record<SubscriptionPlan, string> = {
+  free: "Free",
   basic: "$15/mo",
   pro: "$29/mo",
   business: "$79/mo",

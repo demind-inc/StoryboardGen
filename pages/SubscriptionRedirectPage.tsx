@@ -68,6 +68,7 @@ const SubscriptionRedirectPage: React.FC = () => {
 
         if (finalPlan) {
           const planPrices: Record<SubscriptionPlan, number> = {
+            free: 0,
             basic: 15,
             pro: 29,
             business: 79,

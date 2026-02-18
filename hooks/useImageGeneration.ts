@@ -16,9 +16,7 @@ import {
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
 import { useSaveProjectWithOutputs } from "./useProjectService";
-import {
-  setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB,
-} from "../services/authService";
+import { setHasGeneratedFreeImage as setHasGeneratedFreeImageInDB } from "../services/authService";
 import { trackImageGeneration, trackImageRegeneration } from "../lib/analytics";
 import { promptToScene, sceneToImagePrompt } from "../types/scene";
 
@@ -63,7 +61,9 @@ interface UseImageGenerationReturn {
 const FREE_CREDIT_CAP = 3;
 
 /** Convert an image URL (data, blob, or https) to ReferenceImage for API use. */
-export async function urlToReferenceImage(url: string): Promise<ReferenceImage> {
+export async function urlToReferenceImage(
+  url: string
+): Promise<ReferenceImage> {
   if (url.startsWith("data:")) {
     const match = url.match(/^data:(image\/[^;]+);base64,/);
     return {
@@ -142,7 +142,9 @@ export const useImageGeneration = ({
 
   const formatCaptionDisplay = (items: string[]) =>
     items
-      .map((caption, idx) => (items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption))
+      .map((caption, idx) =>
+        items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
+      )
       .join("\n\n");
 
   const handleGenerateCaption = async (
@@ -182,7 +184,9 @@ export const useImageGeneration = ({
 
     // Use functional update so the other platform's captions are never overwritten
     // when TikTok and Instagram generation run independently (e.g. one finishes after the other).
-    const nextCaptionsRef: { current: { tiktok: string[]; instagram: string[] } | null } = { current: null };
+    const nextCaptionsRef: {
+      current: { tiktok: string[]; instagram: string[] } | null;
+    } = { current: null };
     setCaptionStore((prev) => {
       const next = { ...prev, [platform]: response };
       nextCaptionsRef.current = next;
