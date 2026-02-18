@@ -8,11 +8,7 @@ import React, {
 import { useRouter } from "next/router";
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
-import {
-  hasExistingCanonicalGmailAccount,
-  signOut,
-  upsertProfile,
-} from "../services/authService";
+import { signOut, upsertProfile } from "../services/authService";
 import { ensureCaptionSettings } from "../services/captionSettingsService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
@@ -238,21 +234,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     setIsLoading(true);
     try {
-      const normalizedEmail = authEmail.trim();
-      const hasCanonicalGmailConflict = await hasExistingCanonicalGmailAccount(
-        normalizedEmail
-      );
-
-      if (hasCanonicalGmailConflict) {
-        setAuthError(
-          "This Gmail account already exists. Please sign in with your base Gmail address."
-        );
-        return;
-      }
-
       const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.signUp({
-        email: normalizedEmail,
+        email: authEmail.trim(),
         password: authPassword,
         options: {
           data: {
@@ -309,9 +293,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Sign-up error:", error);
-      setAuthError(
-        error.message || "Failed to create account. Please try again."
-      );
+      const errorMessage = String(error?.message || "");
+      if (
+        errorMessage.includes("email_normalized_unique_idx") ||
+        errorMessage.includes("already exists")
+      ) {
+        setAuthError(
+          "This email address matches an existing account. Please sign in instead."
+        );
+      } else {
+        setAuthError(
+          error.message || "Failed to create account. Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
