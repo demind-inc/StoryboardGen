@@ -9,21 +9,17 @@ import {
 import type {
   ProjectDetail,
   ProjectSummary,
-  ReferenceImage,
   SceneResult,
   SubscriptionPlan,
 } from "../../types";
-import {
-  generateCharacterScene,
-  generateSceneCaptionsForPlatform,
-} from "../../services/geminiService";
+import { generateSceneCaptionsForPlatform } from "../../services/geminiService";
 import {
   useSaveProjectCaptions,
   useSaveProjectOutput,
 } from "../../hooks/useProjectService";
-import { useRecordGeneration } from "../../hooks/useUsageService";
 import { useCaptionSettings } from "../../hooks/useCaptionSettingsService";
-import { urlToReferenceImage } from "../../hooks/useImageGeneration";
+import { useRegenerateImage } from "../../hooks/useImageGeneration";
+import { useSubscription } from "../../providers/SubscriptionProvider";
 import { promptToScene } from "../../types/scene";
 import styles from "./SavedProjectsPanel.module.scss";
 
@@ -44,6 +40,17 @@ const formatCaptionList = (items: string[]) =>
       items.length > 1 ? `Scene ${idx + 1}: ${caption}` : caption
     )
     .join("\n\n");
+
+/** True when the error is due to usage limits (payment modal is shown instead). */
+function isUsageLimitError(error: unknown): boolean {
+  const msg = error && typeof (error as any)?.message === "string" ? (error as any).message : "";
+  return (
+    msg === "Upgrade to keep generating." ||
+    msg === "Monthly credit limit reached." ||
+    msg === "Unable to check credit balance." ||
+    msg === "MONTHLY_LIMIT_REACHED"
+  );
+}
 
 interface SavedProjectsPanelProps {
   /** List of projects for list view (/saved/project). When null, panel is in detail mode. */
@@ -67,10 +74,24 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   planType,
 }) => {
   const router = useRouter();
+  const subscription = useSubscription();
   const saveProjectOutputMutation = useSaveProjectOutput();
   const saveProjectCaptionsMutation = useSaveProjectCaptions();
-  const recordGenerationMutation = useRecordGeneration();
   const captionSettingsQuery = useCaptionSettings(userId);
+
+  const regenerateSingle = useRegenerateImage({
+    userId: userId ?? undefined,
+    planType: (planType ?? subscription.planTypeForUsage) as string,
+    usage: subscription.usage,
+    setUsage: subscription.setUsage,
+    setUsageError: subscription.setUsageError,
+    isPaymentUnlocked: subscription.isPaymentUnlocked,
+    openPaymentModal: subscription.openPaymentModal,
+    refreshUsage: subscription.refreshUsage,
+    size: "1K",
+    guidelines: [],
+    transparentBackground: true,
+  });
   const availableRules =
     captionSettingsQuery.data?.rules ?? DEFAULT_CAPTION_RULES;
   const availableHashtags =
@@ -83,6 +104,15 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     instagram: string[];
   }>({ tiktok: [], instagram: [] });
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  useEffect(() => {
+    if (!isRegenerating) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isRegenerating]);
 
   const results: SceneResult[] = useMemo(() => {
     if (!selectedProject) return [];
@@ -190,39 +220,18 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
     );
 
     try {
-      const currentImageUrl = displayResults[index]?.imageUrl;
-      let referencesToUse: ReferenceImage[] = [];
-      if (currentImageUrl) {
-        try {
-          const previousRef = await urlToReferenceImage(currentImageUrl);
-          referencesToUse = [previousRef];
-        } catch (e) {
-          console.error("Failed to use previous image as reference", e);
-        }
-      }
-      const imageUrl = await generateCharacterScene(
+      const imageUrl = await regenerateSingle({
         prompt,
-        referencesToUse,
-        "1K",
-        []
-      );
+        referenceImageUrl: displayResults[index]?.imageUrl ?? undefined,
+      });
       setDetailResults((prev) =>
         prev.map((res, idx) =>
           idx === index
-            ? {
-                ...res,
-                imageUrl,
-                isLoading: false,
-              }
+            ? { ...res, imageUrl, isLoading: false }
             : res
         )
       );
       if (userId) {
-        await recordGenerationMutation.mutateAsync({
-          userId,
-          amount: 1,
-          planType: planType ?? null,
-        });
         await saveProjectOutputMutation.mutateAsync({
           userId,
           projectId: selectedProject.id,
@@ -235,13 +244,14 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
       }
     } catch (error: any) {
       console.error("Failed to regenerate image:", error);
+      const showError = !isUsageLimitError(error);
       setDetailResults((prev) =>
         prev.map((res, idx) =>
           idx === index
             ? {
                 ...res,
                 isLoading: false,
-                error: error?.message || "Regeneration failed",
+                error: showError ? (error?.message || "Regeneration failed") : undefined,
               }
             : res
         )
@@ -266,22 +276,10 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         continue;
       }
       try {
-        const currentImageUrl = nextResults[i]?.imageUrl;
-        let referencesToUse: ReferenceImage[] = [];
-        if (currentImageUrl) {
-          try {
-            const previousRef = await urlToReferenceImage(currentImageUrl);
-            referencesToUse = [previousRef];
-          } catch (e) {
-            console.error("Failed to use previous image as reference", e);
-          }
-        }
-        const imageUrl = await generateCharacterScene(
+        const imageUrl = await regenerateSingle({
           prompt,
-          referencesToUse,
-          "1K",
-          []
-        );
+          referenceImageUrl: nextResults[i]?.imageUrl ?? undefined,
+        });
         nextResults[i] = {
           ...nextResults[i],
           imageUrl,
@@ -289,11 +287,6 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         };
         if (userId) {
           try {
-            await recordGenerationMutation.mutateAsync({
-              userId,
-              amount: 1,
-              planType: planType ?? null,
-            });
             await saveProjectOutputMutation.mutateAsync({
               userId,
               projectId: selectedProject.id,
@@ -309,10 +302,11 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
         }
       } catch (error: any) {
         console.error("Failed to regenerate image:", error);
+        const showError = !isUsageLimitError(error);
         nextResults[i] = {
           ...nextResults[i],
           isLoading: false,
-          error: error?.message || "Regeneration failed",
+          error: showError ? (error?.message || "Regeneration failed") : undefined,
         };
       }
       setDetailResults([...nextResults]);

@@ -73,6 +73,11 @@
   color: #9aa1af;
 }
 
+.auth-input-wrap {
+  position: relative;
+  display: block;
+}
+
 .auth-input {
   height: 44px;
   border-radius: 12px;
@@ -83,6 +88,12 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+
+  .auth-input-wrap & {
+    padding-right: 44px;
+  }
 
   &::placeholder {
     color: #7f8797;
@@ -91,6 +102,34 @@
   &:focus {
     border-color: rgba(240, 168, 75, 0.6);
     box-shadow: 0 0 0 3px rgba(240, 168, 75, 0.15);
+  }
+}
+
+.auth-input-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9aa1af;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    color: #e9edf4;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &:focus {
+    outline: none;
   }
 }
 

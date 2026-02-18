@@ -45,7 +45,6 @@ const DashboardPage: React.FC = () => {
     subscription.setIsPaymentModalOpen,
     handleBillingHandled,
   ]);
-  console.log(authStatus, session?.user);
   const emailVerified = Boolean(session?.user?.email_confirmed_at);
   useEffect(() => {
     if (
