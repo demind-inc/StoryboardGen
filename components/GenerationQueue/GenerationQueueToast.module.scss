@@ -39,6 +39,36 @@
   gap: 10px;
 }
 
+.titleWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.statusIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.7);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.statusIconSuccess {
+  color: rgba(93, 233, 144, 0.95);
+}
+
+.statusIconFailed {
+  color: rgba(255, 95, 95, 0.95);
+}
+
 .projectName {
   font-size: 13px;
 }

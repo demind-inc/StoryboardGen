@@ -1,6 +1,9 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useGenerationQueue } from "../../providers/GenerationQueueProvider";
+import { InlineSpinner } from "../Spinner/InlineSpinner";
 import styles from "./GenerationQueueToast.module.scss";
 
 const GenerationQueueToast: React.FC = () => {
@@ -47,7 +50,24 @@ const GenerationQueueToast: React.FC = () => {
             }
           >
             <div className={styles.headlineRow}>
-              <strong className={styles.projectName}>{item.projectName || "Untitled project"}</strong>
+              <div className={styles.titleWithIcon}>
+                {item.status === "running" && (
+                  <span className={styles.statusIcon} aria-hidden>
+                    <InlineSpinner size="sm" label="Generating" />
+                  </span>
+                )}
+                {item.status === "succeeded" && (
+                  <span className={`${styles.statusIcon} ${styles.statusIconSuccess}`} aria-hidden>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </span>
+                )}
+                {item.status === "failed" && (
+                  <span className={`${styles.statusIcon} ${styles.statusIconFailed}`} aria-hidden>
+                    <FontAwesomeIcon icon={faCircleExclamation} />
+                  </span>
+                )}
+                <strong className={styles.projectName}>{item.projectName || "Untitled project"}</strong>
+              </div>
               {isDone && (
                 <button
                   type="button"
