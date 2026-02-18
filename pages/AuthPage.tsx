@@ -49,24 +49,32 @@ const AuthPage: React.FC = () => {
   }
 
   return (
-    <AuthShell
-      authEmail={authEmail}
-      authPassword={authPassword}
-      authName={authName}
-      authMessage={authMessage}
-      authError={authError}
-      authStatus={authStatus}
-      isLoading={isLoading}
-      isResettingPassword={isResettingPassword}
-      isSignUpMode={isSignUpMode}
-      onEmailChange={setAuthEmail}
-      onPasswordChange={setAuthPassword}
-      onNameChange={setAuthName}
-      onToggleAuthMode={toggleAuthMode}
-      onRequestPasswordReset={requestPasswordReset}
-      onSignIn={signIn}
-      onSignUp={signUp}
-    />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <AuthShell
+        authEmail={authEmail}
+        authPassword={authPassword}
+        authName={authName}
+        authMessage={authMessage}
+        authError={authError}
+        authStatus={authStatus}
+        isLoading={isLoading}
+        isResettingPassword={isResettingPassword}
+        isSignUpMode={isSignUpMode}
+        onEmailChange={setAuthEmail}
+        onPasswordChange={setAuthPassword}
+        onNameChange={setAuthName}
+        onToggleAuthMode={toggleAuthMode}
+        onRequestPasswordReset={requestPasswordReset}
+        onSignIn={signIn}
+        onSignUp={signUp}
+      />
+    </div>
   );
 };
 
