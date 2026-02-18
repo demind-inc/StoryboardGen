@@ -105,6 +105,15 @@ const SavedProjectsPanel: React.FC<SavedProjectsPanelProps> = ({
   }>({ tiktok: [], instagram: [] });
   const [isRegenerating, setIsRegenerating] = useState(false);
 
+  useEffect(() => {
+    if (!isRegenerating) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isRegenerating]);
+
   const results: SceneResult[] = useMemo(() => {
     if (!selectedProject) return [];
     return selectedProject.outputs.map((output) => ({
