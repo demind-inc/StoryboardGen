@@ -301,6 +301,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           );
           setAuthError(null);
           setIsSignUpMode(false);
+          router.push("/auth/verify-email");
           return;
         }
 
@@ -335,6 +336,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error("Failed to create profile:", profileError);
           // Don't fail the sign up if profile creation fails
         }
+
+        router.push("/auth/verify-email");
       }
     } catch (error: any) {
       console.error("Sign-up error:", error);

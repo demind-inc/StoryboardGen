@@ -27,8 +27,10 @@ begin
   local_part := split_part(normalized_email, '@', 1);
   domain_part := split_part(normalized_email, '@', 2);
 
+  -- Strip plus-addressing for all domains (e.g. user+tag@any.com -> user@any.com)
+  local_part := split_part(local_part, '+', 1);
+
   if domain_part in ('gmail.com', 'googlemail.com') then
-    local_part := split_part(local_part, '+', 1);
     return local_part || '@gmail.com';
   end if;
 
@@ -36,6 +38,6 @@ begin
 end;
 $$;
 
--- Unique index over normalized email enforces the guard in auth.users itself.
-create unique index if not exists email_normalized_unique_idx
-on auth.users (private.normalize_auth_email(email));
+-- Unique index on auth.users requires ownership of that table (supabase_auth_admin).
+-- Run the index separately: see supabase-emailguard-index.sql and run it in
+-- Supabase Dashboard SQL Editor (often has sufficient privileges).
