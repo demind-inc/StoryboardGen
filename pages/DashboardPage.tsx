@@ -45,6 +45,17 @@ const DashboardPage: React.FC = () => {
     subscription.setIsPaymentModalOpen,
     handleBillingHandled,
   ]);
+  console.log(authStatus, session?.user);
+  const emailVerified = Boolean(session?.user?.email_confirmed_at);
+  useEffect(() => {
+    if (
+      authStatus === "signed_in" &&
+      session?.user &&
+      !session.user.email_confirmed_at
+    ) {
+      router.replace("/auth/verify-email");
+    }
+  }, [authStatus, session?.user, router]);
 
   if (authStatus === "checking") {
     return (
@@ -62,6 +73,11 @@ const DashboardPage: React.FC = () => {
   }
 
   if (authStatus !== "signed_in") {
+    return null;
+  }
+
+  // Do not show dashboard until email is verified
+  if (session?.user && !emailVerified) {
     return null;
   }
 
@@ -100,7 +116,6 @@ const DashboardPage: React.FC = () => {
           />
 
           <DashboardMain dashboard={dashboard} />
-
         </div>
       </main>
     </div>

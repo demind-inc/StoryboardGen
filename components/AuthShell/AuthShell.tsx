@@ -170,6 +170,31 @@ const AuthShell: React.FC<AuthShellProps> = ({
           </div>
         )}
 
+        {authError && (
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
+            role="alert"
+          >
+            {authError}
+          </div>
+        )}
+        {localError && (
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
+            role="alert"
+          >
+            {localError}
+          </div>
+        )}
+        {authMessage && (
+          <div
+            className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}
+            role="status"
+          >
+            {authMessage}
+          </div>
+        )}
+
         <button
           type="submit"
           className={styles["auth-submit"]}
@@ -220,27 +245,6 @@ const AuthShell: React.FC<AuthShellProps> = ({
         )}
       </div>
 
-      {authMessage && (
-        <div
-          className={`${styles["auth-alert"]} ${styles["auth-alert--success"]}`}
-        >
-          {authMessage}
-        </div>
-      )}
-      {authError && (
-        <div
-          className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
-        >
-          {authError}
-        </div>
-      )}
-      {localError && (
-        <div
-          className={`${styles["auth-alert"]} ${styles["auth-alert--error"]}`}
-        >
-          {localError}
-        </div>
-      )}
       {authStatus === "checking" && !authError && (
         <p className={styles["auth-helper"]}>Checking your session...</p>
       )}
