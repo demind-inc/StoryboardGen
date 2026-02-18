@@ -8,7 +8,11 @@ import React, {
 import { useRouter } from "next/router";
 import { Session, User } from "@supabase/supabase-js";
 import { AuthStatus } from "../types";
-import { signOut, upsertProfile } from "../services/authService";
+import {
+  hasExistingCanonicalGmailAccount,
+  signOut,
+  upsertProfile,
+} from "../services/authService";
 import { ensureCaptionSettings } from "../services/captionSettingsService";
 import { getSupabaseClient } from "../services/supabaseClient";
 
@@ -234,9 +238,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     setIsLoading(true);
     try {
+      const normalizedEmail = authEmail.trim();
+      const hasCanonicalGmailConflict = await hasExistingCanonicalGmailAccount(
+        normalizedEmail
+      );
+
+      if (hasCanonicalGmailConflict) {
+        setAuthError(
+          "This Gmail account already exists. Please sign in with your base Gmail address."
+        );
+        return;
+      }
+
       const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.signUp({
-        email: authEmail.trim(),
+        email: normalizedEmail,
         password: authPassword,
         options: {
           data: {

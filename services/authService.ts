@@ -15,6 +15,51 @@ export async function signOut() {
   if (error) throw error;
 }
 
+function normalizeEmailAddress(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function getCanonicalGmailAddress(email: string): string | null {
+  const normalizedEmail = normalizeEmailAddress(email);
+  const [localPart, domain] = normalizedEmail.split("@");
+
+  if (!localPart || !domain) {
+    return null;
+  }
+
+  if (domain !== "gmail.com" && domain !== "googlemail.com") {
+    return null;
+  }
+
+  const baseLocalPart = localPart.split("+")[0];
+  return `${baseLocalPart}@gmail.com`;
+}
+
+export async function hasExistingCanonicalGmailAccount(
+  email: string
+): Promise<boolean> {
+  const normalizedEmail = normalizeEmailAddress(email);
+  const canonicalEmail = getCanonicalGmailAddress(normalizedEmail);
+
+  if (!canonicalEmail || !normalizedEmail.includes("+")) {
+    return false;
+  }
+
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id")
+    .ilike("email", canonicalEmail)
+    .limit(1);
+
+  if (error) {
+    console.error("Failed to validate canonical Gmail account:", error);
+    return false;
+  }
+
+  return Array.isArray(data) && data.length > 0;
+}
+
 export async function upsertProfile(sessionUser: {
   id: string;
   email?: string | null;
