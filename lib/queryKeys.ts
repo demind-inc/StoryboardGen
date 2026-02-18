@@ -11,7 +11,7 @@ export const queryKeys = {
   promptLibrary: (userId: string | undefined) =>
     ["promptLibrary", userId] as const,
   usage: (userId: string | undefined, planType?: string | null) =>
-    ["usage", userId, planType ?? "basic"] as const,
+    ["usage", userId, planType ?? "free"] as const,
   captionSettings: (userId: string | undefined) =>
     ["captionSettings", userId] as const,
   subscription: {

@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import type { SubscriptionPlan } from "../../../types";
 import { createSupabaseClient } from "../../../lib/supabase/server";
-
-type SubscriptionPlan = "basic" | "pro" | "business";
 
 const USAGE_TABLE = "usage_limits";
 const PLAN_CREDITS: Record<SubscriptionPlan, number> = {
+  free: 3,
   basic: 90,
   pro: 180,
   business: 600,

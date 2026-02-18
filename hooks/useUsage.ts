@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { MonthlyUsage, SubscriptionPlan } from "../types";
-import {
-  getHasGeneratedFreeImage,
-} from "../services/authService";
+import { getHasGeneratedFreeImage } from "../services/authService";
 import { useSubscriptionQuery } from "./useSubscriptionService";
 import { useMonthlyUsage } from "./useUsageService";
 import { queryKeys } from "../lib/queryKeys";
@@ -18,6 +16,8 @@ export interface UseUsageReturn {
   isPaymentUnlocked: boolean;
   isPaymentModalOpen: boolean;
   planType: SubscriptionPlan;
+  /** Plan used for usage/credits (e.g. "free" when no subscription). */
+  planTypeForUsage: SubscriptionPlan;
   planLockedFromSubscription: boolean;
   stripeSubscriptionId: string | null | undefined;
   isSubscriptionLoading: boolean;
@@ -43,7 +43,9 @@ export const useUsage = (
   const subscription = subscriptionQuery.data ?? null;
   const planLockedFromSubscription = !!subscription?.planType;
   const planType = subscription?.planType ?? localPlanType;
-  const usageQuery = useMonthlyUsage(userId, planType);
+  // No plan from subscription → "free" (3 credits); otherwise use plan credits
+  const planTypeForUsage: SubscriptionPlan = subscription?.planType ?? "free";
+  const usageQuery = useMonthlyUsage(userId, planTypeForUsage);
 
   const [usageError, setUsageError] = useState<string | null>(null);
   const [hasGeneratedFreeImage, setHasGeneratedFreeImage] =
@@ -52,7 +54,8 @@ export const useUsage = (
 
   const usage = usageQuery.data ?? null;
   const isUsageLoading = usageQuery.isLoading || usageQuery.isFetching;
-  const isSubscriptionLoading = subscriptionQuery.isLoading || subscriptionQuery.isFetching;
+  const isSubscriptionLoading =
+    subscriptionQuery.isLoading || subscriptionQuery.isFetching;
   const isPaymentUnlocked = subscription?.isActive ?? false;
   const stripeSubscriptionId = subscription?.stripeSubscriptionId;
 
@@ -101,11 +104,14 @@ export const useUsage = (
     [queryClient, userId, planType]
   );
 
-  const setPlanType = useCallback((action: React.SetStateAction<SubscriptionPlan>) => {
-    setLocalPlanType((prev) =>
-      typeof action === "function" ? action(prev) : action
-    );
-  }, []);
+  const setPlanType = useCallback(
+    (action: React.SetStateAction<SubscriptionPlan>) => {
+      setLocalPlanType((prev) =>
+        typeof action === "function" ? action(prev) : action
+      );
+    },
+    []
+  );
 
   // Load plan type from URL or localStorage when not locked from subscription
   useEffect(() => {
@@ -117,12 +123,10 @@ export const useUsage = (
       "preferred_plan"
     ) as SubscriptionPlan | null;
 
-    if (urlPlan && ["basic", "pro", "business"].includes(urlPlan)) {
+    const allowedPlans = ["free", "basic", "pro", "business"];
+    if (urlPlan && allowedPlans.includes(urlPlan)) {
       setLocalPlanType(urlPlan as SubscriptionPlan);
-    } else if (
-      storedPlan &&
-      ["basic", "pro", "business"].includes(storedPlan)
-    ) {
+    } else if (storedPlan && allowedPlans.includes(storedPlan)) {
       setLocalPlanType(storedPlan as SubscriptionPlan);
     }
   }, [authStatus, planLockedFromSubscription]);
@@ -148,6 +152,7 @@ export const useUsage = (
     isFreeImageLoading,
     isPaymentUnlocked,
     planType,
+    planTypeForUsage,
     planLockedFromSubscription,
     stripeSubscriptionId,
     isSubscriptionLoading,

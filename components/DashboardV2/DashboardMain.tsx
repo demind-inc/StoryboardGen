@@ -25,6 +25,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     saveScene,
     isGenerating,
     disableGenerate,
+    generateDisabledTooltip,
     startGeneration,
     handleRegenerate,
     handleGenerateCaption,
@@ -90,6 +91,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         onTransparentBackgroundChange={setTransparentBackground}
         isGenerating={isGenerating}
         disableGenerate={disableGenerate}
+        generateDisabledTooltip={generateDisabledTooltip}
         onGenerateAll={startGeneration}
         onRegenerateActive={() => handleRegenerate(activeSceneIndex)}
         rules={rules}

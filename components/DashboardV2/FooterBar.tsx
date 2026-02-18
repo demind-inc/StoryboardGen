@@ -4,6 +4,7 @@ import styles from "./FooterBar.module.scss";
 
 export interface FooterBarProps {
   disableGenerate: boolean;
+  generateDisabledTooltip?: string | null;
   isGenerating: boolean;
   onGenerateAll: () => void;
   projectName: string;
@@ -13,6 +14,7 @@ export interface FooterBarProps {
 
 const FooterBar: React.FC<FooterBarProps> = ({
   disableGenerate,
+  generateDisabledTooltip,
   isGenerating,
   onGenerateAll,
   projectName,
@@ -63,16 +65,25 @@ const FooterBar: React.FC<FooterBarProps> = ({
           </div>
         )}
       </div> */}
-      <button
-        className={`${styles.actionButton} ${styles.actionButtonPrimary} ${
-          isReady ? styles.actionButtonReady : ""
-        }`}
-        onClick={isDisabled ? undefined : onGenerateAll}
-        disabled={isDisabled}
+      <span
+        className={styles.generateButtonWrap}
+        title={
+          isDisabled && generateDisabledTooltip
+            ? generateDisabledTooltip
+            : undefined
+        }
       >
-        <AIIcon />
-        <span>{isGenerating ? "Generating..." : "Generate Images"}</span>
-      </button>
+        <button
+          className={`${styles.actionButton} ${styles.actionButtonPrimary} ${
+            isReady ? styles.actionButtonReady : ""
+          }`}
+          onClick={isDisabled ? undefined : onGenerateAll}
+          disabled={isDisabled}
+        >
+          <AIIcon />
+          <span>{isGenerating ? "Generating..." : "Generate Images"}</span>
+        </button>
+      </span>
     </div>
   );
 };
