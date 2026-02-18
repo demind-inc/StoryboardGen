@@ -10,7 +10,12 @@ export interface SceneCardProps {
   onSceneSelect: (index: number) => void;
   onAddScene: () => void;
   onRemoveScene?: (index: number) => void;
-  onSaveScene: (index: number, title: string, description: string, scenePrompt: string) => void;
+  onSaveScene: (
+    index: number,
+    title: string,
+    description: string,
+    scenePrompt: string
+  ) => void;
   previewImageUrl?: string;
   onOpenAutoGenerate?: () => void;
   isTopicGenerating?: boolean;
@@ -51,7 +56,9 @@ const SceneCard: React.FC<SceneCardProps> = ({
               >
                 {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
                 <span>
-                  {isTopicGenerating ? "Generating..." : "Auto-Generate"}
+                  {isTopicGenerating
+                    ? "Generating..."
+                    : "Generate Scenes from Topic"}
                 </span>
               </button>
             )}
@@ -61,7 +68,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
               onClick={onAddScene}
             >
               <PlusIcon />
-              <span>Add Scene</span>
+              <span>Add Manually</span>
             </button>
           </div>
         )}
@@ -81,7 +88,9 @@ const SceneCard: React.FC<SceneCardProps> = ({
                   {isTopicGenerating ? <SpinnerIcon /> : <AIIcon />}
                 </span>
                 <span className={styles.emptyActionLabel}>
-                  {isTopicGenerating ? "Generating..." : "Auto-Generate Scenes"}
+                  {isTopicGenerating
+                    ? "Generating..."
+                    : "Generate Scenes from Topic"}
                 </span>
               </button>
               <button
@@ -92,7 +101,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
                 <span className={styles.emptyActionIconSecondary}>
                   <PlusIcon />
                 </span>
-                <span className={styles.emptyActionLabel}>Add Scene</span>
+                <span className={styles.emptyActionLabel}>Add Manually</span>
               </button>
             </div>
             <p className={styles.emptyHint}>
