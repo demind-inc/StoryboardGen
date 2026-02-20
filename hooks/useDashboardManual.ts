@@ -241,15 +241,30 @@ export const useDashboardManual = ({
   const hasValidScenePrompts = scenes.some(
     (scene) => scene.title.trim() || scene.description.trim()
   );
+  const scenesToGenerateCount = manualPrompts
+    .split("\n")
+    .filter((prompt) => prompt.trim() !== "").length;
   const noCreditsRemaining = !!(usage && usage.remaining <= 0);
+  const hasInsufficientCredits =
+    !!usage && scenesToGenerateCount > usage.remaining;
   const disableGenerate =
     isGenerating ||
     referencesWithData.length === 0 ||
     !hasValidScenePrompts ||
+    hasInsufficientCredits ||
     noCreditsRemaining ||
     !!usageError;
   const generateDisabledTooltip = noCreditsRemaining
     ? "No credits remaining. Upgrade for more."
+    : hasInsufficientCredits
+    ? `Not enough credits. ${scenesToGenerateCount} image${
+        scenesToGenerateCount === 1 ? "" : "s"
+      } requested, ${usage?.remaining ?? 0} credit${
+        (usage?.remaining ?? 0) === 1 ? "" : "s"
+      } remaining.`
+    : null;
+  const generateErrorMessage = hasInsufficientCredits
+    ? generateDisabledTooltip
     : null;
 
   const stripePlanLinks = useMemo(() => {
@@ -444,6 +459,7 @@ export const useDashboardManual = ({
     projectId,
     disableGenerate,
     generateDisabledTooltip,
+    generateErrorMessage,
     isReferenceLibraryOpen,
     setIsReferenceLibraryOpen,
     isPaymentModalOpen,

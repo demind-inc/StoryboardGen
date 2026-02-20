@@ -81,6 +81,13 @@
   margin-right: auto;
 }
 
+
+.generateErrorMessage {
+  color: #ff7a7a;
+  font-size: var(--fs-13);
+  align-self: center;
+}
+
 .generateButtonWrap {
   display: inline-flex;
 }

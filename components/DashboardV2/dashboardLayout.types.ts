@@ -33,6 +33,7 @@ export interface DashboardLayoutProps {
   isGenerating: boolean;
   disableGenerate: boolean;
   generateDisabledTooltip?: string | null;
+  generateErrorMessage?: string | null;
   onGenerateAll: () => void;
   onRegenerateActive: () => void;
   transparentBackground: boolean;

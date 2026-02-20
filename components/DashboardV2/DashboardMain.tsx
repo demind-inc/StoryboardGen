@@ -26,6 +26,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
     isGenerating,
     disableGenerate,
     generateDisabledTooltip,
+    generateErrorMessage,
     startGeneration,
     handleRegenerate,
     handleGenerateCaption,
@@ -92,6 +93,7 @@ const DashboardMain: React.FC<DashboardMainProps> = ({ dashboard }) => {
         isGenerating={isGenerating}
         disableGenerate={disableGenerate}
         generateDisabledTooltip={generateDisabledTooltip}
+        generateErrorMessage={generateErrorMessage}
         onGenerateAll={startGeneration}
         onRegenerateActive={() => handleRegenerate(activeSceneIndex)}
         rules={rules}
