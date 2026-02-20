@@ -5,6 +5,7 @@ import styles from "./FooterBar.module.scss";
 export interface FooterBarProps {
   disableGenerate: boolean;
   generateDisabledTooltip?: string | null;
+  generateErrorMessage?: string | null;
   isGenerating: boolean;
   onGenerateAll: () => void;
   projectName: string;
@@ -15,6 +16,7 @@ export interface FooterBarProps {
 const FooterBar: React.FC<FooterBarProps> = ({
   disableGenerate,
   generateDisabledTooltip,
+  generateErrorMessage,
   isGenerating,
   onGenerateAll,
   projectName,
@@ -65,6 +67,9 @@ const FooterBar: React.FC<FooterBarProps> = ({
           </div>
         )}
       </div> */}
+      {generateErrorMessage && (
+        <span className={styles.generateErrorMessage}>{generateErrorMessage}</span>
+      )}
       <span
         className={styles.generateButtonWrap}
         title={
