@@ -1,5 +1,5 @@
 {
-  "version": "2.7",
+  "version": "2.8",
   "children": [
     {
       "type": "frame",
@@ -7720,7 +7720,7 @@
       "type": "frame",
       "id": "BdgW3",
       "x": 156,
-      "y": -4218,
+      "y": -4930,
       "name": "landing-page",
       "clip": true,
       "width": 1400,
@@ -10320,87 +10320,6 @@
           ]
         }
       ]
-    },
-    {
-      "type": "rectangle",
-      "cornerRadius": 24,
-      "id": "OX2w1",
-      "x": 1858,
-      "y": -4408,
-      "fill": {
-        "type": "image",
-        "enabled": true,
-        "url": "./image.png",
-        "mode": "fill"
-      },
-      "width": 796,
-      "height": 498
-    },
-    {
-      "type": "frame",
-      "id": "VQPBl",
-      "x": 2159,
-      "y": -3272,
-      "name": "how-output",
-      "width": 424,
-      "height": 260,
-      "fill": "#1A1A1B",
-      "cornerRadius": 12,
-      "layout": "none",
-      "children": [
-        {
-          "type": "frame",
-          "id": "L16Ka",
-          "x": -29,
-          "y": 69,
-          "name": "storyboard-output",
-          "width": 400,
-          "height": 236,
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "url": "./public/assets/showcase/storyboard-output.png",
-            "mode": "fill"
-          },
-          "cornerRadius": 10
-        }
-      ]
-    },
-    {
-      "type": "rectangle",
-      "cornerRadius": 24,
-      "id": "yY9Ah",
-      "x": 1935,
-      "y": -3857,
-      "fill": {
-        "type": "image",
-        "enabled": true,
-        "url": "./image2.png",
-        "mode": "fill"
-      },
-      "width": 797,
-      "height": 498,
-      "stroke": {
-        "align": "inside",
-        "thickness": 4,
-        "fill": "#b3b3b36b"
-      }
-    },
-    {
-      "type": "frame",
-      "id": "n9riD",
-      "x": 1770,
-      "y": -2798,
-      "name": "how-shot-a",
-      "width": 460,
-      "height": 310,
-      "fill": {
-        "type": "image",
-        "enabled": true,
-        "url": "./public/assets/showcase/storyboard-output.png",
-        "mode": "fill"
-      },
-      "cornerRadius": 16
     },
     {
       "type": "frame",
