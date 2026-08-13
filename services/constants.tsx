@@ -48,4 +48,4 @@ export const DEFAULT_CHARACTER_BACKGROUND_SCENE = `
 
 export const MODEL_NAME = "gemini-3-pro-image-preview";
 export const CAPTION_MODEL_NAME =
-  process.env.GEMINI_TEXT_MODEL || "gemini-2.5-flash-lite";
+  process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
