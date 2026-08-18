@@ -82,7 +82,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXX  # optional
 
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_TEXT_MODEL=gemini-2.5-flash-lite  # optional
+GEMINI_TEXT_MODEL=gemini-3.5-flash-lite  # optional
 SUPABASE_URL=your_supabase_url
 SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
 SUPABASE_ROLE_KEY=your_supabase_service_role_key

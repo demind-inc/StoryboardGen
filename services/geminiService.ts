@@ -15,7 +15,7 @@ import {
 
 const MODEL_NAME = "gemini-3-pro-image-preview";
 const CAPTION_MODEL_NAME =
-  process.env.GEMINI_TEXT_MODEL || "gemini-2.5-flash-lite";
+  process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
 
 function getGeminiClient() {
   const apiKey = process.env.GEMINI_API_KEY;
