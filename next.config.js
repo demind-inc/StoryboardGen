@@ -2,8 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Do not add an `env` map here. Next.js inlines those values into the
-  // browser bundle. Browser-visible config must use a NEXT_PUBLIC_ prefix.
+  // Public only. Lets Vercel SUPABASE_URL / SUPABASE_ANON_KEY reach the
+  // browser as NEXT_PUBLIC_* without exposing Gemini, Stripe, or the
+  // service-role key. Do not add secrets here.
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL:
+      process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY,
+  },
 };
 
 // Injected content via Sentry wizard below (only applied in production)
