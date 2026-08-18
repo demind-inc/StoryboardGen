@@ -58,35 +58,44 @@ vercel --prod
 
 ## Environment Variables
 
-Set these in Vercel Dashboard → Settings → Environment Variables:
+Set these in Vercel Dashboard → Settings → Environment Variables.
 
-### Frontend Build Variables
+**Rule:** a name starting with `NEXT_PUBLIC_` is copied into the website JavaScript. Any other name stays on the server and is not exposed.
 
-These are used during the build process:
+Never prefix secrets with `NEXT_PUBLIC_`. Do not put secrets in `next.config.js` `env`.
+
+### Browser (will appear on the website)
+
+These are required for login in the browser. They are not secret (Supabase publishable/anon key).
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
+NEXT_PUBLIC_BASE_URL=https://yourdomain.com
+NEXT_PUBLIC_STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link  # optional
+NEXT_PUBLIC_STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link      # optional
+NEXT_PUBLIC_STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link  # optional
+NEXT_PUBLIC_GA_ID=G-XXXXXXXX  # optional
+```
+
+### Server-only (not exposed on the website)
 
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
+GEMINI_TEXT_MODEL=gemini-2.5-flash-lite  # optional
 SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
-STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
-STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
-```
-
-### Backend API Variables
-
-These are used by serverless functions at runtime:
-
-```bash
-SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key  # Important: Use service role key, not anon key
+SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
+SUPABASE_ROLE_KEY=your_supabase_service_role_key
 STRIPE_SECRET_KEY=sk_live_...  # or sk_test_... for testing
-STRIPE_WEBHOOK_SECRET=whsec_...  # Get from Stripe Dashboard → Webhooks
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID_BASIC=price_...
+STRIPE_PRICE_ID_PRO=price_...
+STRIPE_PRICE_ID_BUSINESS=price_...
 ```
 
 **Important:**
 
-- `SUPABASE_SERVICE_ROLE_KEY` is required for backend operations (bypasses RLS)
+- `SUPABASE_ROLE_KEY` is required for backend operations (bypasses RLS)
 - Set variables for Production, Preview, and Development environments as needed
 
 ## API Endpoints

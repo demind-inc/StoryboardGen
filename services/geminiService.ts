@@ -1,3 +1,4 @@
+// Used only from pages/api. Do not import this module into client code.
 import { GoogleGenAI } from "@google/genai";
 import type {
   CaptionRules,
@@ -10,9 +11,19 @@ import {
   DEFAULT_CHARACTER_PROMPT_BASE,
   DEFAULT_CHARACTER_BACKGROUND_SCENE,
   DEFAULT_CHARACTER_BACKGROUND_TRANSPARENT,
-  MODEL_NAME,
-  CAPTION_MODEL_NAME,
 } from "./constants";
+
+const MODEL_NAME = "gemini-3-pro-image-preview";
+const CAPTION_MODEL_NAME =
+  process.env.GEMINI_TEXT_MODEL || "gemini-2.5-flash-lite";
+
+function getGeminiClient() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("KEY_NOT_FOUND");
+  }
+  return new GoogleGenAI({ apiKey });
+}
 
 /** Default brand/scene context — always applied in Gemini, not exposed to frontend. */
 const BRAND_DEFAULT_CONTEXT = `Always show the product in natural use, maintain warm approachable lighting, include diverse representation, avoid cluttered backgrounds, and keep the scene clean so the brand story feels calm.`;
@@ -24,11 +35,7 @@ export async function generateCharacterScene(
   guidelines: CustomGuidelines = [],
   options: { transparentBackground?: boolean } = {}
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("KEY_NOT_FOUND");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = getGeminiClient();
 
   const referenceParts = references.map((ref) => ({
     inlineData: {
@@ -120,11 +127,7 @@ export async function generateSceneSuggestions(
   count = 4,
   customGuideline?: string
 ): Promise<Array<{ title: string; description: string; scenePrompt: string }>> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("KEY_NOT_FOUND");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = getGeminiClient();
 
   const defaultGuideline = `You are generating TikTok and Instagram slideshow content about ${topic}`;
   const effectiveGuideline = (customGuideline?.trim() || defaultGuideline).trim();
@@ -201,11 +204,7 @@ export async function generateSceneCaptions(
   guidelines: CustomGuidelines,
   hashtags: Hashtags = []
 ): Promise<{ tiktok: string[]; instagram: string[] }> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("KEY_NOT_FOUND");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = getGeminiClient();
 
   const referenceParts = references.map((ref) => ({
     inlineData: {
@@ -295,11 +294,7 @@ export async function generateSceneCaptionsForPlatform(
   guidelines: CustomGuidelines,
   hashtags: Hashtags = []
 ): Promise<string[]> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("KEY_NOT_FOUND");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = getGeminiClient();
 
   const referenceParts = references.map((ref) => ({
     inlineData: {
@@ -373,11 +368,7 @@ export async function generateSceneSummaries(
   prompts: string[],
   guidelines: CustomGuidelines
 ): Promise<{ titles: string[]; descriptions: string[] }> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("KEY_NOT_FOUND");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = getGeminiClient();
 
   const sceneList = prompts
     .map((scene, idx) => `${idx + 1}. ${scene}`)

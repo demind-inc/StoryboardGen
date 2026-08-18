@@ -35,6 +35,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    ```bash
    SUPABASE_URL=your_supabase_url
    SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
    Ensure you have a `profiles` table with `id uuid primary key`, `email text`, `full_name text`, `last_sign_in_at timestamptz`, and `has_generated_free_image boolean default false`:
@@ -141,10 +143,10 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    # Optional: Base URL for checkout redirects (defaults to VERCEL_URL or localhost:3000)
    NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 
-   # Legacy: Payment Links (optional, used as fallback if Price IDs not set)
-   STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
-   STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
-   STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
+   # Optional: Payment Links (browser-visible, so they must use NEXT_PUBLIC_)
+   NEXT_PUBLIC_STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
+   NEXT_PUBLIC_STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
+   NEXT_PUBLIC_STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
    ```
 
    **Getting Stripe Price IDs:**
@@ -245,25 +247,26 @@ View your app in AI Studio: https://ai.studio/apps/drive/1_OMZ0ZGdgsH2MdvJO7Z08f
    Set these in your Vercel project settings (Settings → Environment Variables):
 
    ```bash
-   # Frontend (for build)
+   # Browser-visible (NEXT_PUBLIC_ is required for the website)
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_BASE_URL=https://yourdomain.com
+
+   # Server-only (do not prefix these with NEXT_PUBLIC_)
    GEMINI_API_KEY=your_gemini_api_key
    SUPABASE_URL=your_supabase_url
    SUPABASE_ANON_KEY=your_supabase_anon_key
-   NEXT_PUBLIC_BASE_URL=https://yourdomain.com  # Optional, for checkout redirects
-
-   # Backend API (for serverless functions)
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   SUPABASE_ROLE_KEY=your_supabase_service_role_key
    STRIPE_SECRET_KEY=sk_live_... (or sk_test_... for testing)
    STRIPE_WEBHOOK_SECRET=whsec_... (optional but recommended)
    STRIPE_PRICE_ID_BASIC=price_xxxxx
    STRIPE_PRICE_ID_PRO=price_xxxxx
    STRIPE_PRICE_ID_BUSINESS=price_xxxxx
 
-   # Legacy: Payment Links (optional, used as fallback)
-   STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
-   STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
-   STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
+   # Optional payment links (browser-visible)
+   NEXT_PUBLIC_STRIPE_LINK_BASIC=https://buy.stripe.com/basic_payment_link
+   NEXT_PUBLIC_STRIPE_LINK_PRO=https://buy.stripe.com/pro_payment_link
+   NEXT_PUBLIC_STRIPE_LINK_BUSINESS=https://buy.stripe.com/business_payment_link
    ```
 
    **Important Notes:**

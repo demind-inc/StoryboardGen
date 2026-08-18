@@ -12,7 +12,7 @@ import {
 import {
   generateCharacterScene,
   generateSceneCaptionsForPlatform,
-} from "../services/geminiService";
+} from "../services/geminiApi";
 import { getMonthlyUsage } from "../services/usageService";
 import { useRecordGeneration } from "./useUsageService";
 import { useSaveProjectWithOutputs } from "./useProjectService";

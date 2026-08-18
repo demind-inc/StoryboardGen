@@ -12,7 +12,7 @@ import type {
   SceneResult,
   SubscriptionPlan,
 } from "../../types";
-import { generateSceneCaptionsForPlatform } from "../../services/geminiService";
+import { generateSceneCaptionsForPlatform } from "../../services/geminiApi";
 import {
   useSaveProjectCaptions,
   useSaveProjectOutput,

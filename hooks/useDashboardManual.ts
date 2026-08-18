@@ -18,7 +18,7 @@ import {
 import { useReferenceLibrary } from "./useLibraryService";
 import { useCaptionSettings } from "./useCaptionSettingsService";
 import type { CaptionRules, CustomGuidelines, Hashtags } from "../types";
-import { generateSceneSuggestions } from "../services/geminiService";
+import { generateSceneSuggestions } from "../services/geminiApi";
 import {
   Scene,
   scenesToPrompts,
@@ -269,9 +269,9 @@ export const useDashboardManual = ({
 
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
-      basic: process.env.STRIPE_LINK_BASIC || "",
-      pro: process.env.STRIPE_LINK_PRO || "",
-      business: process.env.STRIPE_LINK_BUSINESS || "",
+      basic: process.env.NEXT_PUBLIC_STRIPE_LINK_BASIC || "",
+      pro: process.env.NEXT_PUBLIC_STRIPE_LINK_PRO || "",
+      business: process.env.NEXT_PUBLIC_STRIPE_LINK_BUSINESS || "",
     };
     if (!userId) return baseLinks;
     const links: Partial<Record<SubscriptionPlan, string>> = {};

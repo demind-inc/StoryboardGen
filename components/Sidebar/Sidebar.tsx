@@ -142,9 +142,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const stripePlanLinks = useMemo(() => {
     const baseLinks = {
-      basic: process.env.STRIPE_LINK_BASIC || "",
-      pro: process.env.STRIPE_LINK_PRO || "",
-      business: process.env.STRIPE_LINK_BUSINESS || "",
+      basic: process.env.NEXT_PUBLIC_STRIPE_LINK_BASIC || "",
+      pro: process.env.NEXT_PUBLIC_STRIPE_LINK_PRO || "",
+      business: process.env.NEXT_PUBLIC_STRIPE_LINK_BUSINESS || "",
     };
     const userId = session?.user?.id;
     if (!userId) return baseLinks;

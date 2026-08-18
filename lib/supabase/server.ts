@@ -7,7 +7,8 @@ import { createServerClient } from "@supabase/ssr";
  * @returns Supabase client configured for SSR
  */
 export function createSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseUrl =
+    process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
